@@ -1,6 +1,6 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "perspectivadrone",
+	"name": "perspectivadrone2",
 	"main": "./src/worker.ts",
 	"compatibility_date": "2026-02-24",
 	"compatibility_flags": ["nodejs_compat"],
@@ -9,13 +9,13 @@
 			"binding": "DB",
 			"database_name": "perspectivadrone",
 			// Run `wrangler d1 create my-emdash-site` and paste the real ID here for deploy
-			"database_id": "2cd96a8c-3612-447c-b00c-8567f9675bf4",
+			"database_id": "11474150-446d-4e0d-875f-c41c2fc583d1",
 		},
 	],
 	"r2_buckets": [
 		{
 			"binding": "MEDIA",
-			"bucket_name": "perspectivadrone-media","preview_bucket_name": "perspectivadrone-media",
+			"bucket_name": "perspectivadrone","preview_bucket_name": "perspectivadrone",
 		},
 	],
 	// Worker Loader for plugin sandboxing
