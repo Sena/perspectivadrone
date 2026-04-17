@@ -1,5 +1,38 @@
+# Dependencies
 node_modules
+.pnpm-store
+
+# Build output
 dist
 .astro
-uploads
+.wrangler
+
+# Local databases
 data.db
+*.sqlite
+*.sqlite-journal
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.dev.vars
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# EmDash temporary files
+scratch/
+uploads/
+emdash-env.d.ts
+.emdash/types.ts
+.emdash/schema.json
