@@ -7,15 +7,15 @@
 	"d1_databases": [
 		{
 			"binding": "DB",
-			"database_name": "perspectivadrone-d1",
+			"database_name": "perspectivadrone",
 			// Run `wrangler d1 create my-emdash-site` and paste the real ID here for deploy
-			"database_id": "4bff96a9-896e-4b80-9247-23a1bd191790",
+			"database_id": "2cd96a8c-3612-447c-b00c-8567f9675bf4",
 		},
 	],
 	"r2_buckets": [
 		{
 			"binding": "MEDIA",
-			"bucket_name": "my-emdash-media","preview_bucket_name": "my-emdash-media",
+			"bucket_name": "perspectivadrone-media","preview_bucket_name": "perspectivadrone-media",
 		},
 	],
 	// Worker Loader for plugin sandboxing
