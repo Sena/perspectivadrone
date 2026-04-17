@@ -10,6 +10,7 @@ export interface BlogSiteIdentitySettings {
 	tagline?: string;
 	logo?: MediaReference;
 	favicon?: MediaReference;
+	whatsapp?: string;
 }
 
 const DEFAULT_SITE_TITLE = "My Blog";
@@ -21,5 +22,6 @@ export function resolveBlogSiteIdentity(settings?: BlogSiteIdentitySettings) {
 		siteTagline: settings?.tagline ?? DEFAULT_SITE_TAGLINE,
 		siteLogo: settings?.logo?.url ? settings.logo : null,
 		siteFavicon: settings?.favicon?.url ?? null,
+		siteWhatsapp: settings?.whatsapp ?? "",
 	};
 }
