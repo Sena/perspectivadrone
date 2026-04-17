@@ -12,7 +12,6 @@ export interface Página {
   title: string;
   content?: PortableTextBlock[];
   image?: { id: string; src?: string; alt?: string; width?: number; height?: number };
-  subtitle?: string;
   createdAt: Date;
   updatedAt: Date;
   publishedAt: Date | null;
@@ -27,6 +26,22 @@ export interface Trabalho {
   location?: string;
   coordinates?: string;
   image: { id: string; src?: string; alt?: string; width?: number; height?: number };
+  display_order?: number;
+  layout_type?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  publishedAt: Date | null;
+  bylines?: ContentBylineCredit[];
+}
+
+export interface Post {
+  id: string;
+  slug: string | null;
+  status: string;
+  title: string;
+  featured_image?: { id: string; src?: string; alt?: string; width?: number; height?: number };
+  content?: PortableTextBlock[];
+  excerpt?: string;
   createdAt: Date;
   updatedAt: Date;
   publishedAt: Date | null;
@@ -51,6 +66,7 @@ declare module "emdash" {
   interface EmDashCollections {
     pages: Página;
     portfolio: Trabalho;
+    posts: Post;
     services: Serviço;
   }
 }
