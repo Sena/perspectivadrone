@@ -27,16 +27,26 @@ const FALLBACK_ITEMS = [
   },
 ];
 
-const finalItems = items.length > 0 
+const finalItems = (items.length > 0 
   ? items.map(entry => ({
       img: entry.data.image,
       title: entry.data.title,
       location: entry.data.location,
       coords: entry.data.coordinates,
-      category: "Natureza", // Could be fetched via getEntryTerms if needed
+      category: "Trabalho",
+      display_order: entry.data.display_order || 0,
+      layout_type: entry.data.layout_type || "standard",
       edit: entry.edit
     }))
-  : FALLBACK_ITEMS;
+  : FALLBACK_ITEMS.map((item, i) => ({ ...item, display_order: i, layout_type: i === 0 ? "featured" : "standard" }))
+).sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
+
+const layoutMap = {
+  standard: "col-span-1 row-span-1 aspect-video",
+  featured: "col-span-1 md:col-span-2 md:row-span-2 aspect-video md:aspect-auto",
+  landscape: "col-span-1 md:col-span-2 aspect-video",
+  portrait: "col-span-1 md:row-span-2 aspect-[9/16] md:aspect-auto"
+};
 ---
 
 <section id="portfolio" class="py-24 px-6 max-w-7xl mx-auto">
@@ -51,30 +61,19 @@ const finalItems = items.length > 0
       </div>
     </div>
 
-    <!-- Puzzle-style Mosaic Grid (Repeating pattern every 5 items for a perfect fit) -->
-    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 md:auto-rows-[300px] auto-rows-[200px]">
-      {finalItems.map((item, i) => {
-        let spanClass = "";
-        const mod = i % 5;
-        
-        if (mod === 0) spanClass = "col-span-2 row-span-2"; // Big Highlight (Top Left)
-        else if (mod === 1) spanClass = "col-span-1 row-span-1"; // Small (Top Right)
-        else if (mod === 2) spanClass = "col-span-1 row-span-1"; // Small (Middle Right)
-        else if (mod === 3) spanClass = "col-span-2 row-span-1"; // Wide (Bottom Left)
-        else spanClass = "col-span-1 row-span-1"; // Corner (Bottom Right)
-
-        // Mobile adjustments (2 cols)
-        const mobileClass = i % 3 === 0 ? "col-span-2 h-[300px]" : "col-span-1 h-[250px]";
-
-        return (
-          <div
-            class={`photo-card group cursor-pointer relative overflow-hidden ${mobileClass} md:h-full md:${spanClass}`}
-            {...(item as any).edit?.image}
-          >
+    <!-- CMS-Driven Dynamic Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:grid-flow-row-dense">
+      {finalItems.map((item) => (
+        <div
+          class={`photo-card group cursor-pointer relative overflow-hidden h-full ${layoutMap[item.layout_type as keyof typeof layoutMap] || layoutMap.standard}`}
+          {...(item as any).edit?.image}
+        >
           {typeof item.img === 'string' ? (
-             <img src={item.img} alt={item.title} class="w-full h-full object-cover" />
+             <img src={item.img} alt={item.title} class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110" />
           ) : (
-             <Image image={item.img} class="w-full h-full object-cover" />
+             <div class="w-full h-full transition-transform duration-700 group-hover:scale-110">
+               <Image image={item.img} class="w-full h-full object-cover object-center" />
+             </div>
           )}
           
           <div class="overlay">
@@ -91,8 +90,7 @@ const finalItems = items.length > 0
             <span class="coord-text text-[9px]" style="color: oklch(0.72 0.18 65 / 0.9);">{item.category}</span>
           </div>
         </div>
-        );
-      })}
+      ))}
     </div>
 
     <div class="mt-8 text-center">
