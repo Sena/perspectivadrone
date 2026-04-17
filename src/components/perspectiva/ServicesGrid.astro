@@ -1,0 +1,91 @@
+---
+import { PortableText, Image } from "emdash/ui";
+
+const { services = [], cta } = Astro.props;
+const ctaData = cta?.data || {};
+const CTA_TITLE = ctaData.title || "Vamos criar algo ##extraordinário##?";
+const CTA_TITLE_PARTS = CTA_TITLE.split(/##(.*?)##/g);
+
+// Component-level icon mapper for Lucide icons
+const IconMap: Record<string, any> = {
+  plane: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>`,
+  camera: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>`,
+  bike: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>`,
+  star: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+};
+
+const FALLBACK_SERVICES = [
+  { slug: 's1', data: { title: "Filmagem com Drone", description: "Imagens aéreas cinematográficas com DJI Air 2S e drones FPV. Perspectivas únicas para eventos, propriedades e projetos audiovisuais.", icon: "plane" } },
+  { slug: 's2', data: { title: "Fotografia de Natureza", description: "Registros autênticos de paisagens, cachoeiras, florestas e pôres do sol. Cada clique captura a essência do Brasil selvagem.", icon: "camera" } },
+  { slug: 's3', data: { title: "Conteúdo de Viagem", description: "Documentação fotográfica e em vídeo de rotas de moto, trilhas e destinos off-road pelo interior do Brasil.", icon: "bike" } },
+  { slug: 's4', data: { title: "FPV & Acrobacia", description: "Voos FPV de alta velocidade e manobras acrobáticas para conteúdo dinâmico e impactante nas redes sociais.", icon: "star" } }
+];
+
+const finalServices = services.length > 0 ? services : FALLBACK_SERVICES;
+---
+
+<section id="servicos" class="py-24 px-6 max-w-7xl mx-auto">
+  <div class="mb-16">
+    <p class="coord-text mb-3" style="color: oklch(0.72 0.18 65 / 0.8);">/ 03 — SERVIÇOS</p>
+    <h2 class="text-5xl font-bold text-white mb-4" style="font-family: 'Playfair Display', serif;">
+      O que posso <span class="italic" style="color: oklch(0.72 0.18 65);">criar</span> para você
+    </h2>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    {finalServices.map((service) => (
+      <div 
+        class="p-8 border border-white/5 transition-all duration-500 hover:border-amber-400/30 hover:shadow-[0_0_30px_rgba(251,191,36,0.05)]" 
+        style="background: oklch(0.06 0.005 285 / 0.5);"
+      >
+        <div class="mb-6" style="color: oklch(0.72 0.18 65);" set:html={IconMap[service.data.icon] || IconMap.star} />
+        <h3 class="text-xl font-bold text-white mb-4" style="font-family: 'Playfair Display', serif;" {...service.edit?.title}>
+          {service.data.title}
+        </h3>
+        <p class="text-white/50 text-sm leading-relaxed" style="font-family: 'DM Sans', sans-serif; font-weight: 300;" {...service.edit?.description}>
+          {service.data.description}
+        </p>
+      </div>
+    ))}
+  </div>
+
+  <!-- Banner CTA -->
+  <div class="mt-20 relative overflow-hidden h-64 border border-white/10 group">
+    <div class="absolute inset-0" {...cta?.edit?.image}>
+      {ctaData.image ? (
+        <Image 
+          image={ctaData.image} 
+          class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" 
+        />
+      ) : (
+        <img 
+          src="https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oWeQAjFk7GoTWpFXegazj/por_do_sol_drone-fMK8q5jGTrKf4gx5yVfZUV.webp" 
+          alt="Por do sol" 
+          class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" 
+        />
+      )}
+    </div>
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-[2px]"></div>
+    <div class="relative z-10 h-full flex flex-col items-center justify-center p-8 text-center">
+      <div class="coord-text text-[9px] mb-3 tracking-[0.3em]" style="color: oklch(0.72 0.18 65);" {...cta?.edit?.content}>
+        <PortableText value={ctaData.content || [{ "_type": "block", "children": [{ "_type": "span", "text": "CADA PROJETO É ÚNICO" }] }]} />
+      </div>
+      <h3 class="text-3xl md:text-4xl font-bold text-white mb-6" style="font-family: 'Playfair Display', serif;" {...cta?.edit?.title}>
+        {CTA_TITLE_PARTS.map((part, i) => (
+          i % 2 === 1 
+            ? <span class="italic" style="color: oklch(0.72 0.18 65);">{part}</span> 
+            : part
+        ))}
+      </h3>
+      <a 
+        href="#contato" 
+        class="px-8 py-3 font-semibold text-xs tracking-widest transition-colors duration-300"
+        style="background: oklch(0.72 0.18 65); color: oklch(0.08 0.005 285);"
+        onmouseover="this.style.background='oklch(0.60 0.20 55)'"
+        onmouseout="this.style.background='oklch(0.72 0.18 65)'"
+      >
+        Solicitar Orçamento
+      </a>
+    </div>
+  </div>
+</section>

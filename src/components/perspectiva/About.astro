@@ -1,0 +1,46 @@
+---
+import { PortableText, Image } from "emdash/ui";
+
+const { entry } = Astro.props;
+const data = entry?.data || {};
+
+const ABOUT_TITLE = data.title || "Sena, ##o outro## olhar";
+const ABOUT_IMG = data.image || "https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oWeQAjFk7GoTWpFXegazj/moto_estrada-WBtucu3AC4pLKfQ4csSnLc.webp";
+const ABOUT_CONTENT = data.content || [
+  { "_type": "block", "style": "normal", "children": [{ "_type": "span", "text": "Sou Flávio Sena, fotógrafo e piloto de drone apaixonado por descobrir o Brasil de perspectivas que poucos têm a chance de ver. Minha câmera e meu drone são extensões do meu olhar — sempre buscando o ângulo que conta a história completa." }] },
+];
+const ABOUT_TITLE_PARTS = ABOUT_TITLE.split(/##(.*?)##/g);
+---
+
+<section id="sobre" class="py-24 px-6 max-w-7xl mx-auto flex flex-col md:flex-row gap-16 items-start">
+  <!-- Image container -->
+  <div class="relative w-full md:w-1/2 group">
+    <div class="relative overflow-hidden border border-white/10" {...entry?.edit?.image}>
+       {typeof ABOUT_IMG === 'string' ? (
+         <img src={ABOUT_IMG} alt="Flávio Sena" class="w-full aspect-[4/5] object-cover transition-transform duration-700 group-hover:scale-110" />
+       ) : (
+         <Image image={ABOUT_IMG} class="w-full aspect-[4/5] object-cover transition-transform duration-700 group-hover:scale-110" />
+       )}
+      <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+    </div>
+    
+    <!-- Decorative border -->
+    <div class="absolute -top-4 -left-4 w-full h-full border border-amber-400/20 -z-10 transition-all duration-500 group-hover:top-0 group-hover:left-0"></div>
+  </div>
+
+  <!-- Content side -->
+  <div class="w-full md:w-1/2">
+    <p class="coord-text mb-3" style="color: oklch(0.72 0.18 65 / 0.8);">/ 02 — SOBRE</p>
+    <h2 class="text-5xl font-bold text-white mb-8" style="font-family: 'Playfair Display', serif;" {...entry?.edit?.title}>
+      {ABOUT_TITLE_PARTS.map((part, i) => (
+        i % 2 === 1 
+          ? <span class="italic" style="color: oklch(0.72 0.18 65);">{part}</span> 
+          : part
+      ))}
+    </h2>
+
+    <div class="space-y-6 text-white/70 text-lg leading-relaxed" style="font-family: 'DM Sans', sans-serif; font-weight: 300;" {...entry?.edit?.content}>
+       <PortableText value={ABOUT_CONTENT} />
+    </div>
+  </div>
+</section>

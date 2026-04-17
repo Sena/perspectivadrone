@@ -11,6 +11,8 @@
 		"typecheck": "astro check",
 		"bootstrap": "emdash init && emdash seed",
 		"seed": "emdash seed",
+		"cleanup": "node scripts/cleanup.js",
+		"cleanup:prod": "node scripts/cleanup.js --remote",
 		"deploy:prod": "astro build && wrangler deploy && npx emdash seed seed/seed.json --remote"
 	},
 	"dependencies": {
@@ -27,11 +29,15 @@
 	"devDependencies": {
 		"@astrojs/check": "^0.9.7",
 		"@cloudflare/workers-types": "^4.20260305.1",
+		"@tailwindcss/vite": "^4.2.2",
+		"tailwindcss": "^4.2.2",
 		"wrangler": "^4.80.0"
 	},
 	"pnpm": {
 		"onlyBuiltDependencies": [
+			"better-sqlite3",
 			"esbuild",
+			"sharp",
 			"workerd"
 		]
 	}

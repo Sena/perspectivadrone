@@ -10,6 +10,8 @@ npx emdash seed seed/seed.json --validate  # Validate seed file
 
 The admin UI is at `http://localhost:4321/_emdash/admin`.
 
+If you need a password, use this link: `http://localhost:4321/_emdash/api/setup/dev-bypass?redirect=/_emdash/admin`
+
 ## Key Files
 
 | File                     | Purpose                                                                            |

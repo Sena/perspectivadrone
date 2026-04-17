@@ -1,0 +1,80 @@
+---
+import { Image, PortableText } from "emdash/ui";
+
+const { entry } = Astro.props;
+const data = entry?.data || {};
+
+// Fallback to reference site image if CMS image not available
+const HERO_IMG = data.image || "https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oWeQAjFk7GoTWpFXegazj/hero_aerial-VVZGySyHKtXCrUgRiWHtMu.webp";
+const HERO_TITLE = data.title || "O mundo é ##mais bonito## lá de cima.";
+const HERO_CONTENT = data.content || [{ "_type": "block", "children": [{ "_type": "span", "text": "Apaixonado por viagens de moto, fotografia e natureza — capturando momentos únicos e admirando o pôr do sol." }] }];
+
+const HERO_TITLE_PARTS = HERO_TITLE.split(/##(.*?)##/g);
+---
+<section id="inicio" class="relative w-full h-screen min-h-[600px] flex items-end overflow-hidden">
+  <!-- Background image -->
+  <div class="absolute inset-0" {...entry?.edit?.image}>
+    {typeof HERO_IMG === 'string' ? (
+      <img
+        src={HERO_IMG}
+        alt="Vista aérea - Flávio Sena Fotografia"
+        class="w-full h-full object-cover"
+      />
+    ) : (
+      <Image
+        image={HERO_IMG}
+        class="w-full h-full object-cover"
+      />
+    )}
+    <div class="absolute inset-0 bg-gradient-to-t from-[oklch(0.05_0.005_285)] via-[oklch(0.08_0.005_285/0.4)] to-transparent"></div>
+    <div class="absolute inset-0 bg-gradient-to-r from-[oklch(0.05_0.005_285/0.6)] to-transparent"></div>
+  </div>
+
+  <!-- Coordinates decoration -->
+  <div class="absolute top-1/3 right-8 md:right-16 flex flex-col items-end gap-1 opacity-60">
+    <span class="coord-text">23°32'S</span>
+    <span class="coord-text">46°38'W</span>
+    <div class="w-8 h-px bg-amber-400/60 mt-1"></div>
+    <span class="coord-text text-[9px]">Alt. 180m</span>
+  </div>
+
+  <!-- Hero content -->
+  <div class="relative z-10 max-w-7xl mx-auto px-6 pb-20 md:pb-28 w-full">
+    <div class="transition-all duration-1000 opacity-100 translate-y-0">
+      <p class="coord-text mb-4" style="color: oklch(0.72 0.18 65 / 0.8);">Fotografia & Drone · Brasil</p>
+      
+      <h1 class="text-5xl md:text-7xl lg:text-8xl font-bold leading-none text-white mb-6" style="font-family: 'Playfair Display', serif;" {...entry?.edit?.title}>
+        {HERO_TITLE_PARTS.map((part, i) => (
+          i % 2 === 1 
+            ? <span class="italic" style="color: oklch(0.72 0.18 65);">{part}</span> 
+            : part
+        ))}
+      </h1>
+
+      <div class="text-white/70 text-lg md:text-xl max-w-xl mb-10 leading-relaxed" style="font-family: 'DM Sans', sans-serif; font-weight: 300;" {...entry?.edit?.content}>
+        <PortableText value={HERO_CONTENT} />
+      </div>
+      
+      <div class="flex flex-wrap gap-4">
+        <a
+          href="#portfolio"
+          class="px-8 py-3 font-semibold text-sm tracking-wide transition-colors duration-300"
+          style="background: oklch(0.72 0.18 65); color: oklch(0.08 0.005 285); font-family: 'DM Sans', sans-serif;"
+          onmouseover="this.style.background='oklch(0.60 0.20 55)'"
+          onmouseout="this.style.background='oklch(0.72 0.18 65)'"
+        >
+          Ver Portfólio
+        </a>
+        <a
+          href="#contato"
+          class="px-8 py-3 border text-white font-medium text-sm tracking-wide transition-all duration-300"
+          style="border-color: rgba(255,255,255,0.4); font-family: 'DM Sans', sans-serif;"
+          onmouseover="this.style.borderColor='oklch(0.72 0.18 65)'; this.style.color='oklch(0.72 0.18 65)'"
+          onmouseout="this.style.borderColor='rgba(255,255,255,0.4)'; this.style.color='white'"
+        >
+          Fale Comigo
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,115 @@
+---
+import { PortableText } from "emdash/ui";
+
+const { entry } = Astro.props;
+const data = entry?.data || {};
+---
+<section id="contato" class="py-24 px-6 max-w-7xl mx-auto">
+  <div class="grid md:grid-cols-2 gap-16 items-start">
+    <!-- Left side -->
+    <div>
+      <p class="coord-text mb-3" style="color: oklch(0.72 0.18 65 / 0.8);">/ 04 — Contato</p>
+      <h2 class="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight" style="font-family: 'Playfair Display', serif;" {...entry?.edit?.title}>
+        {data.title || "Vamos voar juntos"}
+      </h2>
+      <div class="mb-10 leading-relaxed" style="color: rgba(255,255,255,0.6); font-family: 'DM Sans', sans-serif; font-weight: 300;" {...entry?.edit?.content}>
+        <PortableText value={data.content || [{ "_type": "block", "children": [{ "_type": "span", "text": "Tem um projeto em mente? Quer imagens aéreas para seu evento, propriedade ou conteúdo digital? Entre em contato e vamos conversar sobre como posso ajudar." }] }]} />
+      </div>
+
+      <div class="space-y-5">
+        <a href="https://www.instagram.com/perspectiva.drone/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 group">
+          <div
+            class="w-10 h-10 border flex items-center justify-center transition-all duration-300"
+            style="border-color: oklch(0.72 0.18 65 / 0.3);"
+            onmouseover="this.style.background='oklch(0.72 0.18 65)'; this.style.borderColor='oklch(0.72 0.18 65)';"
+            onmouseout="this.style.background='transparent'; this.style.borderColor='oklch(0.72 0.18 65 / 0.3)';"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: oklch(0.72 0.18 65);"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
+          </div>
+          <div>
+            <p class="coord-text text-white/40 mb-0.5">Instagram</p>
+            <p class="text-white text-sm" style="font-family: 'DM Sans', sans-serif;">@perspectiva.drone</p>
+          </div>
+        </a>
+
+        <div class="flex items-center gap-4">
+          <div class="w-10 h-10 border flex items-center justify-center" style="border-color: oklch(0.72 0.18 65 / 0.3);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: oklch(0.72 0.18 65);"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <div>
+            <p class="coord-text text-white/40 mb-0.5">Localização</p>
+            <p class="text-white text-sm" style="font-family: 'DM Sans', sans-serif;">SP/PR/MG, Brasil</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact form -->
+    <div id="contact-wrapper">
+      <form id="contact-form" class="space-y-5">
+        <div>
+          <label class="coord-text text-white/50 block mb-2">Seu nome</label>
+          <input
+            type="text" required name="name"
+            class="w-full bg-transparent border text-white px-4 py-3 text-sm focus:outline-none transition-colors"
+            style="border-color: rgba(255,255,255,0.2); font-family: 'DM Sans', sans-serif;"
+            placeholder="Como posso te chamar?"
+          />
+        </div>
+        <div>
+          <label class="coord-text text-white/50 block mb-2">E-mail</label>
+          <input
+            type="email" required name="email"
+            class="w-full bg-transparent border text-white px-4 py-3 text-sm focus:outline-none transition-colors"
+            style="border-color: rgba(255,255,255,0.2); font-family: 'DM Sans', sans-serif;"
+            placeholder="seu@email.com"
+          />
+        </div>
+        <div>
+          <label class="coord-text text-white/50 block mb-2">Mensagem</label>
+          <textarea
+            required rows="5" name="message"
+            class="w-full bg-transparent border text-white px-4 py-3 text-sm focus:outline-none transition-colors resize-none"
+            style="border-color: rgba(255,255,255,0.2); font-family: 'DM Sans', sans-serif;"
+            placeholder="Conte sobre seu projeto..."
+          ></textarea>
+        </div>
+        <button
+          type="submit"
+          class="w-full py-3.5 font-semibold text-sm tracking-wide transition-colors duration-300"
+          style="background: oklch(0.72 0.18 65); color: oklch(0.08 0.005 285); font-family: 'DM Sans', sans-serif;"
+          onmouseover="this.style.background='oklch(0.60 0.20 55)'"
+          onmouseout="this.style.background='oklch(0.72 0.18 65)'"
+        >
+          Enviar Mensagem
+        </button>
+      </form>
+
+      <div id="success-msg" class="hidden border p-8 text-center" style="border-color: oklch(0.72 0.18 65 / 0.4);">
+        <div class="mb-4" style="color: oklch(0.72 0.18 65);">
+          <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h3 class="text-white text-xl font-semibold mb-2" style="font-family: 'Playfair Display', serif;">Mensagem enviada!</h3>
+        <p class="text-sm" style="color: rgba(255,255,255,0.6); font-family: 'DM Sans', sans-serif;">Obrigado pelo contato. Responderei em breve.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement;
+  const success = document.getElementById('success-msg');
+
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    form.classList.add('hidden');
+    success?.classList.remove('hidden');
+    setTimeout(() => {
+      form.reset();
+      form.classList.remove('hidden');
+      success?.classList.add('hidden');
+    }, 5000);
+  });
+</script>

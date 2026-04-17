@@ -1,0 +1,135 @@
+---
+const { menu = [] } = Astro.props;
+
+const FALLBACK_MENU = [
+  { label: 'Início', url: '#inicio' },
+  { label: 'Portfólio', url: '#portfolio' },
+  { label: 'Sobre', url: '#sobre' },
+  { label: 'Serviços', url: '#servicos' },
+  { label: 'Contato', url: '#contato' },
+];
+
+const items = menu.length > 0 ? menu : FALLBACK_MENU;
+---
+
+<nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 py-6 px-6 md:px-12">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <!-- Logo -->
+    <div class="flex flex-col">
+      <span class="text-white font-bold text-xl tracking-tight" style="font-family: 'Playfair Display', serif;">Flávio Sena</span>
+      <span class="coord-text text-[8px] uppercase tracking-[0.2em]" style="color: rgba(255,255,255,0.4);">Fotografia & Drone</span>
+    </div>
+
+    <!-- Desktop Menu -->
+    <div class="hidden md:flex items-center gap-10">
+      {items.map((item) => (
+        <a 
+          href={item.url} 
+          class="text-sm tracking-wide text-white/70 hover:text-amber-400 transition-colors font-medium"
+          style="font-family: 'DM Sans', sans-serif;"
+        >
+          {item.label}
+        </a>
+      ))}
+    </div>
+
+    <!-- Social / Contact Button -->
+    <div class="hidden md:flex items-center gap-6">
+      <a 
+        href="https://www.instagram.com/perspectiva.drone/" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        class="flex items-center gap-2 group border border-white/10 px-4 py-2 hover:border-amber-400/30 transition-all"
+        style="background: rgba(255,255,255,0.03);"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white/40 group-hover:text-amber-400"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
+        <span class="coord-text text-[9px] text-white/50 group-hover:text-white transition-colors">@perspectiva.drone</span>
+      </a>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button id="menu-toggle" class="md:hidden text-white/80 p-2">
+      <svg id="menu-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+  </div>
+
+  <!-- Mobile Menu Overlay -->
+  <div id="mobile-menu" class="fixed inset-0 bg-black/95 z-50 translate-x-full transition-transform duration-500 flex flex-col items-center justify-center gap-8 md:hidden">
+    <button id="menu-close" class="absolute top-8 right-8 text-white/60">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+    {items.map((item) => (
+      <a href={item.url} class="text-3xl font-bold text-white hover:text-amber-400 transition-colors mobile-link" style="font-family: 'Playfair Display', serif;">
+        {item.label}
+      </a>
+    ))}
+  </div>
+</nav>
+
+<script>
+  const navbar = document.getElementById('navbar');
+  const toggle = document.getElementById('menu-toggle');
+  const close = document.getElementById('menu-close');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const mobileLinks = document.querySelectorAll('.mobile-link');
+
+  // Scroll effect
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) {
+      navbar.style.background = 'oklch(0.05 0.005 285 / 0.9)';
+      navbar.style.backdropFilter = 'blur(10px)';
+      navbar.style.paddingTop = '1rem';
+      navbar.style.paddingBottom = '1rem';
+      navbar.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+    } else {
+      navbar.style.background = 'transparent';
+      navbar.style.backdropFilter = 'none';
+      navbar.style.paddingTop = '1.5rem';
+      navbar.style.paddingBottom = '1.5rem';
+      navbar.style.borderBottom = 'none';
+    }
+  });
+
+  // Mobile menu logic
+  toggle?.addEventListener('click', () => {
+    mobileMenu?.classList.remove('translate-x-full');
+  });
+
+  close?.addEventListener('click', () => {
+    mobileMenu?.classList.add('translate-x-full');
+  });
+
+  mobileLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      mobileMenu?.classList.add('translate-x-full');
+    });
+  });
+
+  // Scroll Spy logic
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.hidden.md\\:flex a');
+
+  const observerOptions = {
+    root: null,
+    rootMargin: '-20% 0px -70% 0px',
+    threshold: 0
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.getAttribute('id');
+        navLinks.forEach(link => {
+          link.classList.remove('text-amber-400');
+          link.classList.add('text-white/70');
+          if (link.getAttribute('href') === `#${id}`) {
+            link.classList.add('text-amber-400');
+            link.classList.remove('text-white/70');
+          }
+        });
+      }
+    });
+  }, observerOptions);
+
+  sections.forEach(section => observer.observe(section));
+</script>
