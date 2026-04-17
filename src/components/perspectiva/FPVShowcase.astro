@@ -1,0 +1,98 @@
+---
+interface Props {
+	title: string;
+	description?: string;
+	videoUrl: string;
+	poster: {
+		src?: string;
+		alt?: string;
+	};
+}
+
+const { title, description, videoUrl, poster } = Astro.props;
+---
+
+<section class="fpv-showcase">
+	<div class="container">
+		<div class="header">
+			<h2 class="title">{title}</h2>
+			{description && <p class="description">{description}</p>}
+		</div>
+		
+		<div class="video-wrapper">
+			<video
+				controls
+				muted
+				loop
+				playsinline
+				poster={poster.src}
+				class="fpv-video"
+				loading="lazy"
+			>
+				<source src={videoUrl} type="video/mp4" />
+			</video>
+			<div class="video-badge">FPV SINGLE-TAKE</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.fpv-showcase {
+		padding: var(--spacing-20) 0;
+		background: #000;
+	}
+
+	.container {
+		max-width: var(--wide-width);
+		margin: 0 auto;
+		padding: 0 var(--spacing-6);
+	}
+
+	.header {
+		text-align: center;
+		margin-bottom: var(--spacing-12);
+	}
+
+	.title {
+		font-size: clamp(2rem, 5vw, 3.5rem);
+		color: #fff;
+		margin-bottom: var(--spacing-4);
+	}
+
+	.description {
+		font-size: 1.25rem;
+		color: var(--color-text-secondary);
+		max-width: 700px;
+		margin: 0 auto;
+	}
+
+	.video-wrapper {
+		position: relative;
+		border-radius: 8px;
+		overflow: hidden;
+		background: #111;
+		box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+	}
+
+	.fpv-video {
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		display: block;
+		filter: brightness(0.9);
+	}
+
+	.video-badge {
+		position: absolute;
+		top: 20px;
+		right: 20px;
+		background: rgba(255, 255, 255, 0.1);
+		backdrop-filter: blur(10px);
+		padding: 8px 16px;
+		border-radius: 20px;
+		font-size: 0.75rem;
+		font-weight: 700;
+		color: #fff;
+		letter-spacing: 0.1em;
+		border: 1px solid rgba(255, 255, 255, 0.2);
+	}
+</style>

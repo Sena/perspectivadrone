@@ -31,9 +31,40 @@ export interface Post {
   bylines?: ContentBylineCredit[];
 }
 
+export interface Service {
+  id: string;
+  slug: string | null;
+  status: string;
+  title: string;
+  description?: string;
+  icon?: string;
+  image?: { id: string; src?: string; alt?: string; width?: number; height?: number };
+  order?: number;
+  createdAt: Date;
+  updatedAt: Date;
+  publishedAt: Date | null;
+  bylines?: ContentBylineCredit[];
+}
+
+export interface Showreel {
+  id: string;
+  slug: string | null;
+  status: string;
+  title: string;
+  video: string;
+  poster: { id: string; src?: string; alt?: string; width?: number; height?: number };
+  description?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  publishedAt: Date | null;
+  bylines?: ContentBylineCredit[];
+}
+
 declare module "emdash" {
   interface EmDashCollections {
     pages: Page;
     posts: Post;
+    services: Service;
+    showreel: Showreel;
   }
 }
