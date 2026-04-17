@@ -1,5 +1,5 @@
 ---
-import { getSiteSettings } from "emdash";
+import { getEmDashCollection, getSiteSettings, getEmDashEntry, getMenu } from "emdash";
 import Base from "../layouts/Base.astro";
 import Navbar from "../components/perspectiva/Navbar.astro";
 import Hero from "../components/perspectiva/Hero.astro";
@@ -8,35 +8,66 @@ import About from "../components/perspectiva/About.astro";
 import ServicesGrid from "../components/perspectiva/ServicesGrid.astro";
 import ContactForm from "../components/perspectiva/ContactForm.astro";
 
+// Fetch data
 const settings = await getSiteSettings();
+const menu = await getMenu("primary");
+
+// Fetch sections
+const { entry: hero, cacheHint: heroCache } = await getEmDashEntry("pages", "hero");
+const { entry: about, cacheHint: aboutCache } = await getEmDashEntry("pages", "sobre");
+const { entry: ctaServices, cacheHint: ctaServicesCache } = await getEmDashEntry("pages", "cta-services");
+const { entry: contactInfo, cacheHint: contactCache } = await getEmDashEntry("pages", "contato");
+
+const { entries: portfolioItems, cacheHint: portfolioCache } = await getEmDashCollection("portfolio");
+const { entries: services, cacheHint: servicesCache } = await getEmDashCollection("services");
+
+// Cache hints
+Astro.cache.set(heroCache);
+Astro.cache.set(aboutCache);
+Astro.cache.set(ctaServicesCache);
+Astro.cache.set(contactCache);
+Astro.cache.set(portfolioCache);
+Astro.cache.set(servicesCache);
+
+const sortedServices = services.sort((a, b) => (Number(a.data.sort_order) || 0) - (Number(b.data.sort_order) || 0));
 
 const DIVIDER_STYLE = "height: 2px; background: linear-gradient(90deg, transparent, oklch(0.72 0.18 65), transparent); margin: 0 1.5rem;";
 ---
 
-<Base title="Flávio Sena | Fotografia & Drone" description="Fotógrafo e piloto de drone apaixonado por descobrir o Brasil de perspectivas únicas.">
+<Base title={settings.title || "Flávio Sena | Fotografia & Drone"} description={settings.tagline || "Fotógrafo e piloto de drone apaixonado por descobrir o Brasil de perspectivas únicas."}>
   <div class="min-h-screen overflow-x-hidden" style="background: oklch(0.08 0.005 285); color: white;">
-    <Navbar />
-    <Hero />
+    <Navbar menu={menu?.items} />
+    
+    <Hero 
+      entry={hero} 
+    />
 
-    <PortfolioGrid />
-
-    <div style={DIVIDER_STYLE}></div>
-
-    <About />
-
-    <div style={DIVIDER_STYLE}></div>
-
-    <ServicesGrid />
+    <PortfolioGrid items={portfolioItems} />
 
     <div style={DIVIDER_STYLE}></div>
 
-    <ContactForm />
+    <About 
+      entry={about}
+    />
+
+    <div style={DIVIDER_STYLE}></div>
+
+    <ServicesGrid 
+      services={sortedServices} 
+      cta={ctaServices}
+    />
+
+    <div style={DIVIDER_STYLE}></div>
+
+    <ContactForm 
+      entry={contactInfo}
+    />
 
     <footer class="border-t py-10 px-6" style="border-color: rgba(255,255,255,0.1);">
       <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
         <div>
-          <p class="text-white font-bold text-lg" style="font-family: 'Playfair Display', serif;">Flávio Sena</p>
-          <p class="coord-text mt-1" style="color: rgba(255,255,255,0.3);">Fotografia & Drone · São Paulo, Brasil</p>
+          <p class="text-white font-bold text-lg" style="font-family: 'Playfair Display', serif;">{settings.title || "Flávio Sena"}</p>
+          <p class="coord-text mt-1" style="color: rgba(255,255,255,0.3);">{settings.tagline || "Fotografia & Drone · Brasil"}</p>
         </div>
         <div class="flex items-center gap-6">
           <a href="https://www.instagram.com/sena_o_outro/" target="_blank" rel="noopener noreferrer" class="transition-colors" style="color: rgba(255,255,255,0.4);" onmouseover="this.style.color='oklch(0.72 0.18 65)'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">
@@ -47,7 +78,7 @@ const DIVIDER_STYLE = "height: 2px; background: linear-gradient(90deg, transpare
           </a>
         </div>
         <p class="coord-text" style="color: rgba(255,255,255,0.2);">
-          © {new Date().getFullYear()} Flávio Sena · Todos os direitos reservados
+          © {new Date().getFullYear()} {settings.title || "Flávio Sena"} · Todos os direitos reservados
         </p>
       </div>
     </footer>

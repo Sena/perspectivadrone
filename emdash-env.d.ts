@@ -5,55 +5,42 @@
 
 import type { ContentBylineCredit, PortableTextBlock } from "emdash";
 
-export interface Page {
+export interface Página {
   id: string;
   slug: string | null;
   status: string;
   title: string;
   content?: PortableTextBlock[];
+  image?: { id: string; src?: string; alt?: string; width?: number; height?: number };
+  subtitle?: string;
   createdAt: Date;
   updatedAt: Date;
   publishedAt: Date | null;
   bylines?: ContentBylineCredit[];
 }
 
-export interface Post {
+export interface Trabalho {
   id: string;
   slug: string | null;
   status: string;
   title: string;
-  featured_image?: { id: string; src?: string; alt?: string; width?: number; height?: number };
-  content?: PortableTextBlock[];
-  excerpt?: string;
+  location?: string;
+  coordinates?: string;
+  image: { id: string; src?: string; alt?: string; width?: number; height?: number };
   createdAt: Date;
   updatedAt: Date;
   publishedAt: Date | null;
   bylines?: ContentBylineCredit[];
 }
 
-export interface Service {
+export interface Serviço {
   id: string;
   slug: string | null;
   status: string;
   title: string;
   description?: string;
   icon?: string;
-  image?: { id: string; src?: string; alt?: string; width?: number; height?: number };
-  order?: number;
-  createdAt: Date;
-  updatedAt: Date;
-  publishedAt: Date | null;
-  bylines?: ContentBylineCredit[];
-}
-
-export interface Showreel {
-  id: string;
-  slug: string | null;
-  status: string;
-  title: string;
-  video: string;
-  poster: { id: string; src?: string; alt?: string; width?: number; height?: number };
-  description?: string;
+  sort_order?: number;
   createdAt: Date;
   updatedAt: Date;
   publishedAt: Date | null;
@@ -62,9 +49,8 @@ export interface Showreel {
 
 declare module "emdash" {
   interface EmDashCollections {
-    pages: Page;
-    posts: Post;
-    services: Service;
-    showreel: Showreel;
+    pages: Página;
+    portfolio: Trabalho;
+    services: Serviço;
   }
 }

@@ -1,6 +1,10 @@
 ---
-// Static portfolio items matching the reference site exactly
-const PORTFOLIO_ITEMS = [
+import { Image } from "emdash/ui";
+
+const { items = [] } = Astro.props;
+
+// Static portfolio items matching the reference site exactly (Fallbacks)
+const FALLBACK_ITEMS = [
   {
     img: "https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oWeQAjFk7GoTWpFXegazj/hero_aerial-VVZGySyHKtXCrUgRiWHtMu.webp?Expires=1807954674&Signature=WmI7fn74BnTaUQPlsNWyXaIdk1daI4SlvblJqhc43aNnctPixPye5ZQ7oLndF2zwbrZ982R4BTzpVeRP7yIq~2hodrS3qseEFeNeBiEwcjXZrlaXUm15UOddCFIZcDz0~gv9Z62CNLAwsPNel4JWBzQu1a9Y7kQKwIkoftm29EwuZbtXnpEX3g2WRKAE4C-oBfI2Cm8Dexs8NrTPVxv4e2DyeA4FUPkhjnKlvjgikLqpICdng7mIOQBentq7keEGBv3Tr-68cjQrXUD2u1WOOnqU~FmW5YXeGebSg91imSstqE3tbIO7tDy4WOtXoWDblfUcU3m1ObVMbHABLp-msw__&Key-Pair-Id=K1MP89RTKNH4J",
     title: "Mata Atlântica", location: "São Paulo, SP", coords: "23°32'S 46°38'W", category: "Natureza"
@@ -23,7 +27,16 @@ const PORTFOLIO_ITEMS = [
   },
 ];
 
-const SUNSET_IMG = "https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oWeQAjFk7GoTWpFXegazj/por_do_sol_drone-fMK8q5jGTrKf4gx5yVfZUV.webp?Expires=1807954678&Signature=h9TFKKe6tIkzz0nu5bIDHz6fhXJKgzpiysFWcVAPY2dOhP~7Kapb26TH5DXomJ2TbtFtKAEuy6vC4x5Xbehjcm8zUhY3lJohv7ISDuXIoneJ3DSOZB9QxqP~OwpeQ9srQm4HGOYisc4ATH6rygHD8UjiVxyolR3EudblJWJg4A4Xj4O-UBrmSgcrnbw-P0TicgG4JWTjbBRMdAE8OReIxOniupTaY03yquWf7QsapTHomzqhNdR1qGdgiIS8FrPq6EPvuACYMJD4aApVNO4B-eqd0Z1jVaXbAE-PyaZgWMjeqpBO7c4Su3pHjleC2jiL5i62KXmdN0HZgTqPc-5mSQ__&Key-Pair-Id=K1MP89RTKNH4J";
+const finalItems = items.length > 0 
+  ? items.map(entry => ({
+      img: entry.data.image,
+      title: entry.data.title,
+      location: entry.data.location,
+      coords: entry.data.coordinates,
+      category: "Natureza", // Could be fetched via getEntryTerms if needed
+      edit: entry.edit
+    }))
+  : FALLBACK_ITEMS;
 ---
 
 <section id="portfolio" class="py-24 px-6 max-w-7xl mx-auto">
@@ -40,7 +53,7 @@ const SUNSET_IMG = "https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oW
 
     <!-- Asymmetric masonry grid -->
     <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-      {PORTFOLIO_ITEMS.map((item, i) => (
+      {finalItems.map((item, i) => (
         <div
           class={`photo-card group cursor-pointer ${
             i === 0 ? "col-span-2 row-span-2 md:col-span-2 aspect-video md:aspect-auto md:h-[520px]" :
@@ -48,15 +61,21 @@ const SUNSET_IMG = "https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oW
             i === 3 ? "col-span-2 md:col-span-1 aspect-video md:aspect-[4/5]" :
             "col-span-1 aspect-[3/4]"
           }`}
+          {...(item as any).edit?.image}
         >
-          <img src={item.img} alt={item.title} class="w-full h-full object-cover" />
+          {typeof item.img === 'string' ? (
+             <img src={item.img} alt={item.title} class="w-full h-full object-cover" />
+          ) : (
+             <Image image={item.img} class="w-full h-full object-cover" />
+          )}
+          
           <div class="overlay">
             <div class="absolute bottom-0 left-0 right-0 p-4 md:p-6">
-              <p class="coord-text mb-1" style="color: oklch(0.72 0.18 65 / 0.8);">{item.coords}</p>
-              <h3 class="text-white text-lg md:text-xl font-semibold" style="font-family: 'Playfair Display', serif;">{item.title}</h3>
+              <p class="coord-text mb-1" style="color: oklch(0.72 0.18 65 / 0.8);" {...(item as any).edit?.coordinates}>{item.coords}</p>
+              <h3 class="text-white text-lg md:text-xl font-semibold" style="font-family: 'Playfair Display', serif;" {...(item as any).edit?.title}>{item.title}</h3>
               <div class="flex items-center gap-1.5 mt-1">
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: oklch(0.72 0.18 65)"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                <span class="text-white/70 text-xs" style="font-family: 'DM Sans', sans-serif;">{item.location}</span>
+                <span class="text-white/70 text-xs" style="font-family: 'DM Sans', sans-serif;" {...(item as any).edit?.location}>{item.location}</span>
               </div>
             </div>
           </div>

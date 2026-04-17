@@ -14,50 +14,13 @@
 	"collections": [
 		{
 			"slug": "pages",
-			"label": "Pages",
-			"labelSingular": "Page",
-			"supports": [
-				"drafts",
-				"revisions",
-				"search"
-			],
+			"label": "Páginas",
+			"labelSingular": "Página",
+			"supports": ["drafts", "revisions", "search"],
 			"fields": [
-				{
-					"slug": "title",
-					"label": "Title",
-					"type": "string",
-					"required": true
-				},
-				{
-					"slug": "hero_title",
-					"label": "Hero Title",
-					"type": "string"
-				},
-				{
-					"slug": "hero_subtitle",
-					"label": "Hero Subtitle",
-					"type": "text"
-				},
-				{
-					"slug": "hero_image",
-					"label": "Hero Background",
-					"type": "image"
-				},
-				{
-					"slug": "about_title",
-					"label": "About Title",
-					"type": "string"
-				},
-				{
-					"slug": "about_content",
-					"label": "About Content",
-					"type": "portableText"
-				},
-				{
-					"slug": "about_image",
-					"label": "About Image",
-					"type": "image"
-				}
+				{ "slug": "title", "label": "Título", "type": "string", "required": true },
+				{ "slug": "content", "label": "Conteúdo", "type": "portableText" },
+				{ "slug": "image", "label": "Imagem", "type": "image" }
 			]
 		},
 		{
@@ -66,65 +29,29 @@
 			"labelSingular": "Trabalho",
 			"supports": ["drafts"],
 			"fields": [
-				{
-					"slug": "title",
-					"label": "Title",
-					"type": "string",
-					"required": true
-				},
-				{
-					"slug": "location",
-					"label": "Location",
-					"type": "string"
-				},
-				{
-					"slug": "coordinates",
-					"label": "Coordinates",
-					"type": "string"
-				},
-				{
-					"slug": "image",
-					"label": "Image",
-					"type": "image",
-					"required": true
-				}
+				{ "slug": "title", "label": "Título", "type": "string", "required": true },
+				{ "slug": "location", "label": "Localização", "type": "string" },
+				{ "slug": "coordinates", "label": "Coordenadas", "type": "string" },
+				{ "slug": "image", "label": "Imagem", "type": "image", "required": true }
 			]
 		},
 		{
 			"slug": "services",
-			"label": "Services",
-			"labelSingular": "Service",
+			"label": "Serviços",
+			"labelSingular": "Serviço",
 			"fields": [
-				{
-					"slug": "title",
-					"label": "Title",
-					"type": "string",
-					"required": true
-				},
-				{
-					"slug": "description",
-					"label": "Description",
-					"type": "text"
-				},
-				{
-					"slug": "icon",
-					"label": "Icon (Lucide name)",
-					"type": "string"
-				},
-				{
-					"slug": "order",
-					"label": "Order",
-					"type": "number",
-					"default_value": "0"
-				}
+				{ "slug": "title", "label": "Título", "type": "string", "required": true },
+				{ "slug": "description", "label": "Descrição", "type": "text" },
+				{ "slug": "icon", "label": "Ícone (nome Lucide)", "type": "string" },
+				{ "slug": "sort_order", "label": "Ordem", "type": "number", "default_value": "0" }
 			]
 		}
 	],
 	"taxonomies": [
 		{
 			"name": "category",
-			"label": "Categories",
-			"labelSingular": "Category",
+			"label": "Categorias",
+			"labelSingular": "Categoria",
 			"hierarchical": true,
 			"collections": ["portfolio"],
 			"terms": [
@@ -138,7 +65,7 @@
 	"menus": [
 		{
 			"name": "primary",
-			"label": "Primary Navigation",
+			"label": "Navegação Principal",
 			"items": [
 				{ "type": "custom", "label": "Início", "url": "#inicio" },
 				{ "type": "custom", "label": "Portfólio", "url": "#portfolio" },
@@ -151,66 +78,90 @@
 	"content": {
 		"pages": [
 			{
-				"id": "home",
-				"slug": "home",
+				"id": "hero",
+				"slug": "hero",
 				"status": "published",
 				"data": {
-					"title": "Home",
-					"hero_title": "O mundo é mais bonito lá de cima.",
-					"hero_subtitle": "Apaixonado por viagens de moto, fotografia e natureza — capturando momentos únicos e admirando o pôr do sol.",
-					"hero_image": { "url": "https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oWeQAjFk7GoTWpFXegazj/hero_aerial-VVZGySyHKtXCrUgRiWHtMu.webp?Expires=1807954674&Signature=WmI7fn74BnTaUQPlsNWyXaIdk1daI4SlvblJqhc43aNnctPixPye5ZQ7oLndF2zwbrZ982R4BTzpVeRP7yIq~2hodrS3qseEFeNeBiEwcjXZrlaXUm15UOddCFIZcDz0~gv9Z62CNLAwsPNel4JWBzQu1a9Y7kQKwIkoftm29EwuZbtXnpEX3g2WRKAE4C-oBfI2Cm8Dexs8NrTPVxv4e2DyeA4FUPkhjnKlvjgikLqpICdng7mIOQBentq7keEGBv3Tr-68cjQrXUD2u1WOOnqU~FmW5YXeGebSg91imSstqE3tbIO7tDy4WOtXoWDblfUcU3m1ObVMbHABLp-msw__&Key-Pair-Id=K1MP89RTKNH4J" },
-					"about_title": "Sena, o outro olhar",
-					"about_content": [
+					"title": "O mundo é ##mais bonito## lá de cima.",
+					"content": [{ "_type": "block", "children": [{ "_type": "span", "text": "Apaixonado por viagens de moto, fotografia e natureza — capturando momentos únicos e admirando o pôr do sol." }] }],
+					"image": "https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oWeQAjFk7GoTWpFXegazj/hero_aerial-VVZGySyHKtXCrUgRiWHtMu.webp"
+				}
+			},
+			{
+				"id": "sobre",
+				"slug": "sobre",
+				"status": "published",
+				"data": {
+					"title": "Sena, ##o outro## olhar",
+					"content": [
 						{ "_type": "block", "style": "normal", "children": [{ "_type": "span", "text": "Sou Flávio Sena, fotógrafo e piloto de drone apaixonado por descobrir o Brasil de perspectivas que poucos têm a chance de ver. Minha câmera e meu drone são extensões do meu olhar — sempre buscando o ângulo que conta a história completa." }] },
-						{ "_type": "block", "style": "normal", "children": [{ "_type": "span", "text": "As viagens de moto são meu portal para lugares remotos, cachoeiras escondidas e estradas que o Google Maps ainda não mapeou direito." }] }
+						{ "_type": "block", "style": "normal", "children": [{ "_type": "span", "text": "As viagens de moto são meu portal para lugares remotos, cachoeiras escondidas e estradas que o Google Maps ainda não mapeou direito. Cada quilômetro percorrido é uma oportunidade de capturar a beleza bruta do Brasil." }] }
 					],
-					"about_image": { "url": "https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oWeQAjFk7GoTWpFXegazj/moto_estrada-WBtucu3AC4pLKfQ4csSnLc.webp?Expires=1807954676&Signature=JM7f4S39Gwos6ycaWvUIOphRn2gE-Eh1pT0j6Y4r11vQZZ3394a2~l~B2ZcX1PVUK-mitiyA539MYCJKGzBcVsZ654NBy5Z8g-HozxDg3DYE3m1KDVh4ZHSYTHDtKj8t9gch9SVXMZnBnCTPdTBxpwLKD-m3oo69MAu4qGF-3gRYPPgUrfJNjNtxxH~W-W1vdnveED98o-Esve9tOKYq6-DckPdyRxTZNqe4s~hQFnXVhxLISdZZqmiV0bTTUri3asqNLBVIODk6TEjgBvTKu9tZFsB82FtejIJr1T9n45DnW~yBcjZT4szDD6G9xyviwdDGNESQxpcnwaOR0mcxMA__&Key-Pair-Id=K1MP89RTKNH4J" }
+					"image": "https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oWeQAjFk7GoTWpFXegazj/moto_estrada-WBtucu3AC4pLKfQ4csSnLc.webp"
+				}
+			},
+			{
+				"id": "cta-services",
+				"slug": "cta-services",
+				"status": "published",
+				"data": {
+					"title": "Vamos criar algo ##extraordinário##?",
+					"content": [{ "_type": "block", "children": [{ "_type": "span", "text": "CADA PROJETO É ÚNICO" }] }]
+				}
+			},
+			{
+				"id": "contato",
+				"slug": "contato",
+				"status": "published",
+				"data": {
+					"title": "Vamos voar juntos",
+					"content": [{ "_type": "block", "children": [{ "_type": "span", "text": "Tem um projeto em mente? Quer imagens aéreas para seu evento, propriedade ou conteúdo digital? Entre em contato." }] }]
 				}
 			}
 		],
 		"portfolio": [
 			{
 				"id": "p1", "slug": "mata-atlantica", "status": "published",
-				"data": { "title": "Mata Atlântica", "location": "São Paulo, SP", "coordinates": "23°32'S 46°38'W", "image": { "url": "https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oWeQAjFk7GoTWpFXegazj/hero_aerial-VVZGySyHKtXCrUgRiWHtMu.webp?Expires=1807954674&Signature=WmI7fn74BnTaUQPlsNWyXaIdk1daI4SlvblJqhc43aNnctPixPye5ZQ7oLndF2zwbrZ982R4BTzpVeRP7yIq~2hodrS3qseEFeNeBiEwcjXZrlaXUm15UOddCFIZcDz0~gv9Z62CNLAwsPNel4JWBzQu1a9Y7kQKwIkoftm29EwuZbtXnpEX3g2WRKAE4C-oBfI2Cm8Dexs8NrTPVxv4e2DyeA4FUPkhjnKlvjgikLqpICdng7mIOQBentq7keEGBv3Tr-68cjQrXUD2u1WOOnqU~FmW5YXeGebSg91imSstqE3tbIO7tDy4WOtXoWDblfUcU3m1ObVMbHABLp-msw__&Key-Pair-Id=K1MP89RTKNH4J" } },
+				"data": { "title": "Mata Atlântica", "location": "São Paulo, SP", "coordinates": "23°32'S 46°38'W", "image": "https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oWeQAjFk7GoTWpFXegazj/hero_aerial-VVZGySyHKtXCrUgRiWHtMu.webp?Expires=1807954674&Signature=WmI7fn74BnTaUQPlsNWyXaIdk1daI4SlvblJqhc43aNnctPixPye5ZQ7oLndF2zwbrZ982R4BTzpVeRP7yIq~2hodrS3qseEFeNeBiEwcjXZrlaXUm15UOddCFIZcDz0~gv9Z62CNLAwsPNel4JWBzQu1a9Y7kQKwIkoftm29EwuZbtXnpEX3g2WRKAE4C-oBfI2Cm8Dexs8NrTPVxv4e2DyeA4FUPkhjnKlvjgikLqpICdng7mIOQBentq7keEGBv3Tr-68cjQrXUD2u1WOOnqU~FmW5YXeGebSg91imSstqE3tbIO7tDy4WOtXoWDblfUcU3m1ObVMbHABLp-msw__&Key-Pair-Id=K1MP89RTKNH4J" },
 				"terms": { "category": ["natureza"] }
 			},
 			{
 				"id": "p2", "slug": "estrada-da-serra", "status": "published",
-				"data": { "title": "Estrada da Serra", "location": "Serra Gaúcha, RS", "coordinates": "29°10'S 51°10'W", "image": { "url": "https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oWeQAjFk7GoTWpFXegazj/moto_estrada-WBtucu3AC4pLKfQ4csSnLc.webp?Expires=1807954676&Signature=JM7f4S39Gwos6ycaWvUIOphRn2gE-Eh1pT0j6Y4r11vQZZ3394a2~l~B2ZcX1PVUK-mitiyA539MYCJKGzBcVsZ654NBy5Z8g-HozxDg3DYE3m1KDVh4ZHSYTHDtKj8t9gch9SVXMZnBnCTPdTBxpwLKD-m3oo69MAu4qGF-3gRYPPgUrfJNjNtxxH~W-W1vdnveED98o-Esve9tOKYq6-DckPdyRxTZNqe4s~hQFnXVhxLISdZZqmiV0bTTUri3asqNLBVIODk6TEjgBvTKu9tZFsB82FtejIJr1T9n45DnW~yBcjZT4szDD6G9xyviwdDGNESQxpcnwaOR0mcxMA__&Key-Pair-Id=K1MP89RTKNH4J" } },
+				"data": { "title": "Estrada da Serra", "location": "Serra Gaúcha, RS", "coordinates": "29°10'S 51°10'W", "image": "https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oWeQAjFk7GoTWpFXegazj/moto_estrada-WBtucu3AC4pLKfQ4csSnLc.webp?Expires=1807954676&Signature=JM7f4S39Gwos6ycaWvUIOphRn2gE-Eh1pT0j6Y4r11vQZZ3394a2~l~B2ZcX1PVUK-mitiyA539MYCJKGzBcVsZ654NBy5Z8g-HozxDg3DYE3m1KDVh4ZHSYTHDtKj8t9gch9SVXMZnBnCTPdTBxpwLKD-m3oo69MAu4qGF-3gRYPPgUrfJNjNtxxH~W-W1vdnveED98o-Esve9tOKYq6-DckPdyRxTZNqe4s~hQFnXVhxLISdZZqmiV0bTTUri3asqNLBVIODk6TEjgBvTKu9tZFsB82FtejIJr1T9n45DnW~yBcjZT4szDD6G9xyviwdDGNESQxpcnwaOR0mcxMA__&Key-Pair-Id=K1MP89RTKNH4J" },
 				"terms": { "category": ["moto"] }
 			},
 			{
 				"id": "p3", "slug": "cachoeira-escondida", "status": "published",
-				"data": { "title": "Cachoeira Escondida", "location": "Interior de SP", "coordinates": "22°54'S 47°03'W", "image": { "url": "https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oWeQAjFk7GoTWpFXegazj/natureza_cachoeira-8cc9uiv272ewBMWutpAmM3.webp?Expires=1807954677&Signature=kK9IQg6OzHkvCF~3BoySUjhwraS7TwXt9wYu79WuT3RQOFxC9eMZ-v46xujuQ0GJfEtSUtBQlQezswkDb74gLDex68M5U9RuXOLcqxkTCaIBjijJTEoc8jp7IBbF~IGXJRRcRqV~Jg3dxkVG-xsYmog5aZwW6g1eRF3oFwyD0mWY7lJm4KqDpF1jwkBwP3lTrKa9bYerV9MAFkLjMIHWP5fYXbv036zHZtk-SHUpu1DKsQm2ENzsOcxbpDEi8NapXTbllYDgPvdN0WvuUd~oZnTedacpimEAI500bw6NerOmflwhtGa90ysJmIBeDyZj3DABoBNs6eq8COFGtfk2dw__&Key-Pair-Id=K1MP89RTKNH4J" } },
+				"data": { "title": "Cachoeira Escondida", "location": "Interior de SP", "coordinates": "22°54'S 47°03'W", "image": "https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oWeQAjFk7GoTWpFXegazj/natureza_cachoeira-8cc9uiv272ewBMWutpAmM3.webp?Expires=1807954677&Signature=kK9IQg6OzHkvCF~3BoySUjhwraS7TwXt9wYu79WuT3RQOFxC9eMZ-v46xujuQ0GJfEtSUtBQlQezswkDb74gLDex68M5U9RuXOLcqxkTCaIBjijJTEoc8jp7IBbF~IGXJRRcRqV~Jg3dxkVG-xsYmog5aZwW6g1eRF3oFwyD0mWY7lJm4KqDpF1jwkBwP3lTrKa9bYerV9MAFkLjMIHWP5fYXbv036zHZtk-SHUpu1DKsQm2ENzsOcxbpDEi8NapXTbllYDgPvdN0WvuUd~oZnTedacpimEAI500bw6NerOmflwhtGa90ysJmIBeDyZj3DABoBNs6eq8COFGtfk2dw__&Key-Pair-Id=K1MP89RTKNH4J" },
 				"terms": { "category": ["natureza"] }
 			},
 			{
 				"id": "p4", "slug": "por-do-sol", "status": "published",
-				"data": { "title": "Pôr do Sol", "location": "Cerrado Brasileiro", "coordinates": "15°47'S 47°52'W", "image": { "url": "https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oWeQAjFk7GoTWpFXegazj/por_do_sol_drone-fMK8q5jGTrKf4gx5yVfZUV.webp?Expires=1807954678&Signature=h9TFKKe6tIkzz0nu5bIDHz6fhXJKgzpiysFWcVAPY2dOhP~7Kapb26TH5DXomJ2TbtFtKAEuy6vC4x5Xbehjcm8zUhY3lJohv7ISDuXIoneJ3DSOZB9QxqP~OwpeQ9srQm4HGOYisc4ATH6rygHD8UjiVxyolR3EudblJWJg4A4Xj4O-UBrmSgcrnbw-P0TicgG4JWTjbBRMdAE8OReIxOniupTaY03yquWf7QsapTHomzqhNdR1qGdgiIS8FrPq6EPvuACYMJD4aApVNO4B-eqd0Z1jVaXbAE-PyaZgWMjeqpBO7c4Su3pHjleC2jiL5i62KXmdN0HZgTqPc-5mSQ__&Key-Pair-Id=K1MP89RTKNH4J" } },
+				"data": { "title": "Pôr do Sol", "location": "Cerrado Brasileiro", "coordinates": "15°47'S 47°52'W", "image": "https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oWeQAjFk7GoTWpFXegazj/por_do_sol_drone-fMK8q5jGTrKf4gx5yVfZUV.webp?Expires=1807954678&Signature=h9TFKKe6tIkzz0nu5bIDHz6fhXJKgzpiysFWcVAPY2dOhP~7Kapb26TH5DXomJ2TbtFtKAEuy6vC4x5Xbehjcm8zUhY3lJohv7ISDuXIoneJ3DSOZB9QxqP~OwpeQ9srQm4HGOYisc4ATH6rygHD8UjiVxyolR3EudblJWJg4A4Xj4O-UBrmSgcrnbw-P0TicgG4JWTjbBRMdAE8OReIxOniupTaY03yquWf7QsapTHomzqhNdR1qGdgiIS8FrPq6EPvuACYMJD4aApVNO4B-eqd0Z1jVaXbAE-PyaZgWMjeqpBO7c4Su3pHjleC2jiL5i62KXmdN0HZgTqPc-5mSQ__&Key-Pair-Id=K1MP89RTKNH4J" },
 				"terms": { "category": ["paisagem"] }
 			},
 			{
 				"id": "p5", "slug": "luzes-da-cidade", "status": "published",
-				"data": { "title": "Luzes da Cidade", "location": "Interior de MG", "coordinates": "19°55'S 43°56'W", "image": { "url": "https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oWeQAjFk7GoTWpFXegazj/cidade_aerea-MjjC4aZRjAJXy9heM5GU3G.webp?Expires=1807954680&Signature=qRFqIAWvznKgKxmZhwRxlJgQHKSvvKN0Y7leNVjHnZUF2nF0FnKDDs--tjCVqytevN0cnfmS9xZ2tPrrCyl5lFfmaiBH5IJ8DZHR~wrGVW2Y2VVgQEBfmDwwkhPEiFUgL-23vbKWhVtsbTWD8lR6xtNRMAtmuW-3vz5aAzaGYPhrcBIPPYjGrxCPrMEUmOyqJRR4PhwD3HN2yW8N5vnV2FYFCbG71FtGA68I3Ij4~kK2jtbo4~Jvpx7ISmhp-Vg4yEhCHqA3z6kNXbDjjFHAP7VVKa1AqtvThKYRZ2XaY9eLZaUHEfgx5jEWCXPbED~d3SrGvoZfeVW7aHKj~-1RQA__&Key-Pair-Id=K1MP89RTKNH4J" } },
+				"data": { "title": "Luzes da Cidade", "location": "Interior de MG", "coordinates": "19°55'S 43°56'W", "image": "https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oWeQAjFk7GoTWpFXegazj/cidade_aerea-MjjC4aZRjAJXy9heM5GU3G.webp?Expires=1807954680&Signature=qRFqIAWvznKgKxmZhwRxlJgQHKSvvKN0Y7leNVjHnZUF2nF0FnKDDs--tjCVqytevN0cnfmS9xZ2tPrrCyl5lFfmaiBH5IJ8DZHR~wrGVW2Y2VVgQEBfmDwwkhPEiFUgL-23vbKWhVtsbTWD8lR6xtNRMAtmuW-3vz5aAzaGYPhrcBIPPYjGrxCPrMEUmOyqJRR4PhwD3HN2yW8N5vnV2FYFCbG71FtGA68I3Ij4~kK2jtbo4~Jvpx7ISmhp-Vg4yEhCHqA3z6kNXbDjjFHAP7VVKa1AqtvThKYRZ2XaY9eLZaUHEfgx5jEWCXPbED~d3SrGvoZfeVW7aHKj~-1RQA__&Key-Pair-Id=K1MP89RTKNH4J" },
 				"terms": { "category": ["urbano"] }
 			}
 		],
 		"services": [
 			{
 				"id": "s1", "slug": "filmagem-drone", "status": "published",
-				"data": { "title": "Filmagem com Drone", "description": "Imagens aéreas cinematográficas com DJI Air 2S e drones FPV.", "icon": "plane", "order": 1 }
+				"data": { "title": "Filmagem com Drone", "description": "Imagens aéreas cinematográficas com DJI Air 2S e drones FPV.", "icon": "plane", "sort_order": 1 }
 			},
 			{
 				"id": "s2", "slug": "fotografia-natureza", "status": "published",
-				"data": { "title": "Fotografia de Natureza", "description": "Registros autênticos de paisagens, cachoeiras e florestas.", "icon": "camera", "order": 2 }
+				"data": { "title": "Fotografia de Natureza", "description": "Registros autênticos de paisagens, cachoeiras e florestas.", "icon": "camera", "sort_order": 2 }
 			},
 			{
 				"id": "s3", "slug": "conteudo-viagem", "status": "published",
-				"data": { "title": "Conteúdo de Viagem", "description": "Documentação fotográfica de rotas de moto e destinos off-road.", "icon": "bike", "order": 3 }
+				"data": { "title": "Conteúdo de Viagem", "description": "Documentação fotográfica de rotas de moto e destinos off-road.", "icon": "bike", "sort_order": 3 }
 			},
 			{
 				"id": "s4", "slug": "fpv-acrobacia", "status": "published",
-				"data": { "title": "FPV & Acrobacia", "description": "Voos FPV de alta velocidade para conteúdo dinâmico.", "icon": "star", "order": 4 }
+				"data": { "title": "FPV & Acrobacia", "description": "Voos FPV de alta velocidade para conteúdo dinâmico.", "icon": "star", "sort_order": 4 }
 			}
 		]
 	}

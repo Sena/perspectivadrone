@@ -1,159 +1,135 @@
 ---
-const navLinks = [
-  { label: "Início", href: "#inicio" },
-  { label: "Portfólio", href: "#portfolio" },
-  { label: "Sobre", href: "#sobre" },
-  { label: "Serviços", href: "#servicos" },
-  { label: "Contato", href: "#contato" },
+const { menu = [] } = Astro.props;
+
+const FALLBACK_MENU = [
+  { label: 'Início', url: '#inicio' },
+  { label: 'Portfólio', url: '#portfolio' },
+  { label: 'Sobre', url: '#sobre' },
+  { label: 'Serviços', url: '#servicos' },
+  { label: 'Contato', url: '#contato' },
 ];
 
-const INSTAGRAM_SVG = `<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>`;
+const items = menu.length > 0 ? menu : FALLBACK_MENU;
 ---
 
-<nav id="main-nav" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500">
-  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+<nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 py-6 px-6 md:px-12">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
     <!-- Logo -->
-    <a href="#inicio" class="flex flex-col leading-none group" id="nav-logo">
-      <span class="text-xl font-bold tracking-wide text-white transition-colors duration-300" style="font-family: 'Playfair Display', serif;" id="logo-text">
-        Flávio Sena
-      </span>
-      <span class="coord-text text-[10px] mt-0.5">Fotografia & Drone</span>
-    </a>
+    <div class="flex flex-col">
+      <span class="text-white font-bold text-xl tracking-tight" style="font-family: 'Playfair Display', serif;">Flávio Sena</span>
+      <span class="coord-text text-[8px] uppercase tracking-[0.2em]" style="color: rgba(255,255,255,0.4);">Fotografia & Drone</span>
+    </div>
 
-    <!-- Desktop links -->
-    <ul class="hidden md:flex items-center gap-8">
-      {navLinks.map((link) => (
-        <li>
-          <a
-            href={link.href}
-            class="nav-link relative text-sm font-medium tracking-wide transition-colors duration-300 pb-1 text-white/70"
-            style="font-family: 'DM Sans', sans-serif;"
-          >
-            {link.label}
-          </a>
-        </li>
+    <!-- Desktop Menu -->
+    <div class="hidden md:flex items-center gap-10">
+      {items.map((item) => (
+        <a 
+          href={item.url} 
+          class="text-sm tracking-wide text-white/70 hover:text-amber-400 transition-colors font-medium"
+          style="font-family: 'DM Sans', sans-serif;"
+        >
+          {item.label}
+        </a>
       ))}
-    </ul>
+    </div>
 
-    <!-- Instagram CTA -->
-    <a
-      href="https://www.instagram.com/sena_o_outro/"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="hidden md:flex items-center gap-2 px-4 py-2 border text-sm font-medium rounded-sm transition-all duration-300"
-      style="border-color: oklch(0.72 0.18 65 / 0.6); color: oklch(0.72 0.18 65); font-family: 'DM Sans', sans-serif;"
-      onmouseover="this.style.background='oklch(0.72 0.18 65)'; this.style.color='oklch(0.08 0.005 285)'"
-      onmouseout="this.style.background='transparent'; this.style.color='oklch(0.72 0.18 65)'"
-    >
-      <Fragment set:html={INSTAGRAM_SVG} />
-      @sena_o_outro
-    </a>
+    <!-- Social / Contact Button -->
+    <div class="hidden md:flex items-center gap-6">
+      <a 
+        href="https://www.instagram.com/sena_o_outro/" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        class="flex items-center gap-2 group border border-white/10 px-4 py-2 hover:border-amber-400/30 transition-all"
+        style="background: rgba(255,255,255,0.03);"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white/40 group-hover:text-amber-400"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
+        <span class="coord-text text-[9px] text-white/50 group-hover:text-white transition-colors">@sena_o_outro</span>
+      </a>
+    </div>
 
-    <!-- Mobile menu button -->
-    <button id="mobile-toggle" class="md:hidden transition-colors" style="color: rgba(255,255,255,0.8);">
-      <svg id="icon-menu" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg>
-      <svg id="icon-close" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    <!-- Mobile Menu Toggle -->
+    <button id="menu-toggle" class="md:hidden text-white/80 p-2">
+      <svg id="menu-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
     </button>
   </div>
 
-  <!-- Mobile menu -->
-  <div id="mobile-menu" class="md:hidden hidden border-t px-6 py-6" style="background: oklch(0.08 0.005 285 / 0.98); backdrop-filter: blur(12px); border-color: oklch(0.22 0.008 285);">
-    <ul class="flex flex-col gap-4">
-      {navLinks.map((link) => (
-        <li>
-          <a
-            href={link.href}
-            class="mobile-link text-white/80 text-base font-medium transition-colors block"
-            style="font-family: 'DM Sans', sans-serif;"
-            onmouseover="this.style.color='oklch(0.72 0.18 65)'"
-            onmouseout="this.style.color='rgba(255,255,255,0.8)'"
-          >
-            {link.label}
-          </a>
-        </li>
-      ))}
-      <li class="pt-2 border-t border-white/10">
-        <a
-          href="https://www.instagram.com/sena_o_outro/"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="flex items-center gap-2 text-sm font-medium"
-          style="color: oklch(0.72 0.18 65);"
-        >
-          <Fragment set:html={INSTAGRAM_SVG} />
-          @sena_o_outro
-        </a>
-      </li>
-    </ul>
+  <!-- Mobile Menu Overlay -->
+  <div id="mobile-menu" class="fixed inset-0 bg-black/95 z-50 translate-x-full transition-transform duration-500 flex flex-col items-center justify-center gap-8 md:hidden">
+    <button id="menu-close" class="absolute top-8 right-8 text-white/60">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+    {items.map((item) => (
+      <a href={item.url} class="text-3xl font-bold text-white hover:text-amber-400 transition-colors mobile-link" style="font-family: 'Playfair Display', serif;">
+        {item.label}
+      </a>
+    ))}
   </div>
 </nav>
 
 <script>
-  const nav = document.getElementById('main-nav');
-  const toggle = document.getElementById('mobile-toggle');
+  const navbar = document.getElementById('navbar');
+  const toggle = document.getElementById('menu-toggle');
+  const close = document.getElementById('menu-close');
   const mobileMenu = document.getElementById('mobile-menu');
-  const iconMenu = document.getElementById('icon-menu');
-  const iconClose = document.getElementById('icon-close');
-  const logoText = document.getElementById('logo-text');
+  const mobileLinks = document.querySelectorAll('.mobile-link');
 
-  // Scroll handler
+  // Scroll effect
   window.addEventListener('scroll', () => {
-    if (window.scrollY > 60) {
-      nav!.style.cssText = 'background: oklch(0.08 0.005 285 / 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid oklch(0.22 0.008 285);';
+    if (window.scrollY > 50) {
+      navbar.style.background = 'oklch(0.05 0.005 285 / 0.9)';
+      navbar.style.backdropFilter = 'blur(10px)';
+      navbar.style.paddingTop = '1rem';
+      navbar.style.paddingBottom = '1rem';
+      navbar.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
     } else {
-      nav!.style.cssText = '';
+      navbar.style.background = 'transparent';
+      navbar.style.backdropFilter = 'none';
+      navbar.style.paddingTop = '1.5rem';
+      navbar.style.paddingBottom = '1.5rem';
+      navbar.style.borderBottom = 'none';
     }
   });
 
-  // Logo hover
-  logoText?.parentElement?.addEventListener('mouseover', () => {
-    logoText.style.color = 'oklch(0.72 0.18 65)';
-  });
-  logoText?.parentElement?.addEventListener('mouseout', () => {
-    logoText.style.color = 'white';
-  });
-
-  // Mobile toggle
+  // Mobile menu logic
   toggle?.addEventListener('click', () => {
-    const isOpen = !mobileMenu?.classList.contains('hidden');
-    if (isOpen) {
-      mobileMenu?.classList.add('hidden');
-      iconMenu?.classList.remove('hidden');
-      iconClose?.classList.add('hidden');
-    } else {
-      mobileMenu?.classList.remove('hidden');
-      iconMenu?.classList.add('hidden');
-      iconClose?.classList.remove('hidden');
-    }
+    mobileMenu?.classList.remove('translate-x-full');
   });
 
-  // Close mobile menu on link click
-  document.querySelectorAll('.mobile-link').forEach(link => {
+  close?.addEventListener('click', () => {
+    mobileMenu?.classList.add('translate-x-full');
+  });
+
+  mobileLinks.forEach(link => {
     link.addEventListener('click', () => {
-      mobileMenu?.classList.add('hidden');
-      iconMenu?.classList.remove('hidden');
-      iconClose?.classList.add('hidden');
+      mobileMenu?.classList.add('translate-x-full');
     });
   });
 
-  // Active link highlight on scroll
-  const sections = ['inicio', 'portfolio', 'sobre', 'servicos', 'contato'];
-  const navLinks = document.querySelectorAll('.nav-link');
+  // Scroll Spy logic
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.hidden.md\\:flex a');
 
-  window.addEventListener('scroll', () => {
-    let current = 'inicio';
-    sections.forEach(id => {
-      const el = document.getElementById(id);
-      if (el && window.scrollY >= el.offsetTop - 100) current = id;
-    });
+  const observerOptions = {
+    root: null,
+    rootMargin: '-20% 0px -70% 0px',
+    threshold: 0
+  };
 
-    navLinks.forEach(link => {
-      const href = link.getAttribute('href');
-      if (href === `#${current}`) {
-        (link as HTMLElement).style.color = 'oklch(0.72 0.18 65)';
-      } else {
-        (link as HTMLElement).style.color = 'rgba(255,255,255,0.7)';
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.getAttribute('id');
+        navLinks.forEach(link => {
+          link.classList.remove('text-amber-400');
+          link.classList.add('text-white/70');
+          if (link.getAttribute('href') === `#${id}`) {
+            link.classList.add('text-amber-400');
+            link.classList.remove('text-white/70');
+          }
+        });
       }
     });
-  });
+  }, observerOptions);
+
+  sections.forEach(section => observer.observe(section));
 </script>

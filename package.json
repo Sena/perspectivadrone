@@ -11,6 +11,8 @@
 		"typecheck": "astro check",
 		"bootstrap": "emdash init && emdash seed",
 		"seed": "emdash seed",
+		"cleanup": "node scripts/cleanup.js",
+		"cleanup:prod": "node scripts/cleanup.js --remote",
 		"deploy:prod": "astro build && wrangler deploy && npx emdash seed seed/seed.json --remote"
 	},
 	"dependencies": {
