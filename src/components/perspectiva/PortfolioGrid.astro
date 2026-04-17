@@ -1,0 +1,85 @@
+---
+// Static portfolio items matching the reference site exactly
+const PORTFOLIO_ITEMS = [
+  {
+    img: "https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oWeQAjFk7GoTWpFXegazj/hero_aerial-VVZGySyHKtXCrUgRiWHtMu.webp?Expires=1807954674&Signature=WmI7fn74BnTaUQPlsNWyXaIdk1daI4SlvblJqhc43aNnctPixPye5ZQ7oLndF2zwbrZ982R4BTzpVeRP7yIq~2hodrS3qseEFeNeBiEwcjXZrlaXUm15UOddCFIZcDz0~gv9Z62CNLAwsPNel4JWBzQu1a9Y7kQKwIkoftm29EwuZbtXnpEX3g2WRKAE4C-oBfI2Cm8Dexs8NrTPVxv4e2DyeA4FUPkhjnKlvjgikLqpICdng7mIOQBentq7keEGBv3Tr-68cjQrXUD2u1WOOnqU~FmW5YXeGebSg91imSstqE3tbIO7tDy4WOtXoWDblfUcU3m1ObVMbHABLp-msw__&Key-Pair-Id=K1MP89RTKNH4J",
+    title: "Mata Atlântica", location: "São Paulo, SP", coords: "23°32'S 46°38'W", category: "Natureza"
+  },
+  {
+    img: "https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oWeQAjFk7GoTWpFXegazj/moto_estrada-WBtucu3AC4pLKfQ4csSnLc.webp?Expires=1807954676&Signature=JM7f4S39Gwos6ycaWvUIOphRn2gE-Eh1pT0j6Y4r11vQZZ3394a2~l~B2ZcX1PVUK-mitiyA539MYCJKGzBcVsZ654NBy5Z8g-HozxDg3DYE3m1KDVh4ZHSYTHDtKj8t9gch9SVXMZnBnCTPdTBxpwLKD-m3oo69MAu4qGF-3gRYPPgUrfJNjNtxxH~W-W1vdnveED98o-Esve9tOKYq6-DckPdyRxTZNqe4s~hQFnXVhxLISdZZqmiV0bTTUri3asqNLBVIODk6TEjgBvTKu9tZFsB82FtejIJr1T9n45DnW~yBcjZT4szDD6G9xyviwdDGNESQxpcnwaOR0mcxMA__&Key-Pair-Id=K1MP89RTKNH4J",
+    title: "Estrada da Serra", location: "Serra Gaúcha, RS", coords: "29°10'S 51°10'W", category: "Moto"
+  },
+  {
+    img: "https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oWeQAjFk7GoTWpFXegazj/natureza_cachoeira-8cc9uiv272ewBMWutpAmM3.webp?Expires=1807954677&Signature=kK9IQg6OzHkvCF~3BoySUjhwraS7TwXt9wYu79WuT3RQOFxC9eMZ-v46xujuQ0GJfEtSUtBQlQezswkDb74gLDex68M5U9RuXOLcqxkTCaIBjijJTEoc8jp7IBbF~IGXJRRcRqV~Jg3dxkVG-xsYmog5aZwW6g1eRF3oFwyD0mWY7lJm4KqDpF1jwkBwP3lTrKa9bYerV9MAFkLjMIHWP5fYXbv036zHZtk-SHUpu1DKsQm2ENzsOcxbpDEi8NapXTbllYDgPvdN0WvuUd~oZnTedacpimEAI500bw6NerOmflwhtGa90ysJmIBeDyZj3DABoBNs6eq8COFGtfk2dw__&Key-Pair-Id=K1MP89RTKNH4J",
+    title: "Cachoeira Escondida", location: "Interior de SP", coords: "22°54'S 47°03'W", category: "Natureza"
+  },
+  {
+    img: "https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oWeQAjFk7GoTWpFXegazj/por_do_sol_drone-fMK8q5jGTrKf4gx5yVfZUV.webp?Expires=1807954678&Signature=h9TFKKe6tIkzz0nu5bIDHz6fhXJKgzpiysFWcVAPY2dOhP~7Kapb26TH5DXomJ2TbtFtKAEuy6vC4x5Xbehjcm8zUhY3lJohv7ISDuXIoneJ3DSOZB9QxqP~OwpeQ9srQm4HGOYisc4ATH6rygHD8UjiVxyolR3EudblJWJg4A4Xj4O-UBrmSgcrnbw-P0TicgG4JWTjbBRMdAE8OReIxOniupTaY03yquWf7QsapTHomzqhNdR1qGdgiIS8FrPq6EPvuACYMJD4aApVNO4B-eqd0Z1jVaXbAE-PyaZgWMjeqpBO7c4Su3pHjleC2jiL5i62KXmdN0HZgTqPc-5mSQ__&Key-Pair-Id=K1MP89RTKNH4J",
+    title: "Pôr do Sol", location: "Cerrado Brasileiro", coords: "15°47'S 47°52'W", category: "Paisagem"
+  },
+  {
+    img: "https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oWeQAjFk7GoTWpFXegazj/cidade_aerea-MjjC4aZRjAJXy9heM5GU3G.webp?Expires=1807954680&Signature=qRFqIAWvznKgKxmZhwRxlJgQHKSvvKN0Y7leNVjHnZUF2nF0FnKDDs--tjCVqytevN0cnfmS9xZ2tPrrCyl5lFfmaiBH5IJ8DZHR~wrGVW2Y2VVgQEBfmDwwkhPEiFUgL-23vbKWhVtsbTWD8lR6xtNRMAtmuW-3vz5aAzaGYPhrcBIPPYjGrxCPrMEUmOyqJRR4PhwD3HN2yW8N5vnV2FYFCbG71FtGA68I3Ij4~kK2jtbo4~Jvpx7ISmhp-Vg4yEhCHqA3z6kNXbDjjFHAP7VVKa1AqtvThKYRZ2XaY9eLZaUHEfgx5jEWCXPbED~d3SrGvoZfeVW7aHKj~-1RQA__&Key-Pair-Id=K1MP89RTKNH4J",
+    title: "Luzes da Cidade", location: "Interior de MG", coords: "19°55'S 43°56'W", category: "Urbano"
+  },
+];
+
+const SUNSET_IMG = "https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oWeQAjFk7GoTWpFXegazj/por_do_sol_drone-fMK8q5jGTrKf4gx5yVfZUV.webp?Expires=1807954678&Signature=h9TFKKe6tIkzz0nu5bIDHz6fhXJKgzpiysFWcVAPY2dOhP~7Kapb26TH5DXomJ2TbtFtKAEuy6vC4x5Xbehjcm8zUhY3lJohv7ISDuXIoneJ3DSOZB9QxqP~OwpeQ9srQm4HGOYisc4ATH6rygHD8UjiVxyolR3EudblJWJg4A4Xj4O-UBrmSgcrnbw-P0TicgG4JWTjbBRMdAE8OReIxOniupTaY03yquWf7QsapTHomzqhNdR1qGdgiIS8FrPq6EPvuACYMJD4aApVNO4B-eqd0Z1jVaXbAE-PyaZgWMjeqpBO7c4Su3pHjleC2jiL5i62KXmdN0HZgTqPc-5mSQ__&Key-Pair-Id=K1MP89RTKNH4J";
+---
+
+<section id="portfolio" class="py-24 px-6 max-w-7xl mx-auto">
+  <div>
+    <!-- Section header -->
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between mb-12 gap-6">
+      <div>
+        <p class="coord-text mb-3" style="color: oklch(0.72 0.18 65 / 0.8);">/ 01 — Portfólio</p>
+        <h2 class="text-4xl md:text-5xl font-bold text-white" style="font-family: 'Playfair Display', serif;">
+          Momentos <span class="italic" style="color: oklch(0.72 0.18 65);">capturados</span>
+        </h2>
+      </div>
+    </div>
+
+    <!-- Asymmetric masonry grid -->
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+      {PORTFOLIO_ITEMS.map((item, i) => (
+        <div
+          class={`photo-card group cursor-pointer ${
+            i === 0 ? "col-span-2 row-span-2 md:col-span-2 aspect-video md:aspect-auto md:h-[520px]" :
+            i === 2 ? "col-span-1 aspect-[3/4]" :
+            i === 3 ? "col-span-2 md:col-span-1 aspect-video md:aspect-[4/5]" :
+            "col-span-1 aspect-[3/4]"
+          }`}
+        >
+          <img src={item.img} alt={item.title} class="w-full h-full object-cover" />
+          <div class="overlay">
+            <div class="absolute bottom-0 left-0 right-0 p-4 md:p-6">
+              <p class="coord-text mb-1" style="color: oklch(0.72 0.18 65 / 0.8);">{item.coords}</p>
+              <h3 class="text-white text-lg md:text-xl font-semibold" style="font-family: 'Playfair Display', serif;">{item.title}</h3>
+              <div class="flex items-center gap-1.5 mt-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: oklch(0.72 0.18 65)"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span class="text-white/70 text-xs" style="font-family: 'DM Sans', sans-serif;">{item.location}</span>
+              </div>
+            </div>
+          </div>
+          <div class="absolute top-3 left-3 px-2 py-1" style="background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);">
+            <span class="coord-text text-[9px]" style="color: oklch(0.72 0.18 65 / 0.9);">{item.category}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-8 text-center">
+      <a
+        href="https://www.instagram.com/sena_o_outro/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 px-8 py-3 border text-sm font-medium transition-all duration-300"
+        style="border-color: oklch(0.72 0.18 65 / 0.4); color: oklch(0.72 0.18 65); font-family: 'DM Sans', sans-serif;"
+        onmouseover="this.style.background='oklch(0.72 0.18 65)'; this.style.color='oklch(0.08 0.005 285)'"
+        onmouseout="this.style.background='transparent'; this.style.color='oklch(0.72 0.18 65)'"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
+        Ver mais no Instagram
+      </a>
+    </div>
+  </div>
+</section>

@@ -1,59 +1,55 @@
 ---
-import { getEmDashCollection, getSiteSettings } from "emdash";
+import { getSiteSettings } from "emdash";
 import Base from "../layouts/Base.astro";
-import HeroCinematic from "../components/perspectiva/HeroCinematic.astro";
-import FPVShowcase from "../components/perspectiva/FPVShowcase.astro";
-import SectorServices from "../components/perspectiva/SectorServices.astro";
-import { resolveBlogSiteIdentity } from "../utils/site-identity";
+import Navbar from "../components/perspectiva/Navbar.astro";
+import Hero from "../components/perspectiva/Hero.astro";
+import PortfolioGrid from "../components/perspectiva/PortfolioGrid.astro";
+import About from "../components/perspectiva/About.astro";
+import ServicesGrid from "../components/perspectiva/ServicesGrid.astro";
+import ContactForm from "../components/perspectiva/ContactForm.astro";
 
-// Fetch cinematic content
-const { entries: showreels, cacheHint: showreelCache } = await getEmDashCollection("showreel");
-const { entries: services, cacheHint: servicesCache } = await getEmDashCollection("services");
-const { siteTitle, siteTagline, siteWhatsapp } = resolveBlogSiteIdentity(await getSiteSettings());
+const settings = await getSiteSettings();
 
-// Set cache hints for both collections
-Astro.cache.set(showreelCache);
-Astro.cache.set(servicesCache);
-
-// Identify components from data
-const heroData = showreels.find(s => s.id === "hero-showreel")?.data;
-const fpvData = showreels.find(s => s.id === "fpv-single-take")?.data;
-const sectorServices = services
-	.map(s => s.data)
-	.sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
+const DIVIDER_STYLE = "height: 2px; background: linear-gradient(90deg, transparent, oklch(0.72 0.18 65), transparent); margin: 0 1.5rem;";
 ---
 
-<Base title={siteTitle} description={siteTagline}>
-	<main class="cinematic-home">
-		{heroData && (
-			<HeroCinematic 
-				title={heroData.title} 
-				videoUrl={heroData.video} 
-				poster={heroData.poster}
-				whatsappUrl={siteWhatsapp}
-			/>
-		)}
+<Base title="Flávio Sena | Fotografia & Drone" description="Fotógrafo e piloto de drone apaixonado por descobrir o Brasil de perspectivas únicas.">
+  <div class="min-h-screen overflow-x-hidden" style="background: oklch(0.08 0.005 285); color: white;">
+    <Navbar />
+    <Hero />
 
-		{fpvData && (
-			<FPVShowcase 
-				title={fpvData.title}
-				description={fpvData.description}
-				videoUrl={fpvData.video}
-				poster={fpvData.poster}
-			/>
-		)}
+    <PortfolioGrid />
 
-		{sectorServices.length > 0 && (
-			<SectorServices 
-				title="Nossos Setores"
-				services={sectorServices}
-			/>
-		)}
-	</main>
+    <div style={DIVIDER_STYLE}></div>
+
+    <About />
+
+    <div style={DIVIDER_STYLE}></div>
+
+    <ServicesGrid />
+
+    <div style={DIVIDER_STYLE}></div>
+
+    <ContactForm />
+
+    <footer class="border-t py-10 px-6" style="border-color: rgba(255,255,255,0.1);">
+      <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+        <div>
+          <p class="text-white font-bold text-lg" style="font-family: 'Playfair Display', serif;">Flávio Sena</p>
+          <p class="coord-text mt-1" style="color: rgba(255,255,255,0.3);">Fotografia & Drone · São Paulo, Brasil</p>
+        </div>
+        <div class="flex items-center gap-6">
+          <a href="https://www.instagram.com/sena_o_outro/" target="_blank" rel="noopener noreferrer" class="transition-colors" style="color: rgba(255,255,255,0.4);" onmouseover="this.style.color='oklch(0.72 0.18 65)'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
+          </a>
+          <a href="https://www.tiktok.com/@senaooutro" target="_blank" rel="noopener noreferrer" class="transition-colors" style="color: rgba(255,255,255,0.4);" onmouseover="this.style.color='oklch(0.72 0.18 65)'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/></svg>
+          </a>
+        </div>
+        <p class="coord-text" style="color: rgba(255,255,255,0.2);">
+          © {new Date().getFullYear()} Flávio Sena · Todos os direitos reservados
+        </p>
+      </div>
+    </footer>
+  </div>
 </Base>
-
-<style>
-	.cinematic-home {
-		background: #000;
-	}
-</style>

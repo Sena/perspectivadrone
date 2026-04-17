@@ -1,75 +1,148 @@
-/*
-  theme.css -- Cinematic Strict Dark Theme for Perspectiva Drone.
-  This file overrides the default light/dark mode behavior to ensure 
-  a premium visual identity regardless of user preference.
-*/
+/* =============================================================
+   DESIGN PHILOSOPHY: Dark Wilderness Editorial
+   - Fundo escuro dramático (preto profundo + carvão)
+   - Destaques em âmbar/dourado (pôr do sol)
+   - Tipografia editorial: Playfair Display (display) + DM Sans (body)
+   - Galeria assimétrica, coordenadas geográficas como decoração
+   - Atmosfera de aventura, altitude e natureza brasileira
+   ============================================================= */
 
+@import "tailwindcss";
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+}
 :root {
-	/* --- Cinematic Palette (HUD Deep Tech) --- */
-	--color-bg-base: #020205;
-	--color-bg-depth: #0a0b1e;
-	--color-bg: var(--color-bg-base);
-	--color-bg-subtle: #05060f;
-	
-	--color-text: #ffffff;
-	--color-text-secondary: #a0aec0; /* Cool grey-blue */
-	--color-muted: #4a5568;
-	
-	--color-border: #1a202c;
-	--color-border-subtle: #0d1117;
-	--color-surface: #0a0b1e;
+  /* --- Colors (OKLCH) --- */
+  --background: oklch(0.08 0.005 285);
+  --foreground: oklch(0.92 0.008 65);
+  
+  --card: oklch(0.12 0.006 285);
+  --card-foreground: oklch(0.92 0.008 65);
+  
+  --primary: oklch(0.72 0.18 65); /* Amber */
+  --primary-foreground: oklch(0.08 0.005 285);
+  
+  --accent: oklch(0.60 0.20 55); /* Deep Amber */
+  --accent-foreground: oklch(0.08 0.005 285);
+  
+  --border: oklch(0.22 0.008 285);
+  
+  /* --- Typography --- */
+  --font-display: 'Playfair Display', serif;
+  --font-sans: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 
-	/* The HUD Blue - Electric Cyan */
-	--color-accent: #00f5ff; 
-	--color-accent-hover: #70faff;
-	--color-on-accent: #000000;
-	--color-accent-ring: rgba(0, 245, 255, 0.15);
-
-	/* --- Typography Refinements --- */
-	--font-size-5xl: 5.5rem;
-	--tracking-tight: -0.04em;
-	--tracking-snug: -0.02em;
-	--tracking-wide: 0.15em; /* For that cinematic title look */
-	--tracking-wider: 0.25em;
-
-	/* --- Spacing --- */
-	--spacing-16: 8rem;
-	--spacing-20: 10rem;
-
-	/* --- Layout --- */
-	--wide-width: 1500px;
+  /* --- Spacing & Layout --- */
+  --wide-width: 1280px;
 }
 
-/* Base Body with Depth Gradient */
-:root, :root.light, :root.dark {
-	background: radial-gradient(circle at top center, var(--color-bg-depth) 0%, var(--color-bg-base) 100%);
-	background-attachment: fixed;
-	color: var(--color-text);
+@layer base {
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 700;
+  }
+
+  /* Reveal animation base */
+  .reveal-hidden {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 1s ease, transform 1s ease;
+  }
+  
+  .reveal-visible {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+  }
 }
 
-/* Hide theme elements */
-.theme-switcher, .theme-btn {
-	display: none !important;
+@layer components {
+  /* Amber diagonal separator */
+  .amber-divider {
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  }
+  
+  /* Coordinate text style */
+  .coord-text {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: oklch(0.55 0.12 65);
+    text-transform: uppercase;
+  }
+  
+  /* Photo card hover effect */
+  .photo-card {
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+  }
+  
+  .photo-card img {
+    transition: transform 0.6s ease;
+    width: 100%;
+    height: 100%;
+    object-cover: cover;
+  }
+  
+  .photo-card:hover img {
+    transform: scale(1.04);
+  }
+  
+  .photo-card .overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, oklch(0.05 0.005 285 / 0.9), transparent);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  
+  .photo-card:hover .overlay {
+    opacity: 1;
+  }
+
+  /* Grain texture overlay */
+  .grain-overlay {
+    position: relative;
+  }
+  
+  .grain-overlay::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.15;
+  }
 }
 
-/* Global Polish */
-* {
-	transition: background-color 0.4s ease, border-color 0.4s ease, color 0.3s ease;
+/* Utils taken from source */
+.animate-bounce {
+  animation: bounce 2s infinite;
 }
 
-h1, h2, h3 {
-	text-transform: uppercase;
-	letter-spacing: var(--tracking-wide);
-	font-weight: 700;
-}
-
-/* HUD Accents */
-.nav-links a:hover {
-	color: var(--color-accent) !important;
-	text-shadow: 0 0 10px rgba(0, 245, 255, 0.5);
-}
-
-.site-title {
-	letter-spacing: var(--tracking-wider);
-	text-transform: uppercase;
+@keyframes bounce {
+  0%, 100% { transform: translateY(-25%); animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
+  50% { transform: translateY(0); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
 }
