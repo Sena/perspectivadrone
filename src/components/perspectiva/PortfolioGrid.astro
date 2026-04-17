@@ -51,18 +51,21 @@ const finalItems = items.length > 0
       </div>
     </div>
 
-    <!-- Asymmetric masonry grid -->
-    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-      {finalItems.map((item, i) => (
-        <div
-          class={`photo-card group cursor-pointer ${
-            i === 0 ? "col-span-2 row-span-2 md:col-span-2 aspect-video md:aspect-auto md:h-[520px]" :
-            i === 2 ? "col-span-1 aspect-[3/4]" :
-            i === 3 ? "col-span-2 md:col-span-1 aspect-video md:aspect-[4/5]" :
-            "col-span-1 aspect-[3/4]"
-          }`}
-          {...(item as any).edit?.image}
-        >
+    <!-- 12-Column dynamic mosaic grid -->
+    <div class="grid grid-cols-12 gap-4 md:grid-flow-row-dense">
+      {finalItems.map((item, i) => {
+        let spanClass = "";
+        if (i === 0) spanClass = "col-span-12 md:col-span-8 row-span-1 md:row-span-2 md:h-auto min-h-[300px]";
+        else if (i === 1) spanClass = "col-span-6 md:col-span-4 row-span-1 md:row-span-2 md:h-auto min-h-[300px]";
+        else if (i === 2) spanClass = "col-span-12 md:col-span-8 row-span-1 md:h-auto min-h-[200px]";
+        else if (i === 3) spanClass = "col-span-6 md:col-span-4 row-span-1 md:h-auto min-h-[200px]";
+        else spanClass = "col-span-6 md:col-span-4 row-span-1 aspect-[4/3] md:aspect-square";
+
+        return (
+          <div
+            class={`photo-card group cursor-pointer relative overflow-hidden ${spanClass}`}
+            {...(item as any).edit?.image}
+          >
           {typeof item.img === 'string' ? (
              <img src={item.img} alt={item.title} class="w-full h-full object-cover" />
           ) : (
@@ -83,7 +86,8 @@ const finalItems = items.length > 0
             <span class="coord-text text-[9px]" style="color: oklch(0.72 0.18 65 / 0.9);">{item.category}</span>
           </div>
         </div>
-      ))}
+        );
+      })}
     </div>
 
     <div class="mt-8 text-center">
