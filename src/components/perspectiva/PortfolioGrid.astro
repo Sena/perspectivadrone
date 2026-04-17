@@ -51,19 +51,24 @@ const finalItems = items.length > 0
       </div>
     </div>
 
-    <!-- 12-Column dynamic mosaic grid -->
-    <div class="grid grid-cols-12 gap-4 md:grid-flow-row-dense">
+    <!-- Puzzle-style Mosaic Grid (Repeating pattern every 5 items for a perfect fit) -->
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 md:auto-rows-[300px] auto-rows-[200px]">
       {finalItems.map((item, i) => {
         let spanClass = "";
-        if (i === 0) spanClass = "col-span-12 md:col-span-8 row-span-1 md:row-span-2 md:h-auto min-h-[300px]";
-        else if (i === 1) spanClass = "col-span-6 md:col-span-4 row-span-1 md:row-span-2 md:h-auto min-h-[300px]";
-        else if (i === 2) spanClass = "col-span-12 md:col-span-8 row-span-1 md:h-auto min-h-[200px]";
-        else if (i === 3) spanClass = "col-span-6 md:col-span-4 row-span-1 md:h-auto min-h-[200px]";
-        else spanClass = "col-span-6 md:col-span-4 row-span-1 aspect-[4/3] md:aspect-square";
+        const mod = i % 5;
+        
+        if (mod === 0) spanClass = "col-span-2 row-span-2"; // Big Highlight (Top Left)
+        else if (mod === 1) spanClass = "col-span-1 row-span-1"; // Small (Top Right)
+        else if (mod === 2) spanClass = "col-span-1 row-span-1"; // Small (Middle Right)
+        else if (mod === 3) spanClass = "col-span-2 row-span-1"; // Wide (Bottom Left)
+        else spanClass = "col-span-1 row-span-1"; // Corner (Bottom Right)
+
+        // Mobile adjustments (2 cols)
+        const mobileClass = i % 3 === 0 ? "col-span-2 h-[300px]" : "col-span-1 h-[250px]";
 
         return (
           <div
-            class={`photo-card group cursor-pointer relative overflow-hidden ${spanClass}`}
+            class={`photo-card group cursor-pointer relative overflow-hidden ${mobileClass} md:h-full md:${spanClass}`}
             {...(item as any).edit?.image}
           >
           {typeof item.img === 'string' ? (
