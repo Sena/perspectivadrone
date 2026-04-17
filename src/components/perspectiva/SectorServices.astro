@@ -48,7 +48,7 @@ const { title, services } = Astro.props;
 <style>
 	.sector-services {
 		padding: var(--spacing-20) 0;
-		background: #000;
+		background: transparent;
 	}
 
 	.container {
@@ -74,14 +74,15 @@ const { title, services } = Astro.props;
 		position: relative;
 		border-radius: 8px;
 		overflow: hidden;
-		background: #111;
-		transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-		border: 1px solid #1a1a1a;
+		background: var(--color-bg-subtle);
+		transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+		border: 1px solid var(--color-border);
 	}
 
 	.service-card:hover {
 		transform: translateY(-8px);
-		border-color: #333;
+		border-color: var(--color-accent);
+		box-shadow: 0 10px 30px rgba(0, 245, 255, 0.1);
 	}
 
 	.image-wrapper {
