@@ -7,8 +7,8 @@
 		"author": "Perspectiva Drone"
 	},
 	"settings": {
-		"title": "Flávio Sena",
-		"tagline": "Fotografia & Drone · Brasil",
+		"title": "Perspectiva Drone",
+		"tagline": "Imagens Aéreas Cinematográficas",
 		"whatsapp": ""
 	},
 	"collections": [
@@ -94,10 +94,10 @@
 				"slug": "sobre",
 				"status": "published",
 				"data": {
-					"title": "Sena, ##o outro## olhar",
+					"title": "Perspectiva Drone, ##o outro## olhar",
 					"content": [
-						{ "_type": "block", "style": "normal", "children": [{ "_type": "span", "text": "Sou Flávio Sena, fotógrafo e piloto de drone apaixonado por descobrir o Brasil de perspectivas que poucos têm a chance de ver. Minha câmera e meu drone são extensões do meu olhar — sempre buscando o ângulo que conta a história completa." }] },
-						{ "_type": "block", "style": "normal", "children": [{ "_type": "span", "text": "As viagens de moto são meu portal para lugares remotos, cachoeiras escondidas e estradas que o Google Maps ainda não mapeou direito. Cada quilômetro percorrido é uma oportunidade de capturar a beleza bruta do Brasil." }] }
+						{ "_type": "block", "style": "normal", "children": [{ "_type": "span", "text": "A Perspectiva Drone é focada em descobrir o Brasil de ângulos que poucos têm a chance de ver. Nossa missão é capturar a beleza bruta da natureza e a grandiosidade de projetos através de perspectivas únicas." }] },
+						{ "_type": "block", "style": "normal", "children": [{ "_type": "span", "text": "Com drones de alta performance e um olhar atento, transformamos paisagens em narrativas visuais impactantes." }] }
 					],
 					"image": "https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oWeQAjFk7GoTWpFXegazj/moto_estrada-WBtucu3AC4pLKfQ4csSnLc.webp"
 				}

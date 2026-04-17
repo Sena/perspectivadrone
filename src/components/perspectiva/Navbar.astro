@@ -1,5 +1,9 @@
 ---
-const { menu = [] } = Astro.props;
+const { 
+  menu = [], 
+  title = "Perspectiva Drone", 
+  tagline = "Imagens Aéreas Cinematográficas" 
+} = Astro.props;
 
 const FALLBACK_MENU = [
   { label: 'Início', url: '#inicio' },
@@ -16,8 +20,8 @@ const items = menu.length > 0 ? menu : FALLBACK_MENU;
   <div class="max-w-7xl mx-auto flex items-center justify-between">
     <!-- Logo -->
     <div class="flex flex-col">
-      <span class="text-white font-bold text-xl tracking-tight" style="font-family: 'Playfair Display', serif;">Flávio Sena</span>
-      <span class="coord-text text-[8px] uppercase tracking-[0.2em]" style="color: rgba(255,255,255,0.4);">Fotografia & Drone</span>
+      <span class="text-white font-bold text-xl tracking-tight" style="font-family: 'Playfair Display', serif;">{title}</span>
+      <span class="coord-text text-[8px] uppercase tracking-[0.2em]" style="color: rgba(255,255,255,0.4);">{tagline}</span>
     </div>
 
     <!-- Desktop Menu -->
