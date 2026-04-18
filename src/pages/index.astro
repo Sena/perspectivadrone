@@ -36,13 +36,13 @@ const DIVIDER_STYLE = "height: 2px; background: linear-gradient(90deg, transpare
 
 <Base title={settings.title || "Flávio Sena | Fotografia & Drone"} description={settings.tagline || "Fotógrafo e piloto de drone apaixonado por descobrir o Brasil de perspectivas únicas."}>
   <div class="min-h-screen overflow-x-hidden" style="background: oklch(0.08 0.005 285); color: white;">
-    <Navbar menu={menu?.items} title={settings.title} tagline={settings.tagline} />
+    <Navbar instagram={settings.social?.instagram} menu={menu?.items} title={settings.title} tagline={settings.tagline} />
     
     <Hero 
       entry={hero} 
     />
 
-    <PortfolioGrid items={portfolioItems} />
+    <PortfolioGrid items={portfolioItems}  instagram={settings.social?.instagram}/>
 
     <div style={DIVIDER_STYLE}></div>
 
@@ -60,6 +60,7 @@ const DIVIDER_STYLE = "height: 2px; background: linear-gradient(90deg, transpare
     <div style={DIVIDER_STYLE}></div>
 
     <ContactForm 
+      instagram={settings.social?.instagram}
       entry={contactInfo}
     />
 
