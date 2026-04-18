@@ -1,7 +1,7 @@
 ---
 import { PortableText } from "emdash/ui";
 
-const { entry } = Astro.props;
+const { entry, instagram = "" } = Astro.props;
 const data = entry?.data || {};
 ---
 <section id="contato" class="py-24 px-6 max-w-7xl mx-auto">
@@ -17,7 +17,7 @@ const data = entry?.data || {};
       </div>
 
       <div class="space-y-5">
-        <a href="https://www.instagram.com/perspectiva.drone/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 group">
+        <a href={`https://www.instagram.com/${instagram}/`} target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 group">
           <div
             class="w-10 h-10 border flex items-center justify-center transition-all duration-300"
             style="border-color: oklch(0.72 0.18 65 / 0.3);"
@@ -28,7 +28,7 @@ const data = entry?.data || {};
           </div>
           <div>
             <p class="coord-text text-white/40 mb-0.5">Instagram</p>
-            <p class="text-white text-sm" style="font-family: 'DM Sans', sans-serif;">@perspectiva.drone</p>
+            <p class="text-white text-sm" style="font-family: 'DM Sans', sans-serif;">{`@${instagram}`}</p>
           </div>
         </a>
 
