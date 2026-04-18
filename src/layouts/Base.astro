@@ -50,6 +50,14 @@ const pageCtx = createPublicPageContext({
 			/* Load fonts explicitly if config doesn't push them to head correctly */
 			@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 		</style>
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-RJDVRMXRM6"></script>
+		<script is:inline>
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+
+			gtag('config', 'G-RJDVRMXRM6');
+		</script>
 	</head>
 	<body class="grain-overlay">
 		<EmDashBodyStart page={pageCtx} />
