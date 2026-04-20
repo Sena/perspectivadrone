@@ -13,8 +13,8 @@ const items = menu;
   <div class="max-w-7xl mx-auto flex items-center justify-between">
     <!-- Logo -->
     <div class="flex flex-col">
-      <span class="text-white font-bold text-xl tracking-tight" style="font-family: 'Playfair Display', serif;">{title}</span>
-      <span class="coord-text text-[8px] uppercase tracking-[0.2em]" style="color: rgba(255,255,255,0.4);">{tagline}</span>
+      <span class="text-white font-bold text-xl tracking-tight font-display">{title}</span>
+      <span class="coord-text text-[8px] uppercase tracking-[0.2em] text-white/40">{tagline}</span>
     </div>
 
     <!-- Desktop Menu -->
@@ -22,8 +22,7 @@ const items = menu;
       {items.map((item) => (
         <a 
           href={item.url} 
-          class="text-sm tracking-wide text-white/70 hover:text-amber-400 transition-colors font-medium"
-          style="font-family: 'DM Sans', sans-serif;"
+          class="text-sm tracking-wide text-white/70 hover:text-amber-400 transition-colors font-medium font-sans"
         >
           {item.label}
         </a>
@@ -36,8 +35,7 @@ const items = menu;
         href={`https://www.instagram.com/${instagram}/`} 
         target="_blank" 
         rel="noopener noreferrer"
-        class="flex items-center gap-2 group border border-white/10 px-4 py-2 hover:border-amber-400/30 transition-all"
-        style="background: rgba(255,255,255,0.03);"
+        class="flex items-center gap-2 group border border-white/10 px-4 py-2 hover:border-amber-400/30 transition-all bg-white/5"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white/40 group-hover:text-amber-400"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
         <span class="coord-text text-[9px] text-white/50 group-hover:text-white transition-colors">@{instagram}</span>
@@ -56,7 +54,7 @@ const items = menu;
       <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
     </button>
     {items.map((item) => (
-      <a href={item.url} class="text-3xl font-bold text-white hover:text-amber-400 transition-colors mobile-link" style="font-family: 'Playfair Display', serif;">
+      <a href={item.url} class="text-3xl font-bold text-white hover:text-amber-400 transition-colors mobile-link font-display">
         {item.label}
       </a>
     ))}
@@ -73,17 +71,9 @@ const items = menu;
   // Scroll effect
   window.addEventListener('scroll', () => {
     if (window.scrollY > 50) {
-      navbar.style.background = 'oklch(0.05 0.005 285 / 0.9)';
-      navbar.style.backdropFilter = 'blur(10px)';
-      navbar.style.paddingTop = '1rem';
-      navbar.style.paddingBottom = '1rem';
-      navbar.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+      navbar?.classList.add('nav-scrolled');
     } else {
-      navbar.style.background = 'transparent';
-      navbar.style.backdropFilter = 'none';
-      navbar.style.paddingTop = '1.5rem';
-      navbar.style.paddingBottom = '1.5rem';
-      navbar.style.borderBottom = 'none';
+      navbar?.classList.remove('nav-scrolled');
     }
   });
 
@@ -130,3 +120,13 @@ const items = menu;
 
   sections.forEach(section => observer.observe(section));
 </script>
+
+<style>
+  .nav-scrolled {
+    background: oklch(0.05 0.005 285 / 0.9);
+    backdrop-filter: blur(10px);
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+</style>

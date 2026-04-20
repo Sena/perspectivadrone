@@ -27,9 +27,9 @@ const layoutMap = {
     <!-- Section header -->
     <div class="flex flex-col md:flex-row md:items-end md:justify-between mb-12 gap-6">
       <div>
-        <p class="coord-text mb-3" style="color: oklch(0.72 0.18 65 / 0.8);">/ 01 — Portfólio</p>
-        <h2 class="text-4xl md:text-5xl font-bold text-white" style="font-family: 'Playfair Display', serif;">
-          Momentos <span class="italic" style="color: oklch(0.72 0.18 65);">capturados</span>
+        <p class="coord-text mb-3 text-primary-80">/ 01 — Portfólio</p>
+        <h2 class="text-4xl md:text-5xl font-bold text-white font-display">
+          Momentos <span class="italic text-primary">capturados</span>
         </h2>
       </div>
     </div>
@@ -51,16 +51,16 @@ const layoutMap = {
           
           <div class="overlay">
             <div class="absolute bottom-0 left-0 right-0 p-4 md:p-6">
-              <p class="coord-text mb-1" style="color: oklch(0.72 0.18 65 / 0.8);" {...(item as any).edit?.coordinates}>{item.coords}</p>
-              <h3 class="text-white text-lg md:text-xl font-semibold" style="font-family: 'Playfair Display', serif;" {...(item as any).edit?.title}>{item.title}</h3>
+              <p class="coord-text mb-1 text-primary-80" {...(item as any).edit?.coordinates}>{item.coords}</p>
+              <h3 class="text-white text-lg md:text-xl font-semibold font-display" {...(item as any).edit?.title}>{item.title}</h3>
               <div class="flex items-center gap-1.5 mt-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: oklch(0.72 0.18 65)"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                <span class="text-white/70 text-xs" style="font-family: 'DM Sans', sans-serif;" {...(item as any).edit?.location}>{item.location}</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span class="text-white/70 text-xs font-sans" {...(item as any).edit?.location}>{item.location}</span>
               </div>
             </div>
           </div>
-          <div class="absolute top-3 left-3 px-2 py-1" style="background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);">
-            <span class="coord-text text-[9px]" style="color: oklch(0.72 0.18 65 / 0.9);">{item.category}</span>
+          <div class="category-badge">
+            <span class="coord-text text-[9px] text-primary-90">{item.category}</span>
           </div>
         </div>
       ))}
@@ -71,10 +71,7 @@ const layoutMap = {
         href={`https://www.instagram.com/${instagram}/`}
         target="_blank"
         rel="noopener noreferrer"
-        class="inline-flex items-center gap-2 px-8 py-3 border text-sm font-medium transition-all duration-300"
-        style="border-color: oklch(0.72 0.18 65 / 0.4); color: oklch(0.72 0.18 65); font-family: 'DM Sans', sans-serif;"
-        onmouseover="this.style.background='oklch(0.72 0.18 65)'; this.style.color='oklch(0.08 0.005 285)'"
-        onmouseout="this.style.background='transparent'; this.style.color='oklch(0.72 0.18 65)'"
+        class="instagram-btn"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
         Ver mais no Instagram
@@ -82,3 +79,36 @@ const layoutMap = {
     </div>
   </div>
 </section>
+
+<style>
+  .text-primary-90 {
+    color: oklch(0.72 0.18 65 / 0.9);
+  }
+
+  .category-badge {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+  }
+
+  .instagram-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 2rem;
+    border: 1px solid oklch(0.72 0.18 65 / 0.4);
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.3s;
+    color: var(--primary);
+    font-family: var(--font-sans);
+  }
+
+  .instagram-btn:hover {
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+</style>
