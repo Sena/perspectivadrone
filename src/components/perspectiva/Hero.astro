@@ -5,9 +5,9 @@ const { entry } = Astro.props;
 const data = entry?.data || {};
 
 // Fallback to reference site image if CMS image not available
-const HERO_IMG = data.image || "https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oWeQAjFk7GoTWpFXegazj/hero_aerial-VVZGySyHKtXCrUgRiWHtMu.webp";
-const HERO_TITLE = data.title || "O mundo é ##mais bonito## lá de cima.";
-const HERO_CONTENT = data.content || [{ "_type": "block", "children": [{ "_type": "span", "text": "Apaixonado por viagens de moto, fotografia e natureza — capturando momentos únicos e admirando o pôr do sol." }] }];
+const HERO_IMG = data.image;
+const HERO_TITLE = data.title || "";
+const HERO_CONTENT = data.content;
 
 const HERO_TITLE_PARTS = HERO_TITLE.split(/##(.*?)##/g);
 ---

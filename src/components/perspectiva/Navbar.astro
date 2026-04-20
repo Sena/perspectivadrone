@@ -2,19 +2,11 @@
 const { 
   menu = [], 
   instagram = "", 
-  title = "Perspectiva Drone", 
-  tagline = "Imagens Aéreas Cinematográficas" 
+  title, 
+  tagline 
 } = Astro.props;
 
-const FALLBACK_MENU = [
-  { label: 'Início', url: '#inicio' },
-  { label: 'Portfólio', url: '#portfolio' },
-  { label: 'Sobre', url: '#sobre' },
-  { label: 'Serviços', url: '#servicos' },
-  { label: 'Contato', url: '#contato' },
-];
-
-const items = menu.length > 0 ? menu : FALLBACK_MENU;
+const items = menu;
 ---
 
 <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 py-6 px-6 md:px-12">
