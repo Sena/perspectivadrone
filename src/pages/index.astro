@@ -31,11 +31,10 @@ Astro.cache.set(servicesCache);
 
 const sortedServices = services.sort((a, b) => (Number(a.data.sort_order) || 0) - (Number(b.data.sort_order) || 0));
 
-const DIVIDER_STYLE = "height: 2px; background: linear-gradient(90deg, transparent, oklch(0.72 0.18 65), transparent); margin: 0 1.5rem;";
 ---
 
 <Base title={settings.title} description={settings.tagline}>
-  <div class="min-h-screen overflow-x-hidden" style="background: oklch(0.08 0.005 285); color: white;">
+  <div class="min-h-screen overflow-x-hidden bg-background text-white">
     <Navbar instagram={settings.social?.instagram} menu={menu?.items} title={settings.title} tagline={settings.tagline} />
     
     <Hero 
@@ -44,33 +43,33 @@ const DIVIDER_STYLE = "height: 2px; background: linear-gradient(90deg, transpare
 
     <PortfolioGrid items={portfolioItems}  instagram={settings.social?.instagram}/>
 
-    <div style={DIVIDER_STYLE}></div>
+    <div class="amber-divider my-0 mx-6"></div>
 
     <About 
       entry={about}
     />
 
-    <div style={DIVIDER_STYLE}></div>
+    <div class="amber-divider my-0 mx-6"></div>
 
     <ServicesGrid 
       services={sortedServices} 
       cta={ctaServices}
     />
 
-    <div style={DIVIDER_STYLE}></div>
+    <div class="amber-divider my-0 mx-6"></div>
 
     <ContactForm 
       instagram={settings.social?.instagram}
       entry={contactInfo}
     />
 
-    <footer class="border-t py-10 px-6" style="border-color: rgba(255,255,255,0.1);">
+    <footer class="border-t border-white/10 py-10 px-6">
       <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
         <div>
           <p class="text-white font-bold text-lg" style="font-family: 'Playfair Display', serif;">{settings.title}</p>
-          <p class="coord-text mt-1" style="color: rgba(255,255,255,0.3);">{settings.tagline}</p>
+          <p class="coord-text mt-1 text-white/30">{settings.tagline}</p>
         </div>
-        <p class="coord-text" style="color: rgba(255,255,255,0.2);">
+        <p class="coord-text text-white/20">
           © {new Date().getFullYear()} {settings.title} · Todos os direitos reservados
         </p>
       </div>

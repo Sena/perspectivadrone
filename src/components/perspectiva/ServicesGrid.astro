@@ -19,23 +19,22 @@ const finalServices = services;
 
 <section id="servicos" class="py-24 px-6 max-w-7xl mx-auto">
   <div class="mb-16">
-    <p class="coord-text mb-3" style="color: oklch(0.72 0.18 65 / 0.8);">/ 03 — SERVIÇOS</p>
-    <h2 class="text-5xl font-bold text-white mb-4" style="font-family: 'Playfair Display', serif;">
-      O que posso <span class="italic" style="color: oklch(0.72 0.18 65);">criar</span> para você
+    <p class="coord-text mb-3 text-primary-80">/ 03 — SERVIÇOS</p>
+    <h2 class="text-5xl font-bold text-white mb-4 font-display">
+      O que posso <span class="italic text-primary">criar</span> para você
     </h2>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
     {finalServices.map((service) => (
       <div 
-        class="p-8 border border-white/5 transition-all duration-500 hover:border-amber-400/30 hover:shadow-[0_0_30px_rgba(251,191,36,0.05)]" 
-        style="background: oklch(0.06 0.005 285 / 0.5);"
+        class="p-8 border border-white/5 transition-all duration-500 hover:border-amber-400/30 hover:shadow-[0_0_30px_rgba(251,191,36,0.05)] service-card"
       >
-        <div class="mb-6" style="color: oklch(0.72 0.18 65);" set:html={IconMap[service.data.icon] || IconMap.star} />
-        <h3 class="text-xl font-bold text-white mb-4" style="font-family: 'Playfair Display', serif;" {...service.edit?.title}>
+        <div class="mb-6 text-primary" set:html={IconMap[service.data.icon] || IconMap.star} />
+        <h3 class="text-xl font-bold text-white mb-4 font-display" {...service.edit?.title}>
           {service.data.title}
         </h3>
-        <p class="text-white/50 text-sm leading-relaxed" style="font-family: 'DM Sans', sans-serif; font-weight: 300;" {...service.edit?.description}>
+        <p class="text-white/50 text-sm leading-relaxed font-sans font-light" {...service.edit?.description}>
           {service.data.description}
         </p>
       </div>
@@ -54,25 +53,28 @@ const finalServices = services;
     </div>
     <div class="absolute inset-0 bg-black/60 backdrop-blur-[2px]"></div>
     <div class="relative z-10 h-full flex flex-col items-center justify-center p-8 text-center">
-      <div class="coord-text text-[9px] mb-3 tracking-[0.3em]" style="color: oklch(0.72 0.18 65);" {...cta?.edit?.content}>
+      <div class="coord-text text-[9px] mb-3 tracking-[0.3em] text-primary" {...cta?.edit?.content}>
         <PortableText value={ctaData.content} />
       </div>
-      <h3 class="text-3xl md:text-4xl font-bold text-white mb-6" style="font-family: 'Playfair Display', serif;" {...cta?.edit?.title}>
+      <h3 class="text-3xl md:text-4xl font-bold text-white mb-6 font-display" {...cta?.edit?.title}>
         {CTA_TITLE_PARTS.map((part, i) => (
           i % 2 === 1 
-            ? <span class="italic" style="color: oklch(0.72 0.18 65);">{part}</span> 
+            ? <span class="italic text-primary">{part}</span> 
             : part
         ))}
       </h3>
       <a 
         href="#contato" 
-        class="px-8 py-3 font-semibold text-xs tracking-widest transition-colors duration-300"
-        style="background: oklch(0.72 0.18 65); color: oklch(0.08 0.005 285);"
-        onmouseover="this.style.background='oklch(0.60 0.20 55)'"
-        onmouseout="this.style.background='oklch(0.72 0.18 65)'"
+        class="btn-primary"
       >
         Solicitar Orçamento
       </a>
     </div>
   </div>
 </section>
+
+<style>
+  .service-card {
+    background: oklch(0.06 0.005 285 / 0.5);
+  }
+</style>
