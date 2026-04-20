@@ -3,7 +3,7 @@ import { PortableText, Image } from "emdash/ui";
 
 const { services = [], cta } = Astro.props;
 const ctaData = cta?.data || {};
-const CTA_TITLE = ctaData.title || "Vamos criar algo ##extraordinário##?";
+const CTA_TITLE = ctaData.title || "";
 const CTA_TITLE_PARTS = CTA_TITLE.split(/##(.*?)##/g);
 
 // Component-level icon mapper for Lucide icons
@@ -14,14 +14,7 @@ const IconMap: Record<string, any> = {
   star: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
 };
 
-const FALLBACK_SERVICES = [
-  { slug: 's1', data: { title: "Filmagem com Drone", description: "Imagens aéreas cinematográficas com DJI Air 2S e drones FPV. Perspectivas únicas para eventos, propriedades e projetos audiovisuais.", icon: "plane" } },
-  { slug: 's2', data: { title: "Fotografia de Natureza", description: "Registros autênticos de paisagens, cachoeiras, florestas e pôres do sol. Cada clique captura a essência do Brasil selvagem.", icon: "camera" } },
-  { slug: 's3', data: { title: "Conteúdo de Viagem", description: "Documentação fotográfica e em vídeo de rotas de moto, trilhas e destinos off-road pelo interior do Brasil.", icon: "bike" } },
-  { slug: 's4', data: { title: "FPV & Acrobacia", description: "Voos FPV de alta velocidade e manobras acrobáticas para conteúdo dinâmico e impactante nas redes sociais.", icon: "star" } }
-];
-
-const finalServices = services.length > 0 ? services : FALLBACK_SERVICES;
+const finalServices = services;
 ---
 
 <section id="servicos" class="py-24 px-6 max-w-7xl mx-auto">
@@ -52,15 +45,9 @@ const finalServices = services.length > 0 ? services : FALLBACK_SERVICES;
   <!-- Banner CTA -->
   <div class="mt-20 relative overflow-hidden h-64 border border-white/10 group">
     <div class="absolute inset-0" {...cta?.edit?.image}>
-      {ctaData.image ? (
+      {ctaData.image && (
         <Image 
           image={ctaData.image} 
-          class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" 
-        />
-      ) : (
-        <img 
-          src="https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oWeQAjFk7GoTWpFXegazj/por_do_sol_drone-fMK8q5jGTrKf4gx5yVfZUV.webp" 
-          alt="Por do sol" 
           class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" 
         />
       )}
@@ -68,7 +55,7 @@ const finalServices = services.length > 0 ? services : FALLBACK_SERVICES;
     <div class="absolute inset-0 bg-black/60 backdrop-blur-[2px]"></div>
     <div class="relative z-10 h-full flex flex-col items-center justify-center p-8 text-center">
       <div class="coord-text text-[9px] mb-3 tracking-[0.3em]" style="color: oklch(0.72 0.18 65);" {...cta?.edit?.content}>
-        <PortableText value={ctaData.content || [{ "_type": "block", "children": [{ "_type": "span", "text": "CADA PROJETO É ÚNICO" }] }]} />
+        <PortableText value={ctaData.content} />
       </div>
       <h3 class="text-3xl md:text-4xl font-bold text-white mb-6" style="font-family: 'Playfair Display', serif;" {...cta?.edit?.title}>
         {CTA_TITLE_PARTS.map((part, i) => (

@@ -10,10 +10,10 @@ const data = entry?.data || {};
     <div>
       <p class="coord-text mb-3" style="color: oklch(0.72 0.18 65 / 0.8);">/ 04 — Contato</p>
       <h2 class="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight" style="font-family: 'Playfair Display', serif;" {...entry?.edit?.title}>
-        {data.title || "Vamos voar juntos"}
+        {data.title}
       </h2>
       <div class="mb-10 leading-relaxed" style="color: rgba(255,255,255,0.6); font-family: 'DM Sans', sans-serif; font-weight: 300;" {...entry?.edit?.content}>
-        <PortableText value={data.content || [{ "_type": "block", "children": [{ "_type": "span", "text": "Tem um projeto em mente? Quer imagens aéreas para seu evento, propriedade ou conteúdo digital? Entre em contato e vamos conversar sobre como posso ajudar." }] }]} />
+        <PortableText value={data.content} />
       </div>
 
       <div class="space-y-5">

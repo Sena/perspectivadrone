@@ -4,11 +4,9 @@ import { PortableText, Image } from "emdash/ui";
 const { entry } = Astro.props;
 const data = entry?.data || {};
 
-const ABOUT_TITLE = data.title || "Sena, ##o outro## olhar";
-const ABOUT_IMG = data.image || "https://d36hbw14aib5lz.cloudfront.net/310519663568009244/9oWeQAjFk7GoTWpFXegazj/moto_estrada-WBtucu3AC4pLKfQ4csSnLc.webp";
-const ABOUT_CONTENT = data.content || [
-  { "_type": "block", "style": "normal", "children": [{ "_type": "span", "text": "Sou Flávio Sena, fotógrafo e piloto de drone apaixonado por descobrir o Brasil de perspectivas que poucos têm a chance de ver. Minha câmera e meu drone são extensões do meu olhar — sempre buscando o ângulo que conta a história completa." }] },
-];
+const ABOUT_TITLE = data.title || "";
+const ABOUT_IMG = data.image;
+const ABOUT_CONTENT = data.content;
 const ABOUT_TITLE_PARTS = ABOUT_TITLE.split(/##(.*?)##/g);
 ---
 

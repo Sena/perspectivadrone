@@ -34,7 +34,7 @@ const sortedServices = services.sort((a, b) => (Number(a.data.sort_order) || 0) 
 const DIVIDER_STYLE = "height: 2px; background: linear-gradient(90deg, transparent, oklch(0.72 0.18 65), transparent); margin: 0 1.5rem;";
 ---
 
-<Base title={settings.title || "Flávio Sena | Fotografia & Drone"} description={settings.tagline || "Fotógrafo e piloto de drone apaixonado por descobrir o Brasil de perspectivas únicas."}>
+<Base title={settings.title} description={settings.tagline}>
   <div class="min-h-screen overflow-x-hidden" style="background: oklch(0.08 0.005 285); color: white;">
     <Navbar instagram={settings.social?.instagram} menu={menu?.items} title={settings.title} tagline={settings.tagline} />
     
