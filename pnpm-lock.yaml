@@ -20,9 +20,6 @@ importers:
       '@emdash-cms/plugin-forms':
         specifier: ^0.1.1
         version: 0.1.1(@cloudflare/kumo@1.18.0(@date-fns/tz@1.4.1)(@phosphor-icons/react@2.1.10(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/react@19.2.14)(date-fns@4.1.0)(echarts@6.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6))(@phosphor-icons/react@2.1.10(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(astro@6.1.7(@types/node@25.6.0)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.1)(typescript@5.9.3)(yaml@2.8.3))(emdash@0.4.0(4155d59d8577b6c8491806f126cde103))(react@19.2.4)
-      '@emdash-cms/plugin-webhook-notifier':
-        specifier: ^0.1.2
-        version: 0.1.2(emdash@0.4.0(4155d59d8577b6c8491806f126cde103))
       astro:
         specifier: ^6.0.1
         version: 6.1.7(@types/node@25.6.0)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.1)(typescript@5.9.3)(yaml@2.8.3)
@@ -366,11 +363,6 @@ packages:
       astro: '>=6.0.0-beta.0'
       emdash: 0.1.1
       react: ^18.0.0 || ^19.0.0
-
-  '@emdash-cms/plugin-webhook-notifier@0.1.2':
-    resolution: {integrity: sha512-GUGzgFCawOusnh/oSTVo6lxzu483j69VWeg5wGNEazEQaQgJ/MTCRsryfbmOxA/uOP/0IhW1lVb1zhxQayiRCQ==}
-    peerDependencies:
-      emdash: '>=0.2.0'
 
   '@emmetio/abbreviation@2.3.3':
     resolution: {integrity: sha512-mgv58UrU3rh4YgbE/TzgLQwJ3pFsHHhCLqY20aJq+9comytTXUDNGG/SMtSeMJdkpxgXSXunBGLD8Boka3JyVA==}
@@ -4418,10 +4410,6 @@ snapshots:
       emdash: 0.4.0(4155d59d8577b6c8491806f126cde103)
       react: 19.2.4
       ulidx: 2.4.1
-
-  '@emdash-cms/plugin-webhook-notifier@0.1.2(emdash@0.4.0(4155d59d8577b6c8491806f126cde103))':
-    dependencies:
-      emdash: 0.4.0(4155d59d8577b6c8491806f126cde103)
 
   '@emmetio/abbreviation@2.3.3':
     dependencies:
