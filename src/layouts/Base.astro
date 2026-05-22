@@ -1,5 +1,5 @@
 ---
-import { getMenu, getEmDashCollection, getSiteSettings } from "emdash";
+import { getSiteSettings } from "emdash";
 import {
 	EmDashHead,
 	EmDashBodyStart,
@@ -10,14 +10,14 @@ import { resolveBlogSiteIdentity } from "../utils/site-identity";
 import "../styles/theme.css";
 
 interface Props {
-	title: string;
+	title?: string;
 	description?: string | null;
 	image?: string | null;
 	type?: "website" | "article";
 }
 
 const {
-	title,
+	title = "",
 	description,
 	image,
 	type = "website",
@@ -25,7 +25,7 @@ const {
 
 const settings = await getSiteSettings();
 const { siteTitle } = resolveBlogSiteIdentity(settings);
-const fullTitle = title.includes(siteTitle) ? title : `${title} — ${siteTitle}`;
+const fullTitle = title && title.includes(siteTitle) ? title : (title ? `${title} — ${siteTitle}` : siteTitle);
 
 const pageCtx = createPublicPageContext({
 	Astro,
@@ -50,7 +50,7 @@ const pageCtx = createPublicPageContext({
 			/* Load fonts explicitly if config doesn't push them to head correctly */
 			@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 		</style>
-		<script async src="https://www.googletagmanager.com/gtag/js?id=G-RJDVRMXRM6"></script>
+		<script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-RJDVRMXRM6"></script>
 		<script is:inline>
 			window.dataLayer = window.dataLayer || [];
 			function gtag(){dataLayer.push(arguments);}
@@ -66,17 +66,7 @@ const pageCtx = createPublicPageContext({
 
 		<EmDashBodyEnd page={pageCtx} />
 
-		<script>
-			// Intersection Observer for reveal animations
-			const observer = new IntersectionObserver((entries) => {
-				entries.forEach(entry => {
-					if (entry.isIntersecting) {
-						entry.target.classList.add('reveal-visible');
-					}
-				});
-			}, { threshold: 0.15 });
 
-			document.querySelectorAll('.reveal-hidden').forEach(el => observer.observe(el));
-		</script>
+
 	</body>
 </html>
