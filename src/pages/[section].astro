@@ -1,0 +1,14 @@
+---
+import Index from './index.astro';
+
+const { section } = Astro.params;
+const validSections = ['portfolio', 'sobre', 'servicos', 'contato'];
+
+if (!validSections.includes(section || '')) {
+  return new Response(null, {
+    status: 404,
+    statusText: 'Not found'
+  });
+}
+---
+<Index />
