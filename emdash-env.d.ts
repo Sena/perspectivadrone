@@ -5,7 +5,7 @@
 
 import type { ContentBylineCredit, PortableTextBlock } from "emdash";
 
-export interface Página {
+export interface Page {
   id: string;
   slug: string | null;
   status: string;
@@ -18,7 +18,7 @@ export interface Página {
   bylines?: ContentBylineCredit[];
 }
 
-export interface Trabalho {
+export interface Portfólio {
   id: string;
   slug: string | null;
   status: string;
@@ -26,8 +26,8 @@ export interface Trabalho {
   location?: string;
   coordinates?: string;
   image: { id: string; src?: string; alt?: string; width?: number; height?: number };
-  display_order?: number;
-  layout_type?: string;
+  layout_type?: "featured" | "portrait" | "standard" | "landscape";
+  sort_order?: number;
   createdAt: Date;
   updatedAt: Date;
   publishedAt: Date | null;
@@ -64,8 +64,8 @@ export interface Serviço {
 
 declare module "emdash" {
   interface EmDashCollections {
-    pages: Página;
-    portfolio: Trabalho;
+    pages: Page;
+    portfolio: Portfólio;
     posts: Post;
     services: Serviço;
   }

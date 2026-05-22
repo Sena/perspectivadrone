@@ -3,7 +3,19 @@ import { Image } from "emdash/ui";
 
 const { items = [], instagram = "" } = Astro.props;
 
-const finalItems = items.map(entry => ({
+interface PortfolioEntry {
+  data: {
+    image?: any;
+    title?: string;
+    location?: string;
+    coordinates?: string;
+    display_order?: number;
+    layout_type?: string;
+  };
+  edit?: any;
+}
+
+const finalItems = items.map((entry: PortfolioEntry) => ({
       img: entry.data.image,
       title: entry.data.title,
       location: entry.data.location,
@@ -12,20 +24,20 @@ const finalItems = items.map(entry => ({
       display_order: entry.data.display_order || 0,
       layout_type: entry.data.layout_type || "standard",
       edit: entry.edit
-    })).sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
+    })).sort((a: any, b: any) => (a.display_order || 0) - (b.display_order || 0));
 
 const layoutMap = {
-  standard: "col-span-1 row-span-1 aspect-video",
-  featured: "col-span-1 md:col-span-2 md:row-span-2 aspect-video md:aspect-auto",
-  landscape: "col-span-1 md:col-span-2 aspect-video",
-  portrait: "col-span-1 md:row-span-2 aspect-[9/16] md:aspect-auto"
+  standard: "col-span-1 row-span-1 aspect-[4/3] md:aspect-video",
+  featured: "col-span-1 md:col-span-2 md:row-span-2 aspect-[4/3] md:aspect-auto",
+  landscape: "col-span-1 md:col-span-2 aspect-[4/3] md:aspect-video",
+  portrait: "col-span-1 md:row-span-2 aspect-[4/5] md:aspect-auto"
 };
 ---
 
-<section id="portfolio" class="py-24 px-6 max-w-7xl mx-auto">
+<section id="portfolio" class="py-16 md:py-24 px-6 max-w-7xl mx-auto">
   <div>
     <!-- Section header -->
-    <div class="flex flex-col md:flex-row md:items-end md:justify-between mb-12 gap-6">
+    <div class="reveal-hidden mb-16 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
       <div>
         <p class="coord-text mb-3 text-primary-80">/ 01 — Portfólio</p>
         <h2 class="text-4xl md:text-5xl font-bold text-white font-display">
@@ -36,11 +48,20 @@ const layoutMap = {
 
     <!-- CMS-Driven Dynamic Grid -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:grid-flow-row-dense">
-      {finalItems.map((item) => (
+      {finalItems.map((item: typeof finalItems[0]) => (
         <div
-          class={`photo-card group cursor-pointer relative overflow-hidden h-full ${layoutMap[item.layout_type as keyof typeof layoutMap] || layoutMap.standard}`}
+          class={`reveal-hidden photo-card gsap-card group cursor-pointer relative overflow-hidden ${layoutMap[item.layout_type as keyof typeof layoutMap] || layoutMap.standard}`}
           {...(item as any).edit?.image}
         >
+          <!-- SVG corner-frame border animation -->
+          <svg class="corner-frame" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect class="corner-rect" x="1" y="1" width="98" height="98" rx="0" ry="0"
+              fill="none"
+              stroke="oklch(0.72 0.18 65)"
+              stroke-width="1.5"
+              vector-effect="non-scaling-stroke"
+            />
+          </svg>
           {typeof item.img === 'string' ? (
              <img src={item.img} alt={item.title} class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110" />
           ) : (
@@ -111,4 +132,170 @@ const layoutMap = {
     background: var(--primary);
     color: var(--primary-foreground);
   }
+
+  /* ── Corner-frame SVG overlay ─────────────────────────────── */
+  .corner-frame {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 20;
+    opacity: 0;
+  }
+
+  .corner-rect {
+    /* perimeter ≈ 4 * 100 = 400 viewBox units */
+    stroke-dasharray: 400;
+    stroke-dashoffset: 400;
+  }
+
+  /* Reveal on hover (CSS fallback — GSAP overrides below) */
+  .photo-card:hover .corner-frame {
+    opacity: 1;
+  }
+
+  /* Initial state for stagger reveal */
+  .gsap-card {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  .gsap-reveal {
+    opacity: 0;
+    transform: translateY(30px);
+  }
 </style>
+
+<script>
+  // @ts-nocheck
+  /* ─────────────────────────────────────────────────────────────
+     Animações — GSAP só para hover (corner-frame) e fade hero.
+     Parallax e reveals usam APIs nativas para não interferir
+     no smooth scroll e no scroll spy do Navbar.
+  ───────────────────────────────────────────────────────────── */
+
+  /* ── 1. HERO PARALLAX — scroll nativo + rAF ────────────────
+     Sem ScrollTrigger: calcula yPercent manualmente.
+     Não interfere em anchor scroll nem IntersectionObserver.  */
+  (function () {
+    const hero     = document.querySelector('.gsap-hero');
+    const parallax = document.querySelector('.gsap-parallax');
+    if (!hero || !parallax) return;
+
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const scrollY    = window.scrollY;
+          const heroH      = hero.offsetHeight;
+          if (scrollY <= heroH) {
+            const shift = scrollY * 0.35;
+            parallax.style.transform = `translateY(${shift}px)`;
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+  })();
+
+  /* ── 2. HERO CONTENT — fade-in na carga ───────────────────*/
+  (function () {
+    const heroContent = document.querySelector('.gsap-hero-content');
+    if (!heroContent) return;
+
+    heroContent.style.opacity  = '0';
+    heroContent.style.transform = 'translateY(50px)';
+    heroContent.style.transition = 'opacity 1.4s cubic-bezier(0.16,1,0.3,1), transform 1.4s cubic-bezier(0.16,1,0.3,1)';
+
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      heroContent.style.transitionDelay = '0.3s';
+      heroContent.style.opacity  = '1';
+      heroContent.style.transform = 'translateY(0)';
+    }));
+  })();
+
+  /* ── 3. REVEALS & STAGGER — IntersectionObserver nativo ───
+     Mesma API usada pelo Navbar → sem conflito.               */
+  (function () {
+    /* Section header reveal */
+    const revealObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.transition = 'opacity 0.9s ease, transform 0.9s ease';
+          e.target.style.opacity    = '1';
+          e.target.style.transform  = 'translateY(0)';
+          revealObs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.gsap-reveal').forEach(el => revealObs.observe(el));
+
+    /* Portfolio cards — stagger cascade */
+    const cards = Array.from(document.querySelectorAll('.gsap-card'));
+    if (!cards.length) return;
+
+    let triggered = false;
+    const cardObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting && !triggered) {
+          triggered = true;
+          cardObs.disconnect();
+          cards.forEach((card, i) => {
+            const delay = i * 0.12;
+            card.style.transition = `opacity 0.8s ${delay}s cubic-bezier(0.16,1,0.3,1), transform 0.8s ${delay}s cubic-bezier(0.16,1,0.3,1)`;
+            card.style.opacity    = '1';
+            card.style.transform  = 'translateY(0)';
+          });
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -20% 0px' });
+
+    cardObs.observe(document.getElementById('portfolio') || cards[0]);
+  })();
+
+  /* ── 4. CORNER-FRAME HOVER — carrega GSAP só p/ isso ─────
+     GSAP é carregado dinamicamente apenas para o efeito
+     SVG stroke-dashoffset. Não registra ScrollTrigger.        */
+  (function () {
+    const cards = Array.from(document.querySelectorAll('.gsap-card'));
+    if (!cards.length) return;
+
+    const loadScript = (src) =>
+      new Promise((res, rej) => {
+        const s = document.createElement('script');
+        s.src = src; s.onload = res; s.onerror = rej;
+        document.head.appendChild(s);
+      });
+
+    const initHover = () => {
+      const gsap = window.gsap;
+      cards.forEach((card) => {
+        const frame = card.querySelector('.corner-frame');
+        const rect  = card.querySelector('.corner-rect');
+        if (!frame || !rect) return;
+
+        card.addEventListener('mouseenter', () => {
+          gsap.to(frame, { opacity: 1, duration: 0.15 });
+          gsap.to(rect,  { strokeDashoffset: 0, duration: 0.55, ease: 'power2.inOut' });
+        });
+        card.addEventListener('mouseleave', () => {
+          gsap.to(rect, {
+            strokeDashoffset: 400, duration: 0.4, ease: 'power2.in',
+            onComplete: () => gsap.set(frame, { opacity: 0 }),
+          });
+        });
+      });
+    };
+
+    if (window.gsap) { initHover(); return; }
+    loadScript('https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js')
+      .then(initHover)
+      .catch(e => console.warn('[GSAP hover] Failed:', e));
+  })();
+</script>
+
+
+

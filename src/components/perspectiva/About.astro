@@ -10,12 +10,14 @@ const ABOUT_CONTENT = data.content;
 const ABOUT_TITLE_PARTS = ABOUT_TITLE.split(/##(.*?)##/g);
 ---
 
-<section id="sobre" class="py-24 px-6 max-w-7xl mx-auto flex flex-col md:flex-row gap-16 items-start">
+<section id="sobre" class="py-16 md:py-32 px-6 max-w-7xl mx-auto flex flex-col md:flex-row gap-16 items-start">
   <!-- Image container -->
-  <div class="relative w-full md:w-1/2 group">
+  <div class="reveal-hidden relative w-full md:w-1/2 group">
     <div class="relative overflow-hidden border border-white/10" {...entry?.edit?.image}>
        {typeof ABOUT_IMG === 'string' ? (
          <img src={ABOUT_IMG} alt="Flávio Sena" class="w-full aspect-[4/5] object-cover transition-transform duration-700 group-hover:scale-110" />
+       ) : (import.meta.env.DEV && ABOUT_IMG?.meta?.storageKey) ? (
+         <img src={`/uploads/${ABOUT_IMG.meta.storageKey}`} alt="Flávio Sena" class="w-full aspect-[4/5] object-cover transition-transform duration-700 group-hover:scale-110" />
        ) : (
          <Image image={ABOUT_IMG} class="w-full aspect-[4/5] object-cover transition-transform duration-700 group-hover:scale-110" />
        )}
@@ -30,7 +32,7 @@ const ABOUT_TITLE_PARTS = ABOUT_TITLE.split(/##(.*?)##/g);
   <div class="w-full md:w-1/2">
     <p class="coord-text mb-3 text-primary-80">/ 02 — SOBRE</p>
     <h2 class="text-5xl font-bold text-white mb-8 font-display" {...entry?.edit?.title}>
-      {ABOUT_TITLE_PARTS.map((part, i) => (
+      {ABOUT_TITLE_PARTS.map((part: string, i: number) => (
         i % 2 === 1 
           ? <span class="italic text-primary">{part}</span> 
           : part

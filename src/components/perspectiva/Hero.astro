@@ -11,20 +11,15 @@ const HERO_CONTENT = data.content;
 
 const HERO_TITLE_PARTS = HERO_TITLE.split(/##(.*?)##/g);
 ---
-<section id="inicio" class="relative w-full h-screen min-h-[600px] flex items-end overflow-hidden">
+<section id="inicio" class="gsap-hero relative w-full h-[100dvh] min-h-[400px] md:min-h-[600px] flex items-end overflow-hidden">
   <!-- Background image -->
-  <div class="absolute inset-0" {...entry?.edit?.image}>
+  <div class="gsap-parallax absolute inset-0" {...entry?.edit?.image}>
     {typeof HERO_IMG === 'string' ? (
-      <img
-        src={HERO_IMG}
-        alt="Vista aérea - Flávio Sena Fotografia"
-        class="w-full h-full object-cover"
-      />
+      <img src={HERO_IMG} alt="Hero image" class="w-full h-full object-cover" />
+    ) : (import.meta.env.DEV && HERO_IMG?.meta?.storageKey) ? (
+      <img src={`/uploads/${HERO_IMG.meta.storageKey}`} alt="Hero image" class="w-full h-full object-cover" />
     ) : (
-      <Image
-        image={HERO_IMG}
-        class="w-full h-full object-cover"
-      />
+      <Image image={HERO_IMG} class="w-full h-full object-cover" />
     )}
     <div class="absolute inset-0 bg-gradient-to-t from-[oklch(0.05_0.005_285)] via-[oklch(0.08_0.005_285/0.4)] to-transparent"></div>
     <div class="absolute inset-0 bg-gradient-to-r from-[oklch(0.05_0.005_285/0.6)] to-transparent"></div>
@@ -32,18 +27,18 @@ const HERO_TITLE_PARTS = HERO_TITLE.split(/##(.*?)##/g);
 
   <!-- Hero content -->
   <div class="relative z-10 max-w-7xl mx-auto px-6 pb-20 md:pb-28 w-full">
-    <div class="transition-all duration-1000 opacity-100 translate-y-0">
+    <div class="gsap-hero-content">
       <p class="coord-text mb-4 text-primary-80">Fotografia & Drone · Brasil</p>
       
-      <h1 class="text-5xl md:text-7xl lg:text-8xl font-bold leading-none text-white mb-6 font-display" {...entry?.edit?.title}>
-        {HERO_TITLE_PARTS.map((part, i) => (
+      <h1 class="reveal-hidden text-5xl md:text-7xl lg:text-8xl font-bold leading-none text-white mb-6 font-display" {...entry?.edit?.title}>
+        {HERO_TITLE_PARTS.map((part: string, i: number) => (
           i % 2 === 1 
             ? <span class="italic text-primary">{part}</span> 
             : part
         ))}
       </h1>
 
-      <div class="text-white/70 text-lg md:text-xl max-w-xl mb-10 leading-relaxed font-sans font-light" {...entry?.edit?.content}>
+      <div class="reveal-hidden text-white/70 text-lg md:text-xl max-w-xl mb-10 leading-relaxed font-sans font-light" {...entry?.edit?.content}>
         <PortableText value={HERO_CONTENT} />
       </div>
       

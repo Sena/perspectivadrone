@@ -18,10 +18,7 @@ if (!page) {
 Astro.cache.set(cacheHint);
 ---
 
-<Base
-	title={page.data.title}
-	content={{ collection: "pages", id: page.data.id, slug }}
->
+<Base title={page.data.title}>
 	<article class="page-article">
 		<header class="page-header">
 			<h1 class="page-title" {...page.edit.title}>{page.data.title}</h1>

@@ -14,10 +14,19 @@ const IconMap: Record<string, any> = {
   star: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
 };
 
-const finalServices = services;
+interface ServiceEntry {
+  data: {
+    icon: string;
+    title: string;
+    description: string;
+  };
+  edit?: any;
+}
+
+const finalServices: ServiceEntry[] = services;
 ---
 
-<section id="servicos" class="py-24 px-6 max-w-7xl mx-auto">
+<section id="servicos" class="py-16 md:py-24 px-6 max-w-7xl mx-auto">
   <div class="mb-16">
     <p class="coord-text mb-3 text-primary-80">/ 03 — SERVIÇOS</p>
     <h2 class="text-5xl font-bold text-white mb-4 font-display">
@@ -26,9 +35,9 @@ const finalServices = services;
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-    {finalServices.map((service) => (
+    {finalServices.map((service: ServiceEntry) => (
       <div 
-        class="p-8 border border-white/5 transition-all duration-500 hover:border-amber-400/30 hover:shadow-[0_0_30px_rgba(251,191,36,0.05)] service-card"
+        class="reveal-hidden p-8 border border-white/5 transition-all duration-500 hover:border-amber-400/30 hover:shadow-[0_0_30px_rgba(251,191,36,0.05)] service-card"
       >
         <div class="mb-6 text-primary" set:html={IconMap[service.data.icon] || IconMap.star} />
         <h3 class="text-xl font-bold text-white mb-4 font-display" {...service.edit?.title}>
@@ -52,12 +61,12 @@ const finalServices = services;
       )}
     </div>
     <div class="absolute inset-0 bg-black/60 backdrop-blur-[2px]"></div>
-    <div class="relative z-10 h-full flex flex-col items-center justify-center p-8 text-center">
+    <div class="reveal-hidden relative z-10 h-full flex flex-col items-center justify-center p-8 text-center">
       <div class="coord-text text-[9px] mb-3 tracking-[0.3em] text-primary" {...cta?.edit?.content}>
         <PortableText value={ctaData.content} />
       </div>
       <h3 class="text-3xl md:text-4xl font-bold text-white mb-6 font-display" {...cta?.edit?.title}>
-        {CTA_TITLE_PARTS.map((part, i) => (
+        {CTA_TITLE_PARTS.map((part: string, i: number) => (
           i % 2 === 1 
             ? <span class="italic text-primary">{part}</span> 
             : part
