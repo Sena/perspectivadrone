@@ -9,7 +9,7 @@ Site institucional de fotografia e filmagem aérea com drone. Construído com **
 | Camada | Tecnologia |
 |---|---|
 | Framework | Astro 5 (SSR, `output: "server"`) |
-| CMS | EmDash (`emdash ^0.4`) |
+| CMS | EmDash (`emdash ^0.14`) |
 | Estilização | Tailwind CSS v4 (via Vite plugin) |
 | Animações | GSAP 3.12 + ScrollTrigger (CDN) |
 | Runtime | Cloudflare Workers |
@@ -187,8 +187,31 @@ As animações são carregadas via CDN (sem bundle) e controladas por classes CS
 | `.gsap-reveal` | headers de seção | fade-in ao entrar na viewport |
 | `.gsap-card` | cards do portfólio | stagger cascade ao scrollar |
 | `.corner-frame` | SVG interno dos cards | borda "desenhada" no hover (stroke-dashoffset) |
+| `#portfolio-lightbox` | Lightbox (Slide) | Galeria nativa em tela cheia via JSVanilla Vanilla |
 
 > O GSAP é carregado dinamicamente com um guard `window.__gsapLoaded` para evitar carregamento duplicado em navegações SPA.
+
+---
+
+## Segurança (Content Security Policy - CSP)
+
+O projeto possui uma política CSP rígida implementada no `src/layouts/Base.astro`. Esta política bloqueia a execução de fontes e scripts externos não autorizados, mitigando riscos de XSS.
+
+Se você precisar adicionar uma nova ferramenta (ex: Pixel do Meta, Hotjar, nova fonte externa), você **obrigatoriamente** precisa adicionar os domínios do serviço no objeto de whitelist `cspDomains` contido no `Base.astro`:
+
+```javascript
+// src/layouts/Base.astro
+const cspDomains = {
+  scripts: [
+    "https://www.googletagmanager.com", 
+    "https://cdn.jsdelivr.net",
+    "https://static.cloudflareinsights.com",
+    // "https://connect.facebook.net" <- adicione aqui
+  ],
+  // ...
+```
+
+A diretiva `unsafe-inline` é permitida globalmente, mas restrita aos domínios aprovados neste array.
 
 ---
 
