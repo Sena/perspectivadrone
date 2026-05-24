@@ -46,7 +46,7 @@ const data = entry?.data || {};
           <label class="coord-text text-white/50 block mb-2">Seu nome</label>
           <input
             type="text" required name="name"
-            class="w-full bg-transparent border border-white/20 text-white px-4 py-3 text-sm focus:outline-none transition-colors font-sans"
+            class="w-full bg-transparent border border-white/5 border-b-white/30 text-white px-4 py-3 text-sm focus:outline-none transition-all duration-300 font-sans focus:border-white/5 focus:border-b-amber-400 focus:-translate-y-1 focus:shadow-[0_4px_20px_-4px_rgba(251,191,36,0.3)]"
             placeholder="Como posso te chamar?"
           />
         </div>
@@ -54,7 +54,7 @@ const data = entry?.data || {};
           <label class="coord-text text-white/50 block mb-2">E-mail</label>
           <input
             type="email" required name="email"
-            class="w-full bg-transparent border border-white/20 text-white px-4 py-3 text-sm focus:outline-none transition-colors font-sans"
+            class="w-full bg-transparent border border-white/5 border-b-white/30 text-white px-4 py-3 text-sm focus:outline-none transition-all duration-300 font-sans focus:border-white/5 focus:border-b-amber-400 focus:-translate-y-1 focus:shadow-[0_4px_20px_-4px_rgba(251,191,36,0.3)]"
             placeholder="seu@email.com"
           />
         </div>
@@ -62,8 +62,7 @@ const data = entry?.data || {};
           <label class="coord-text text-white/50 block mb-2">Mensagem</label>
           <textarea
             required rows="5" name="message"
-            class="w-full bg-transparent border text-white px-4 py-3 text-sm focus:outline-none transition-colors resize-none"
-            style="border-color: rgba(255,255,255,0.2); font-family: 'DM Sans', sans-serif;"
+            class="w-full bg-transparent border border-white/5 border-b-white/30 text-white px-4 py-3 text-sm focus:outline-none transition-all duration-300 resize-none font-sans focus:border-white/5 focus:border-b-amber-400 focus:-translate-y-1 focus:shadow-[0_4px_20px_-4px_rgba(251,191,36,0.3)]"
             placeholder="Conte sobre seu projeto..."
           ></textarea>
         </div>
