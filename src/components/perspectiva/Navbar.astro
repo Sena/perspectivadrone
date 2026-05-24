@@ -40,6 +40,7 @@ const items: MenuItem[] = menu;
         href={`https://www.instagram.com/${instagram}/`} 
         target="_blank" 
         rel="noopener noreferrer"
+        aria-label="Acessar Instagram"
         class="flex items-center gap-2 group border border-white/10 px-4 py-2 hover:border-amber-400/30 transition-all bg-white/5"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white/40 group-hover:text-amber-400"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
@@ -48,7 +49,7 @@ const items: MenuItem[] = menu;
     </div>
 
     <!-- Mobile Menu Toggle -->
-    <button id="menu-toggle" class="md:hidden text-white/80 p-2">
+    <button id="menu-toggle" class="md:hidden text-white/80 p-2" aria-label="Abrir menu">
       <svg id="menu-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
     </button>
   </div>
@@ -58,7 +59,7 @@ const items: MenuItem[] = menu;
 
 <!-- Mobile Menu Overlay -->
 <div id="mobile-menu" class="fixed inset-0 bg-black/95 z-[60] translate-x-full transition-transform duration-500 flex flex-col items-center justify-start overflow-y-auto pt-32 pb-16 gap-8 md:hidden">
-  <button id="menu-close" class="absolute top-8 right-8 text-white/60">
+  <button id="menu-close" class="absolute top-8 right-8 text-white/60" aria-label="Fechar menu">
     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
   </button>
   {items.map((item: MenuItem) => (
@@ -69,13 +70,17 @@ const items: MenuItem[] = menu;
 </div>
 
 <script>
-  const navbar = document.getElementById('navbar');
-  const toggle = document.getElementById('menu-toggle');
-  const close = document.getElementById('menu-close');
-  const mobileMenu = document.getElementById('mobile-menu');
-  const mobileLinks = document.querySelectorAll('.mobile-link');
+  // Proteção contra múltiplos bindings caso View Transitions seja ativado
+  if (!(window as any).__navbarInitialized) {
+    (window as any).__navbarInitialized = true;
 
-  // Scroll effect
+    const navbar = document.getElementById('navbar');
+    const toggle = document.getElementById('menu-toggle');
+    const close = document.getElementById('menu-close');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileLinks = document.querySelectorAll('.mobile-link');
+
+    // Scroll effect
   window.addEventListener('scroll', () => {
     if (window.scrollY > 50) {
       navbar?.classList.add('nav-scrolled');
@@ -104,45 +109,69 @@ const items: MenuItem[] = menu;
   const navLinks = document.querySelectorAll('#desktop-menu a, #mobile-menu a.mobile-link');
 
   const siteTitle = document.querySelector('title')?.textContent?.split('—')[1]?.trim() || "Perspectiva Drone";
-  
-  const observerOptions = {
-    root: null,
-    rootMargin: '-20% 0px -70% 0px',
-    threshold: 0
-  };
 
+  const sectionRatios = {};
+  
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const id = entry.target.getAttribute('id');
+      sectionRatios[entry.target.id] = entry.intersectionRatio;
+    });
+
+    let maxRatio = 0;
+    let activeId = 'inicio';
+    
+    for (const [id, ratio] of Object.entries(sectionRatios)) {
+      if (ratio > maxRatio) {
+        maxRatio = ratio;
+        activeId = id;
+      }
+    }
+
+    // Force last section if at the very bottom
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50) {
+      activeId = 'contato';
+    }
+
+    if (maxRatio > 0 || activeId === 'contato') {
+      updateActiveNav(activeId);
+    }
+  }, {
+    root: null,
+    rootMargin: '0px',
+    threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+  });
+
+  let isNavigating = false;
+
+  function updateActiveNav(id, force = false) {
+    if (isNavigating && !force) return;
+    
+    navLinks.forEach(link => {
+      link.classList.remove('text-amber-400');
+      link.classList.add('text-white/70');
+      const href = link.getAttribute('href') || '';
+      const isInicio = id === 'inicio' && (href === '/' || href === '#inicio' || href === '/#inicio');
+      
+      if (href === `#${id}` || href === `/#${id}` || href === `/${id}` || isInicio) {
+        link.classList.add('text-amber-400');
+        link.classList.remove('text-white/70');
         
-        // Handle navbar highlight
-        navLinks.forEach(link => {
-          link.classList.remove('text-amber-400');
-          link.classList.add('text-white/70');
-          const href = link.getAttribute('href') || '';
-          const isInicio = id === 'inicio' && (href === '/' || href === '#inicio' || href === '/#inicio');
-          
-          if (href === `#${id}` || href === `/#${id}` || isInicio) {
-            link.classList.add('text-amber-400');
-            link.classList.remove('text-white/70');
-            
-            // Update Title
-            const label = link.textContent?.trim();
-            if (label && id !== 'inicio') {
-               document.title = `${label} - ${siteTitle}`;
-            } else if (id === 'inicio') {
-               document.title = siteTitle;
-            }
-            
-            // Update URL
-            const newUrl = id === 'inicio' ? '/' : `/${id}`;
-            window.history.replaceState(null, '', newUrl);
-          }
-        });
+        // Update Title
+        const label = link.textContent?.trim();
+        if (label && id !== 'inicio') {
+           document.title = `${label} - ${siteTitle}`;
+        } else if (id === 'inicio') {
+           document.title = siteTitle;
+        }
+        
+        // Update URL
+        const newUrl = id === 'inicio' ? '/' : `/${id}`;
+        if (window.location.pathname !== newUrl) {
+          window.history.replaceState(null, '', newUrl);
+        }
       }
     });
-  }, observerOptions);
+  }
 
   sections.forEach(section => observer.observe(section));
 
@@ -164,13 +193,21 @@ const items: MenuItem[] = menu;
   revealElements.forEach(el => revealObserver.observe(el));
 
   // Smooth scroll & click intercept for nav links
-  const allNavLinks = document.querySelectorAll('#desktop-menu a, #mobile-menu a');
+  const allNavLinks = document.querySelectorAll<HTMLAnchorElement>('#desktop-menu a, #mobile-menu a');
+  const validSectionPaths = ['/portfolio', '/sobre', '/servicos', '/contato'];
+  
   allNavLinks.forEach(link => {
     link.addEventListener('click', (e) => {
       if (link.hostname && link.hostname !== window.location.hostname) return;
       
       const url = new URL(link.href, window.location.origin);
-      if (url.pathname !== window.location.pathname && url.pathname !== '/') return;
+      
+      // We only intercept if it's the current page, the root page, or one of the valid section paths
+      if (
+         url.pathname !== window.location.pathname && 
+         url.pathname !== '/' && 
+         !validSectionPaths.includes(url.pathname)
+      ) return;
 
       let targetId = url.hash ? url.hash.substring(1) : url.pathname.replace(/^\/|\/$/g, '');
       if (targetId === '') targetId = 'inicio';
@@ -178,22 +215,44 @@ const items: MenuItem[] = menu;
       const targetElement = document.getElementById(targetId);
       if (targetElement) {
         e.preventDefault();
+        isNavigating = true;
+        updateActiveNav(targetId, true);
         targetElement.scrollIntoView({ behavior: 'smooth' });
+        setTimeout(() => { isNavigating = false; }, 1000);
       }
     });
   });
 
   // Handle direct navigation to sections (e.g. /contato)
   document.addEventListener('DOMContentLoaded', () => {
-    const path = window.location.pathname.replace(/^\/|\/$/g, '');
-    if (path && path !== '') {
-      const targetElement = document.getElementById(path);
+    const validSectionsForLoad = ['portfolio', 'sobre', 'servicos', 'contato'];
+    
+    // Check both hash and pathname in case of rewrite or traditional anchor
+    let targetId = window.location.hash.substring(1);
+    if (!targetId) {
+      const pathPart = window.location.pathname.replace(/^\/|\/$/g, '');
+      if (validSectionsForLoad.includes(pathPart)) {
+        targetId = pathPart;
+      }
+    }
+    
+    if (targetId && targetId !== '') {
+      isNavigating = true;
+      const targetElement = document.getElementById(targetId);
       if (targetElement) {
-        // Small timeout ensures the page is fully laid out before scrolling
-        setTimeout(() => targetElement.scrollIntoView({ behavior: 'smooth' }), 100);
+        updateActiveNav(targetId, true);
+        
+        // Force the scroll to happen since we are artificially at the top
+        setTimeout(() => {
+          targetElement.scrollIntoView({ behavior: 'auto' });
+          setTimeout(() => { isNavigating = false; }, 100);
+        }, 100);
+      } else {
+        isNavigating = false;
       }
     }
   });
+  } // Fim do guard de inicialização
 </script>
 
 <style>
