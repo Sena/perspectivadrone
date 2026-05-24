@@ -1,10 +1,11 @@
 ---
 import { Image } from "emdash/ui";
+import type { MediaValue } from "emdash";
 
 interface Service {
 	title: string;
 	description?: string;
-	image?: Record<string, unknown>;
+	image?: MediaValue;
 	order?: number;
 }
 
