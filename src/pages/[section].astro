@@ -1,6 +1,4 @@
 ---
-import Index from './index.astro';
-
 const { section } = Astro.params;
 const validSections = ['portfolio', 'sobre', 'servicos', 'contato'];
 
@@ -10,5 +8,7 @@ if (!validSections.includes(section || '')) {
     statusText: 'Not found'
   });
 }
+
+// Rewrite the request to the home page so the URL stays clean without a hashtag redirect flash
+return Astro.rewrite('/');
 ---
-<Index />
