@@ -38,3 +38,4 @@ Agent skills are in `.agents/skills/`. Load them when working on specific tasks:
 - `entry.id` is the slug (for URLs). `entry.data.id` is the database ULID (for API calls like `getEntryTerms`).
 - Always call `Astro.cache.set(cacheHint)` on pages that query content.
 - Taxonomy names in queries must match the seed's `"name"` field exactly (e.g., `"category"` not `"categories"`).
+- **Lightbox / Galeria**: O grid de portfólio já possui um Lightbox nativo via Vanilla JS em `PortfolioGrid.astro` (com controles de teclado, botões e swipe para mobile). Não recrie galerias ou importe bibliotecas externas (como Swiper ou GLightbox) para isso.

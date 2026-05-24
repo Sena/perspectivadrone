@@ -1,30 +1,10 @@
 ---
 import { Image } from "emdash/ui";
+import { formatAndSortPortfolio, type PortfolioRawEntry } from "../../utils/portfolio";
 
 const { items = [], instagram = "" } = Astro.props;
 
-interface PortfolioEntry {
-  data: {
-    image?: any;
-    title?: string;
-    location?: string;
-    coordinates?: string;
-    display_order?: number;
-    layout_type?: string;
-  };
-  edit?: any;
-}
-
-const finalItems = items.map((entry: PortfolioEntry) => ({
-      img: entry.data.image,
-      title: entry.data.title,
-      location: entry.data.location,
-      coords: entry.data.coordinates,
-      category: "Trabalho",
-      display_order: entry.data.display_order || 0,
-      layout_type: entry.data.layout_type || "standard",
-      edit: entry.edit
-    })).sort((a: any, b: any) => (a.display_order || 0) - (b.display_order || 0));
+const finalItems = formatAndSortPortfolio(items as PortfolioRawEntry[]);
 
 const layoutMap = {
   standard: "col-span-1 row-span-1 aspect-[4/3] md:aspect-video",
@@ -80,7 +60,7 @@ const layoutMap = {
               </div>
             </div>
           </div>
-          <div class="category-badge">
+          <div class="absolute top-3 left-3 px-2 py-1 bg-black/50 backdrop-blur-sm">
             <span class="coord-text text-[9px] text-primary-90">{item.category}</span>
           </div>
         </div>
@@ -92,11 +72,40 @@ const layoutMap = {
         href={`https://www.instagram.com/${instagram}/`}
         target="_blank"
         rel="noopener noreferrer"
-        class="instagram-btn"
+        class="inline-flex items-center gap-2 px-8 py-3 border border-primary/40 text-sm font-medium transition-all text-primary font-sans hover:bg-primary hover:text-black"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
         Ver mais no Instagram
       </a>
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <div id="portfolio-lightbox" class="fixed inset-0 z-[100] bg-black/95 hidden flex-col items-center justify-center opacity-0 transition-opacity duration-300">
+    <!-- Close Btn -->
+    <button id="lightbox-close" class="absolute top-6 right-6 text-white/60 hover:text-white transition-colors p-2 z-[101]" aria-label="Fechar slide">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+
+    <!-- Prev Btn -->
+    <button id="lightbox-prev" class="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors p-2 md:p-4 z-[101]" aria-label="Foto anterior">
+      <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+
+    <!-- Next Btn -->
+    <button id="lightbox-next" class="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors p-2 md:p-4 z-[101]" aria-label="Próxima foto">
+      <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </button>
+
+    <!-- Main Image Container -->
+    <div class="max-w-5xl max-h-[80vh] px-12 md:px-24 w-full h-full flex flex-col items-center justify-center relative">
+      <img id="lightbox-img" src="" alt="Ampliada" class="max-w-full max-h-[70vh] object-contain select-none" />
+      
+      <!-- Caption -->
+      <div id="lightbox-caption" class="text-center mt-6">
+        <p id="lightbox-title" class="text-white text-xl md:text-2xl font-display font-semibold mb-1"></p>
+        <p id="lightbox-location" class="text-white/60 font-sans text-sm"></p>
+      </div>
     </div>
   </div>
 </section>
@@ -104,33 +113,6 @@ const layoutMap = {
 <style>
   .text-primary-90 {
     color: oklch(0.72 0.18 65 / 0.9);
-  }
-
-  .category-badge {
-    position: absolute;
-    top: 0.75rem;
-    left: 0.75rem;
-    padding: 0.25rem 0.5rem;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-  }
-
-  .instagram-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 2rem;
-    border: 1px solid oklch(0.72 0.18 65 / 0.4);
-    font-size: 0.875rem;
-    font-weight: 500;
-    transition: all 0.3s;
-    color: var(--primary);
-    font-family: var(--font-sans);
-  }
-
-  .instagram-btn:hover {
-    background: var(--primary);
-    color: var(--primary-foreground);
   }
 
   /* ── Corner-frame SVG overlay ─────────────────────────────── */
@@ -290,10 +272,121 @@ const layoutMap = {
       });
     };
 
-    if (window.gsap) { initHover(); return; }
+    if (window.gsap || window.__gsapLoaded) { initHover(); return; }
+    window.__gsapLoaded = true;
     loadScript('https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js')
       .then(initHover)
       .catch(e => console.warn('[GSAP hover] Failed:', e));
+  })();
+
+  /* ── 5. LIGHTBOX ───────────────────────────────────────── */
+  (function initLightbox() {
+    const lightbox = document.getElementById('portfolio-lightbox');
+    const lightboxImg = document.getElementById('lightbox-img') as HTMLImageElement;
+    const lightboxTitle = document.getElementById('lightbox-title');
+    const lightboxLocation = document.getElementById('lightbox-location');
+    const closeBtn = document.getElementById('lightbox-close');
+    const nextBtn = document.getElementById('lightbox-next');
+    const prevBtn = document.getElementById('lightbox-prev');
+    const cards = Array.from(document.querySelectorAll('.photo-card'));
+
+    if (!lightbox || !lightboxImg || !cards.length) return;
+
+    let currentIndex = 0;
+
+    const openLightbox = (index: number) => {
+      currentIndex = index;
+      updateLightbox();
+      lightbox.classList.remove('hidden');
+      lightbox.classList.add('flex');
+      
+      requestAnimationFrame(() => {
+        lightbox.classList.remove('opacity-0');
+        lightbox.classList.add('opacity-100');
+      });
+      document.body.style.overflow = 'hidden';
+    };
+
+    const closeLightbox = () => {
+      lightbox.classList.remove('opacity-100');
+      lightbox.classList.add('opacity-0');
+      setTimeout(() => {
+        lightbox.classList.add('hidden');
+        lightbox.classList.remove('flex');
+        document.body.style.overflow = '';
+      }, 300);
+    };
+
+    const updateLightbox = () => {
+      if (currentIndex < 0) currentIndex = cards.length - 1;
+      if (currentIndex >= cards.length) currentIndex = 0;
+
+      const card = cards[currentIndex];
+      if (!card) return;
+
+      const imgEl = card.querySelector('img');
+      const titleEl = card.querySelector('h3');
+      const locationSpan = card.querySelector('span.text-xs');
+
+      if (imgEl) {
+        // If image is lazy loaded or has srcset, currentSrc usually gets the best loaded image
+        lightboxImg.src = imgEl.currentSrc || imgEl.src;
+      }
+      
+      if (lightboxTitle) lightboxTitle.textContent = titleEl?.textContent || '';
+      if (lightboxLocation) lightboxLocation.textContent = locationSpan?.textContent || '';
+    };
+
+    // Click events on cards
+    cards.forEach((card, index) => {
+      card.addEventListener('click', (e) => {
+        // Allow user to click without triggering if they are just selecting text or right clicking, but simple click is fine here.
+        openLightbox(index);
+      });
+    });
+
+    closeBtn?.addEventListener('click', closeLightbox);
+    nextBtn?.addEventListener('click', (e) => { e.stopPropagation(); currentIndex++; updateLightbox(); });
+    prevBtn?.addEventListener('click', (e) => { e.stopPropagation(); currentIndex--; updateLightbox(); });
+    
+    // Close when clicking outside image
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox || (e.target as HTMLElement).closest('.max-w-5xl') === null || e.target === document.querySelector('.max-w-5xl')) {
+         closeLightbox();
+      }
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (lightbox.classList.contains('hidden')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowRight') { currentIndex++; updateLightbox(); }
+      if (e.key === 'ArrowLeft') { currentIndex--; updateLightbox(); }
+    });
+
+    // Mobile Swipe Navigation
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    lightbox.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    lightbox.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      if (lightbox.classList.contains('hidden')) return;
+      
+      const swipeDistance = touchEndX - touchStartX;
+      if (swipeDistance > 50) {
+        // Swipe Right -> Prev
+        currentIndex--;
+        updateLightbox();
+      } else if (swipeDistance < -50) {
+        // Swipe Left -> Next
+        currentIndex++;
+        updateLightbox();
+      }
+    }, { passive: true });
   })();
 </script>
 
