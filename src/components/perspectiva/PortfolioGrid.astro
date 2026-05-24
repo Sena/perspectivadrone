@@ -42,13 +42,9 @@ const layoutMap = {
               vector-effect="non-scaling-stroke"
             />
           </svg>
-          {typeof item.img === 'string' ? (
-             <img src={item.img} alt={item.title} class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110" />
-          ) : (
-             <div class="w-full h-full transition-transform duration-700 group-hover:scale-110">
-               <Image image={item.img} class="w-full h-full object-cover object-center" />
-             </div>
-          )}
+          <div class="w-full h-full transition-transform duration-700 group-hover:scale-110">
+            <Image image={item.img} alt={item.title || "Portfólio"} title={item.title || "Portfólio"} class="w-full h-full object-cover object-center" />
+          </div>
           
           <div class="overlay">
             <div class="absolute bottom-0 left-0 right-0 p-4 md:p-6">

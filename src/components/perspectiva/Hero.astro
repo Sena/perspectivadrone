@@ -14,13 +14,7 @@ const HERO_TITLE_PARTS = HERO_TITLE.split(/##(.*?)##/g);
 <section id="inicio" class="gsap-hero relative w-full h-[100dvh] min-h-[400px] md:min-h-[600px] flex items-end overflow-hidden">
   <!-- Background image -->
   <div class="gsap-parallax absolute inset-0" {...entry?.edit?.image}>
-    {typeof HERO_IMG === 'string' ? (
-      <img src={HERO_IMG} alt="Hero image" class="w-full h-full object-cover" />
-    ) : (import.meta.env.DEV && HERO_IMG?.meta?.storageKey) ? (
-      <img src={`/uploads/${HERO_IMG.meta.storageKey}`} alt="Hero image" class="w-full h-full object-cover" />
-    ) : (
-      <Image image={HERO_IMG} class="w-full h-full object-cover" />
-    )}
+    <Image image={HERO_IMG} alt={HERO_TITLE || "Destaque"} title={HERO_TITLE || "Destaque"} class="w-full h-full object-cover" />
     <div class="absolute inset-0 bg-gradient-to-t from-[oklch(0.05_0.005_285)] via-[oklch(0.08_0.005_285/0.4)] to-transparent"></div>
     <div class="absolute inset-0 bg-gradient-to-r from-[oklch(0.05_0.005_285/0.6)] to-transparent"></div>
   </div>

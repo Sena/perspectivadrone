@@ -28,6 +28,8 @@ const { title, services } = Astro.props;
 						{service.image && (
 							<Image 
 								image={service.image} 
+								alt={service.title || "Serviço"}
+								title={service.title || "Serviço"}
 								class="card-image"
 							/>
 						)}
