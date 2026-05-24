@@ -9,6 +9,50 @@ import { createPublicPageContext } from "emdash/page";
 import { resolveBlogSiteIdentity } from "../utils/site-identity";
 import "../styles/theme.css";
 
+// Prevenir cache do HTML para evitar CSS quebrado (hash antigo) após novos deploys
+Astro.response.headers.set(
+	"Cache-Control",
+	"public, max-age=0, must-revalidate"
+);
+
+// Forçar HTTPS (HSTS)
+Astro.response.headers.set(
+	"Strict-Transport-Security",
+	"max-age=31536000; includeSubDomains; preload"
+);
+
+// Domínios permitidos para o CSP
+const cspDomains = {
+	scripts: [
+		"https://www.googletagmanager.com", 
+		"https://cdn.jsdelivr.net",
+		"https://static.cloudflareinsights.com",
+		],
+	styles: [
+		"https://fonts.googleapis.com",
+		],
+	images: [
+		"https://www.google-analytics.com",
+		"https://www.googletagmanager.com",
+		],
+	fonts: [
+		"https://fonts.gstatic.com",
+		],
+	connects: [
+		"https://www.google-analytics.com",
+		"https://analytics.google.com",
+		"https://stats.g.doubleclick.net",
+		"https://cloudflareinsights.com",
+	],
+};
+
+// CSP restrito ao próprio domínio com exceções explícitas (via cspDomains)
+// O 'nonce' foi removido porque anula o 'unsafe-inline', quebrando scripts nativos do Astro
+Astro.response.headers.set(
+	"Content-Security-Policy",
+	`default-src 'self'; script-src 'self' 'unsafe-inline' ${cspDomains.scripts.join(" ")}; style-src 'self' 'unsafe-inline' ${cspDomains.styles.join(" ")}; img-src 'self' data: blob: ${cspDomains.images.join(" ")}; font-src 'self' data: ${cspDomains.fonts.join(" ")}; connect-src 'self' ${cspDomains.connects.join(" ")};`
+);
+
 interface Props {
 	title?: string;
 	description?: string | null;
@@ -46,10 +90,9 @@ const pageCtx = createPublicPageContext({
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>{fullTitle}</title>
 		<EmDashHead page={pageCtx} />
-		<style is:global>
-			/* Load fonts explicitly if config doesn't push them to head correctly */
-			@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
-		</style>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
 		<script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-RJDVRMXRM6"></script>
 		<script is:inline>
 			window.dataLayer = window.dataLayer || [];
