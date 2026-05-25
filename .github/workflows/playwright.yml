@@ -26,13 +26,13 @@ jobs:
           CHECKS=$(gh api repos/${{ github.repository }}/commits/$COMMIT_SHA/check-runs)
           
           # Filtra pelo check do Cloudflare
-          STATUS=$(echo "$CHECKS" | jq -r '.check_runs[] | select(.name | contains("Workers Builds")) | .status' | head -1)
-          CONCLUSION=$(echo "$CHECKS" | jq -r '.check_runs[] | select(.name | contains("Workers Builds")) | .conclusion' | head -1)
+          STATUS=$(echo "$CHECKS" | jq -r '[.check_runs[] | select(.name | contains("Workers Builds"))][0].status')
+          CONCLUSION=$(echo "$CHECKS" | jq -r '[.check_runs[] | select(.name | contains("Workers Builds"))][0].conclusion')
           
           if [ "$STATUS" == "completed" ]; then
             if [ "$CONCLUSION" == "success" ]; then
-              SUMMARY=$(echo "$CHECKS" | jq -r '.check_runs[] | select(.name | contains("Workers Builds")) | .output.summary' | head -1)
-              URL=$(echo "$SUMMARY" | grep -o 'https://[^ ]*\.workers\.dev' | tail -1)
+              SUMMARY=$(echo "$CHECKS" | jq -r '[.check_runs[] | select(.name | contains("Workers Builds"))][0].output.summary')
+              URL=$(echo "$SUMMARY" | grep -Eo 'https://[a-zA-Z0-9.-]+\.workers\.dev' | tail -1)
               echo "✅ Cloudflare finalizado! URL encontrada: $URL"
               break
             else
