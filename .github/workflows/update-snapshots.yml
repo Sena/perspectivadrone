@@ -3,6 +3,9 @@ name: Update Playwright Snapshots
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   update-snapshots:
     name: Update Snapshots
@@ -25,7 +28,7 @@ jobs:
           ${{ runner.os }}-playwright-
         
     - name: Install dependencies
-      run: npx pnpm install --ignore-scripts
+      run: npx pnpm@10 install --ignore-scripts
       
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
