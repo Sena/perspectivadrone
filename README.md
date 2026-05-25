@@ -165,6 +165,41 @@ pnpm run cleanup:prod     # limpa dados remotos (cuidado!)
 
 ---
 
+## Testes (Playwright)
+
+O projeto possui configuração completa de **E2E e Visual Regression Tests** usando o Playwright (`playwright.config.ts`).
+
+### Como rodar os testes
+
+> **Aviso Importante:** O Playwright foi configurado para **NÃO** iniciar automaticamente o servidor (`npm run dev`) por conta de bugs de processos zumbis no Windows. Você precisa subir o projeto manualmente antes de testar.
+
+1. Em um terminal, inicie o projeto localmente:
+   ```bash
+   pnpm run dev
+   ```
+2. Em **outro** terminal, execute os testes:
+   ```bash
+   npx playwright test
+   ```
+
+### Atualizando as baselines visuais
+Se você alterar o CSS propositalmente e um teste visual falhar, você pode atualizar as fotos de referência executando:
+```bash
+npx playwright test --update-snapshots
+```
+
+### Integração Contínua (CI) com Cloudflare Workers
+
+O projeto possui um workflow configurado no GitHub Actions (`.github/workflows/playwright.yml`) que automatiza a execução de todos os testes E2E em Pull Requests e Commits.
+
+O fluxo de CI funciona da seguinte forma:
+1. O Cloudflare gera uma URL temporária via **Workers Builds**.
+2. Quando o *Check Run* do Cloudflare é concluído com sucesso, o GitHub Actions é engatilhado.
+3. A URL gerada é extraída dinamicamente e injetada no Playwright através da variável de ambiente `PLAYWRIGHT_TEST_BASE_URL`.
+4. Todos os testes visuais e E2E rodam diretamente na versão hospedada, validando o comportamento real antes de qualquer merge.
+
+---
+
 ## Convenções importantes
 
 - **Todas as páginas são SSR** — sem `getStaticPaths()` para conteúdo CMS.
