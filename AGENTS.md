@@ -6,6 +6,8 @@ This is an EmDash site -- a CMS built on Astro with a full admin UI.
 npx emdash dev        # Start dev server (runs migrations, seeds, generates types)
 npx emdash types      # Regenerate TypeScript types from schema
 npx emdash seed seed/seed.json --validate  # Validate seed file
+npx playwright test   # Run Playwright E2E and visual tests (requires dev server running first)
+npx playwright test --update-snapshots # Update visual baseline images
 ```
 
 The admin UI is at `http://localhost:4321/_emdash/admin`.
@@ -22,6 +24,7 @@ If you need a password, use this link: `http://localhost:4321/_emdash/api/setup/
 | `emdash-env.d.ts`        | Generated types for collections (auto-regenerated on dev server start)             |
 | `src/layouts/Base.astro` | Base layout with EmDash wiring (menus, search, page contributions)                 |
 | `src/pages/`             | Astro pages -- all server-rendered                                                 |
+| `SYNC_DB.md`             | Instructions on how to pull production D1 database to local dev environment        |
 
 ## Skills
 
