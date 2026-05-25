@@ -57,7 +57,7 @@ jobs:
         node-version: lts/*
         
     - name: Install dependencies
-      run: npx pnpm install
+      run: npx pnpm install --ignore-scripts
       
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
