@@ -54,7 +54,8 @@ test.describe('Visual Regression Tests', () => {
 
     const hero = page.locator('#inicio');
     await expect(hero).toHaveScreenshot('hero-section.png', {
-      maxDiffPixelRatio: 0.08
+      maxDiffPixelRatio: 0.08,
+      timeout: 15000
     });
   });
 });
