@@ -9,7 +9,7 @@ jobs:
   playwright-tests:
     name: Run E2E Tests on Preview URL
     # Garante que roda apenas quando o check do Cloudflare ("Workers Builds: perspectivadrone2") der sucesso
-    if: github.event.check_run.name == 'Workers Builds: perspectivadrone2' && github.event.check_run.conclusion == 'success'
+    if: contains(github.event.check_run.name, 'Workers Builds') && github.event.check_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     
