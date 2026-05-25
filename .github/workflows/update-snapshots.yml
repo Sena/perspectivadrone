@@ -33,10 +33,21 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
       
+    - name: Start dev server
+      run: npx pnpm run dev &
+      
+    - name: Wait for dev server
+      run: |
+        while ! curl -s http://localhost:4321 > /dev/null; do
+          echo "Waiting for dev server..."
+          sleep 5
+        done
+        echo "Dev server is up!"
+
     - name: Update Snapshots
       run: npx playwright test tests/visual.spec.ts --update-snapshots --workers=3
       env:
-        PLAYWRIGHT_TEST_BASE_URL: https://perspectivadrone.com.br
+        PLAYWRIGHT_TEST_BASE_URL: http://localhost:4321
         
     - name: Commit and push changes
       run: |
