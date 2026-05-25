@@ -1,0 +1,55 @@
+name: E2E Playwright Tests
+
+# Gatilho: Dispara quando um "Check Run" (como o do Cloudflare) é concluído
+on:
+  check_run:
+    types: [completed]
+
+jobs:
+  playwright-tests:
+    name: Run E2E Tests on Preview URL
+    # Garante que roda apenas quando o check do Cloudflare ("Workers Builds: perspectivadrone2") der sucesso
+    if: github.event.check_run.name == 'Workers Builds: perspectivadrone2' && github.event.check_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    
+    steps:
+    - name: Extract Cloudflare URL
+      id: cf
+      run: |
+        SUMMARY="${{ github.event.check_run.output.summary }}"
+        # Pega a "Preview URL" ou "Preview Alias URL" que termina em .workers.dev do texto do Cloudflare
+        URL=$(echo "$SUMMARY" | grep -o 'https://[^ ]*\.workers\.dev' | tail -1)
+        echo "URL Encontrada: $URL"
+        echo "url=$URL" >> $GITHUB_OUTPUT
+
+    # 1. Faz o checkout exatamente no commit que disparou o check
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.check_run.head_sha }}
+    
+    # 2. Configura o Node.js
+    - uses: actions/setup-node@v4
+      with:
+        node-version: lts/*
+        
+    # 3. Instala dependências do projeto e do Playwright
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+      
+    # 4. Roda os testes injetando a URL extraída do Check Run
+    - name: Run Playwright tests
+      run: npx playwright test
+      env:
+        PLAYWRIGHT_TEST_BASE_URL: ${{ steps.cf.outputs.url }}
+        
+    # 5. Salva o relatório HTML em caso de falha para debugar
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 15
