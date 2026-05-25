@@ -10,7 +10,7 @@
 		"deploy": "astro build && wrangler deploy",
 		"typecheck": "astro check",
 		"bootstrap": "emdash init && emdash seed",
-		"seed": "emdash seed",
+		"seed": "emdash seed seed/seed.json --remote --url http://localhost:4321",
 		"cleanup": "node scripts/cleanup.js",
 		"cleanup:prod": "node scripts/cleanup.js --remote",
 		"deploy:prod": "astro build && wrangler deploy && npx emdash seed seed/seed.json --remote"
