@@ -1,5 +1,7 @@
 # Perspectiva Drone
 
+[![E2E Playwright Tests](https://github.com/Sena/perspectivadrone/actions/workflows/playwright.yml/badge.svg)](https://github.com/Sena/perspectivadrone/actions/workflows/playwright.yml)
+
 Site institucional de fotografia e filmagem aérea com drone. Construído com **Astro 5**, **EmDash CMS**, **Tailwind CSS v4** e hospedado no **Cloudflare Workers** com banco de dados **D1** e armazenamento de mídia **R2**.
 
 ---
@@ -162,6 +164,61 @@ npx emdash seed seed/seed.json --validate
 pnpm run cleanup          # limpa dados locais
 pnpm run cleanup:prod     # limpa dados remotos (cuidado!)
 ```
+
+---
+
+## Testes (Playwright)
+
+O projeto possui configuração completa de **E2E e Visual Regression Tests** usando o Playwright (`playwright.config.ts`).
+
+### Como rodar os testes
+
+> **Aviso Importante:** O Playwright foi configurado para **NÃO** iniciar automaticamente o servidor (`npm run dev`) por conta de bugs de processos zumbis no Windows. Você precisa subir o projeto manualmente antes de testar.
+
+1. Em um terminal, inicie o projeto localmente:
+   ```bash
+   pnpm run dev
+   ```
+2. Em **outro** terminal, execute os testes:
+   ```bash
+   npx playwright test
+   ```
+
+### Atualizando as baselines visuais (Paridade com Linux/CI)
+
+Se você alterar o visual do site, precisará atualizar as fotos de referência (snapshots). Como o GitHub Actions roda em Linux (Ubuntu), imagens geradas nativamente no Windows podem ter diferenças sutis de renderização de fonte e anti-aliasing, causando falhas na pipeline.
+
+Para gerar as imagens "Golden" com **100% de paridade** ao GitHub Actions, utilize o ambiente Docker configurado no projeto:
+
+1. Suba o ambiente Linux via Docker Compose:
+   ```bash
+   docker-compose up -d
+   ```
+2. Aguarde alguns segundos para o Astro iniciar e verifique se o site está rodando em `http://localhost:4321`.
+
+3. Execute o Playwright **por dentro** do container para atualizar as fotos:
+   ```bash
+   docker-compose exec perspectivadrone-linux npx playwright test tests/visual.spec.ts --update-snapshots --workers=1
+   ```
+
+4. Ao finalizar, você pode derrubar o container:
+   ```bash
+   docker-compose down
+   ```
+
+As imagens sobrescritas na pasta `tests/visual.spec.ts-snapshots/` serão idênticas às que o CI espera. Basta commitá-las.
+
+> Nota: Se preferir rodar apenas para testar sem atualizar o gabarito definitivo da pipeline, você pode executar na própria máquina Windows com `npx playwright test --update-snapshots`, mas lembre-se de rodar pelo Docker antes de enviar o Pull Request.
+
+### Integração Contínua (CI) com Cloudflare Workers
+
+O projeto possui um workflow configurado no GitHub Actions (`.github/workflows/playwright.yml`) que automatiza a execução de todos os testes E2E em Pull Requests e Commits.
+
+O fluxo de CI funciona da seguinte forma:
+1. O Cloudflare gera uma URL temporária via **Workers Builds**.
+2. Quando o *Check Run* do Cloudflare é concluído com sucesso, o GitHub Actions é engatilhado.
+3. A URL gerada é extraída dinamicamente e injetada no Playwright através da variável de ambiente `PLAYWRIGHT_TEST_BASE_URL`.
+4. Todos os testes visuais e E2E rodam diretamente na versão hospedada, validando o comportamento real antes de qualquer merge.
 
 ---
 
