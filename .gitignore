@@ -36,3 +36,8 @@ uploads/
 emdash-env.d.ts
 .emdash/types.ts
 .emdash/schema.json
+
+# Test output
+playwright-report/
+test-results/
+check-runs.json

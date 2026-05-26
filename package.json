@@ -13,6 +13,7 @@
 		"seed": "emdash seed seed/seed.json --remote --url http://localhost:4321",
 		"cleanup": "node scripts/cleanup.js",
 		"cleanup:prod": "node scripts/cleanup.js --remote",
+		"sync": "npx github:Sena/emdash-sync-cli",
 		"deploy:prod": "astro build && wrangler deploy && npx emdash seed seed/seed.json --remote"
 	},
 	"dependencies": {
@@ -28,6 +29,7 @@
 	"devDependencies": {
 		"@astrojs/check": "^0.9.9",
 		"@cloudflare/workers-types": "^4.20260522.1",
+		"@playwright/test": "^1.60.0",
 		"@tailwindcss/vite": "^4.3.0",
 		"tailwindcss": "^4.3.0",
 		"wrangler": "^4.94.0"
