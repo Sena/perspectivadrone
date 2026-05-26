@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  astro-playwright:
+    image: mcr.microsoft.com/playwright:v1.60.0-jammy
+    container_name: perspectivadrone-linux
+    ports:
+      - "4321:4321"
+    volumes:
+      - .:/work
+      # Isola o node_modules do Linux do node_modules do Windows
+      - node_modules_linux:/work/node_modules
+    working_dir: /work
+    environment:
+      - CI=true
+    # Instala o pnpm nativamente no container, instala os pacotes do linux e sobe o Astro exposto para a rede host
+    command: /bin/bash -c "npm install -g pnpm@10 && pnpm install --ignore-scripts && pnpm run dev --host 0.0.0.0"
+
+volumes:
+  node_modules_linux:
