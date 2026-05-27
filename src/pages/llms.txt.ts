@@ -1,4 +1,9 @@
-﻿# Perspectiva Drone
+import type { APIRoute } from "astro";
+
+export const GET: APIRoute = async ({ site }) => {
+  const domain = site!.hostname;
+  
+  const content = `# Perspectiva Drone
 
 Piloto com 6 anos de experiência, especializado em cinematografia aérea e capturas dinâmicas para os mercados corporativo, imobiliário e industrial. Foco em precisão, segurança e imersão visual.
 
@@ -17,7 +22,15 @@ Piloto com 6 anos de experiência, especializado em cinematografia aérea e capt
 
 ## Contato e Operação
 - **WhatsApp:** +55 11 95235-3154
-- **E-mail:** contato@perspectivadrone.com.br
+- **E-mail:** contato@${domain}
 - **Instagram:** [@perspectiva.drone](https://www.instagram.com/perspectiva.drone)
 - **Região de Atendimento:** Base em Cotia, SP, atendendo a região metropolitana e projetos específicos, porém podendo negociar outros estados a depender do projeto..
 - **Segurança:** Operações de voo realizadas em estrita conformidade com as regulamentações do espaço aéreo (cadastro SISANT / liberação DECEA).
+`;
+
+  return new Response(content, {
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+    },
+  });
+};

@@ -9,6 +9,7 @@ import emdash from "emdash/astro";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
+  site: "https://perspectivadrone.com.br",
   output: "server",
   adapter: cloudflare(),
 
