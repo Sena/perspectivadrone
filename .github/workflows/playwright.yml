@@ -32,8 +32,8 @@ jobs:
             if [ "$STATUS" == "completed" ]; then
               if [ "$CONCLUSION" == "success" ]; then
                 if [ "${{ github.ref }}" == "refs/heads/main" ]; then
-                  URL="https://perspectivadrone.com.br"
-                  echo "✅ Cloudflare (Produção) finalizado!"
+                  URL="https://perspectivadrone2.flaviosena.workers.dev"
+                  echo "✅ Cloudflare (Produção via Worker URL) finalizado! URL: $URL"
                 else
                   SUMMARY=$(echo "$CHECKS" | jq -r '[.check_runs[] | select(.name | contains("Workers Builds"))][0].output.summary')
                   URL=$(echo "$SUMMARY" | grep -Eo 'https://[a-zA-Z0-9.-]+\.workers\.dev' | tail -1)
