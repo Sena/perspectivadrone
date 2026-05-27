@@ -1,6 +1,8 @@
 ---
 import { Image, PortableText } from "emdash/ui";
 
+import CdnImage from '../CdnImage.astro';
+
 const { entry } = Astro.props;
 const data = entry?.data || {};
 
@@ -10,11 +12,33 @@ const HERO_TITLE = data.title || "";
 const HERO_CONTENT = data.content;
 
 const HERO_TITLE_PARTS = HERO_TITLE.split(/##(.*?)##/g);
+
+const rawSrc = typeof HERO_IMG === 'string' 
+  ? HERO_IMG 
+  : HERO_IMG?.src || Astro.locals.emdash?.getPublicMediaUrl?.(HERO_IMG?.meta?.storageKey || HERO_IMG?.id) || '';
+
+const heroImgAlt = (typeof HERO_IMG === 'object' ? HERO_IMG?.alt : null) || HERO_TITLE || "Destaque";
 ---
 <section id="inicio" class="gsap-hero relative w-full h-[100dvh] min-h-[400px] md:min-h-[600px] flex items-end overflow-hidden">
   <!-- Background image -->
   <div class="gsap-parallax absolute inset-0" {...entry?.edit?.image}>
-    <Image image={HERO_IMG} alt={HERO_TITLE || "Destaque"} title={HERO_TITLE || "Destaque"} class="w-full h-full object-cover" />
+    {rawSrc ? (
+      <CdnImage 
+        src={rawSrc}
+        width={HERO_IMG?.width || 1536}
+        height={HERO_IMG?.height || 1024}
+        widths={[600, 800, 1200, 1600, 2000, 2600]}
+        sizes="(orientation: portrait) 150vh, 100vw"
+        alt={heroImgAlt} 
+        title={HERO_TITLE || "Destaque"} 
+        class="w-full h-full object-cover" 
+        loading="eager"
+        fetchpriority="high"
+        decoding="sync"
+      />
+    ) : (
+      <div class="w-full h-full bg-gray-900"></div>
+    )}
     <div class="absolute inset-0 bg-gradient-to-t from-[oklch(0.05_0.005_285)] via-[oklch(0.08_0.005_285/0.4)] to-transparent"></div>
     <div class="absolute inset-0 bg-gradient-to-r from-[oklch(0.05_0.005_285/0.6)] to-transparent"></div>
   </div>

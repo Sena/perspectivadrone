@@ -1,0 +1,57 @@
+---
+// src/components/CdnImage.astro
+const { 
+  src: rawSrcProp, 
+  width: rawWidthProp, 
+  height: rawHeightProp, 
+  alt: rawAltProp, 
+  image,
+  sizes = "100vw",
+  widths = [320, 640, 768, 1024, 1280, 1920], // Default dynamic array
+  ...rest // Captures Tailwind classes, loading, fetchpriority, etc.
+} = Astro.props;
+
+const resolveSrc = () => {
+  if (rawSrcProp) return rawSrcProp;
+  if (!image) return '';
+  if (typeof image === 'string') return image;
+  return image.src || Astro.locals.emdash?.getPublicMediaUrl?.(image.meta?.storageKey || image.id) || '';
+};
+
+const finalSrc = resolveSrc();
+const finalWidth = rawWidthProp || (typeof image === 'object' ? image?.width : undefined);
+const finalHeight = rawHeightProp || (typeof image === 'object' ? image?.height : undefined);
+const finalAlt = rawAltProp || (typeof image === 'object' ? image?.alt : undefined) || '';
+
+// Get current hostname
+const hostname = Astro.url.hostname;
+
+// URL generator function for CDN with format=auto
+const cdn = (w: number) => {
+  if (!finalSrc) return '';
+
+  // Active resize ONLY in production (using site variable from astro.config)
+  if (Astro.site && hostname === Astro.site.hostname) {
+    return `/cdn-cgi/image/width=${w},format=auto,quality=100${finalSrc.startsWith('/') ? '' : '/'}${finalSrc}`;
+  }
+
+  // Localhost, preview (*.workers.dev) or any other -> no resize
+  return finalSrc;
+};
+
+// Dynamically generates srcset scanning the received widths array
+const generatedSrcset = widths.map((w: number) => `${cdn(w)} ${w}w`).join(', ');
+
+// Uses the largest width from the array as src fallback
+const fallbackWidth = widths[widths.length - 1];
+---
+
+<img 
+  src={cdn(fallbackWidth)}
+  srcset={generatedSrcset}
+  sizes={sizes}
+  width={finalWidth}
+  height={finalHeight}
+  alt={finalAlt}
+  {...rest}
+/>

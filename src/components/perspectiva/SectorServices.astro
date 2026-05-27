@@ -1,6 +1,6 @@
 ---
-import { Image } from "emdash/ui";
 import type { MediaValue } from "emdash";
+import CdnImage from "../CdnImage.astro";
 
 interface Service {
 	title: string;
@@ -26,11 +26,13 @@ const { title, services } = Astro.props;
 				<div class="service-card">
 					<div class="image-wrapper">
 						{service.image && (
-							<Image 
+							<CdnImage 
 								image={service.image} 
+								sizes="(min-width: 768px) 33vw, 100vw"
 								alt={service.title || "Serviço"}
 								title={service.title || "Serviço"}
 								class="card-image"
+								loading="lazy"
 							/>
 						)}
 						<div class="card-overlay"></div>
