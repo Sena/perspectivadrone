@@ -13,7 +13,7 @@
 		"seed": "emdash seed seed/seed.json --remote --url http://localhost:4321",
 		"cleanup": "node scripts/cleanup.js",
 		"cleanup:prod": "node scripts/cleanup.js --remote",
-		"sync": "npx github:Sena/emdash-sync-cli",
+		"sync": "npx --yes github:Sena/emdash-sync-cli",
 		"deploy:prod": "astro build && wrangler deploy && npx emdash seed seed/seed.json --remote"
 	},
 	"dependencies": {
