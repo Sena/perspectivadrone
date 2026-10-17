@@ -45,9 +45,9 @@ const heroImgAlt = (typeof HERO_IMG === 'object' ? HERO_IMG?.alt : null) || HERO
   <!-- Hero content -->
   <div class="relative z-10 max-w-7xl mx-auto px-6 pb-20 md:pb-28 w-full">
     <div class="gsap-hero-content">
-      <p class="coord-text mb-4 text-primary-80">Fotografia & Drone · Brasil</p>
+      <p class="coord-text mb-4 text-primary/80">Fotografia & Drone · Brasil</p>
       
-      <h1 class="reveal-hidden text-5xl md:text-7xl lg:text-8xl font-bold leading-none text-white mb-6 font-display" {...entry?.edit?.title}>
+      <h1 class="reveal-hidden text-5xl md:text-7xl lg:text-8xl font-bold leading-[1.05] text-white mb-6 font-display" {...entry?.edit?.title}>
         {HERO_TITLE_PARTS.map((part: string, i: number) => (
           i % 2 === 1 
             ? <span class="italic text-primary">{part}</span> 

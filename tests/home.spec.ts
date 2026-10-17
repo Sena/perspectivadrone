@@ -211,7 +211,7 @@ test.describe('E2E Interactions', () => {
     const portfolioLink = page.locator('#desktop-menu a').filter({ hasText: 'Portfólio' }).first();
     
     // Check initial active state
-    await expect(homeLink).toHaveClass(/(^|\s)text-amber-400(\s|$)/);
+    await expect(homeLink).toHaveClass(/(^|\s)text-primary(\s|$)/);
     await expect(portfolioLink).toHaveClass(/(^|\s)text-white\/70(\s|$)/);
 
     // Click "Portfólio"
@@ -221,7 +221,7 @@ test.describe('E2E Interactions', () => {
     await page.waitForTimeout(1200);
 
     // The active class should move to "Portfólio"
-    await expect(portfolioLink).toHaveClass(/(^|\s)text-amber-400(\s|$)/);
+    await expect(portfolioLink).toHaveClass(/(^|\s)text-primary(\s|$)/);
     await expect(homeLink).toHaveClass(/(^|\s)text-white\/70(\s|$)/);
 
     // Check if #portfolio section is actually in the viewport now
