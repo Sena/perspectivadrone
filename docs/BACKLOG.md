@@ -1,0 +1,28 @@
+# BACKLOG — achados da QA
+
+Achados fora do padrão **não se corrigem na hora**: entram aqui com id (`BUG-001`…),
+evidência e (quando possível) o teste que reproduz. Correções pontuais da rodada de
+pente fino ficam registradas em "Resolvidos nesta rodada".
+
+Última atualização: 2026-10-17 (rodada do upgrade EmDash 1.3 + suíte 60/60).
+
+## Abertos
+
+| Id | Área | Achado | Ação sugerida |
+| --- | --- | --- | --- |
+| BUG-001 | SEO | `/sitemap.xml` responde 200 com índice **vazio**: todas as collections estão com `has_seo = 0` em `_emdash_collections`. Ligar o flag não resolve: o EmDash geraria `/portfolio/<slug>` e `/services/<slug>`, rotas que **não existem** neste one-pager (e `/pages/<slug>` duplicaria as âncoras). Evidência: experimento local com `has_seo=1` gerou `sitemap-pages/portfolio/services.xml` com essas URLs (revertido em seguida). | Decidir entre: (a) sitemap custom no projeto listando `/` + âncoras + `/posts/*`; (b) criar rotas reais de detalhe por collection; (c) aceitar sitemap vazio. Não ligar `has_seo` sem (a)/(b). |
+| BUG-002 | Dados | 5 linhas de mídia no D1 de produção apontam para objetos ausentes no R2 (404 no pull do sync): `01KPM8VRK0D0TAK2K5XQAHVGN9`, `01KPEX5YXBF09C1JYGPD0FD9WX`, `01KPEXG1CE551VHAC00DB85Y76`, `01KPEXMX1HGTWY7BASGRC2GBWS`, `01KPM8R8918XHNZQ9SPSSB87XX`. | Limpar as linhas órfãs pelo admin (ou SQL no D1) — cuidado para não remover mídia em uso. |
+| BUG-003 | QA/CI | Flake de teardown do Playwright no Windows: `worker-N process did not exit within 300000ms after stop, force-killed` — 5× no run remoto (preview) e 2–3× no local, sempre com múltiplos workers. A suíte **passa** (60/60); o run ganha até ~5 min no final. | Acompanhar issue do Playwright (processos zumbis no Windows). Evidência nova: subset (8 testes) com `--workers=1` terminou limpo (48s, sem hang) — falta validar a suíte completa com 1 worker antes de fixar no config. Não bloqueia merge. |
+| BUG-004 | Imagens | `/cdn-cgi/image/...` responde **1 px** de diferença na zona (`perspectivadrone.com.br`) vs `workers.dev` no mesmo build (`CDyViKDz`) — variante de transform por hostname. O CI testa em `workers.dev`, então a suíte não é afetada. | Considerar na fase de imagens (slots/srcset); se mexer em baseline, regenerar contra a URL que o CI usa. |
+| BUG-005 | Infra | Cloudflare **Workers Builds** falhando na conta (ambos os repos, inclusive commit só de doc no mini-commerce): o check "Wait for Cloudflare Preview" aborta e o CI não roda. Em maio funcionava. Detalhe do erro só no dashboard. | Ação do usuário: dashboard → Workers & Pages → `perspectivadrone2` → Builds → builds `15b05707-46ad-4a9b-8a68-517677af6ed4` e `a6b4057`; conferir reautorização do app Cloudflare no GitHub. |
+| BUG-006 | Deploy | Produção está com **código 0.14** (deploy `50af724a`, 28/05) mas **schema já em 091**: as migrações 040→091 do 1.3 foram aplicadas no D1 de produção em 17/10 04:25–04:26Z, quando a version preview do 1.3 (`1d59a5e9`, `wrangler versions upload` com bindings de produção) recebeu o primeiro request — o runtime 1.3 auto-aplica migrações pendentes. Site funcionou (smoke OK em `/`, `/rss.xml`, `/sitemap.xml`, mídia). Não há rollback de migração. | Deployar o PR `chore/emdash-1.3` em breve para realinhar código/schema. **Lição para o runbook**: qualquer preview de branch com EmDash 1.x usando os bindings de produção migra o D1 de produção. |
+| BUG-007 | Conteúdo | Páginas herdadas do template (`/posts`, `/category/*`, `/tag/*`, `/search`) existem e respondem, mas `posts` está vazio em produção (0 entradas) e nada linka essas páginas. | Decisão de produto: manter (uso futuro de blog) ou remover as rotas. Enquanto isso não vaza em navegação nem em sitemap (BUG-001). |
+| BUG-008 | Imagens | `CdnImage.astro` monta o `srcset` repetindo a **mesma URL** quando fora do hostname de produção (o fallback dev/workers.dev retorna o mesmo `src` para todas as larguras — descritores `320w…1920w` apontando para o mesmo arquivo). Os `widths` também são genéricos (hero pede até 2600 px, acima dos originais) e o `sizes` do grid usa 33vw para cards featured/landscape (~66vw reais). | Tratado na branch de imagens (slots, srcset por hostname e cap na largura original). |
+
+## Resolvidos nesta rodada (branch `qa/suite-e-docs`)
+
+- **Seed inválido**: `seed/seed.json` era `{}` (falhava no `--validate` e não tinha schema). Agora é o export real do schema de produção (`npx emdash export-seed`), validado com `pnpm run seed:validate`.
+- **Scripts quebrados no CLI 1.3**: `seed` e `deploy:prod` usavam `--remote --url`, flags que não existem mais (o seed vai embutido no build e só se aplica em banco vazio). `seed` virou `seed:validate`; `deploy:prod` = `astro build && wrangler deploy`; `bootstrap` (fluxo `data.db`) removido.
+- **RSS**: `<language>` de `en-us` → `pt-BR`; link `atom:link` vinha com barra dupla (`...com.br//rss.xml`) — URL normalizada.
+- **Cache hints**: `getSiteSettings`/`getMenu` trocados pelas variantes `*WithCacheHint` + `Astro.cache.set` em `Base.astro`, `index.astro`, `404.astro` e `posts/[slug].astro`; hints de conteúdo passaram a ser registrados também em `category/[slug]`, `tag/[slug]` e `search`.
+- **Docs**: README e AGENTS.md atualizados (Astro 7, emdash 1.3, fluxo de banco local via `.wrangler`, `npx emdash dev` inexistente, `data.db` obsoleto, deploy sem seed remoto).
