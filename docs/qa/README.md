@@ -24,8 +24,15 @@ npx playwright test --update-snapshots    # regenerar baselines — SOMENTE dent
 | `tests/visual.spec.ts` | 2 comparações visuais: homepage completa e hero |
 | `tests/seo.spec.ts` | RSS (idioma, link sem barra dupla), sitemap e rewrite das âncoras (`/portfolio` → home) |
 
-Cada teste roda nos 6 projetos: `chromium`, `firefox`, `webkit`,
-`Mobile Chrome` (Pixel 5), `Mobile Safari` (iPhone), `Tablet (iPad)`.
+Cada teste roda nos 11 projetos: desktops `chromium` (1280×720), `Desktop 1366`
+(1366×768), `firefox`, `webkit`; mobiles `Galaxy S8` (Android 360×740),
+`iPhone SE` (375×667), `Mobile Safari` (iPhone 12 / 390×664), `Mobile Chrome`
+(Pixel 5 / 393×727), `iPhone 14 Pro Max` (430×740); tablets `Tablet (iPad)`
+(810×1080) e `Tablet (iPad) landscape` (1080×810).
+
+As larguras cobrem os buckets mais comuns do mercado (360→430 px no mobile):
+quebra de linha é sensível à largura — foi assim que o incidente de paridade
+de rendering (2026-10-17) apareceu.
 
 ## Baselines visuais
 
@@ -54,7 +61,7 @@ npx playwright test
 | --- | --- | --- |
 | Local | `http://localhost:4321` | dev server manual; banco em `.wrangler` (pode ser clone do prod via `npm run sync -- pull --apply`) |
 | Preview | `https://<version>-perspectivadrone2.flaviosena.workers.dev` | `wrangler versions upload`; **herda os bindings de produção** — atenção: uma preview com EmDash 1.x migra o D1 de produção no primeiro request (BUG-006) |
-| CI | URL extraída do check do Cloudflare | `.github/workflows/playwright.yml`; container `mcr.microsoft.com/playwright:v1.60.0-jammy` (mesma imagem do Docker local; `HOME=/root` p/ o Firefox lançar como root) |
+| CI | URL extraída do check do Cloudflare | `.github/workflows/playwright.yml`; container `mcr.microsoft.com/playwright:v1.60.0-jammy` (mesma imagem do Docker local; `HOME=/root` inline no comando do step de testes p/ o Firefox lançar como root) |
 
 ## Achados conhecidos
 
@@ -63,6 +70,16 @@ npx playwright test
 
 ## Histórico
 
+- **2026-10-17 (logs limpos)** — `HOME=/root` (necessário p/ o Firefox no container) saiu do
+  nível do job para **inline no comando do Playwright**: em `env:` (job ou step) ele vaza para a
+  CLI docker do runner, que então procura credenciais em `/root` e loga avisos cosméticos
+  (32/run no job; 1/shard no step; zero impacto funcional — imagens públicas, pull anônimo).
+- **2026-10-17 (cobertura de aparelhos)** — suíte ampliada de 6 para 11 projetos: `Galaxy S8`
+  (Android 360), `iPhone SE` (375), `iPhone 14 Pro Max` (430), `Tablet (iPad) landscape` e
+  `Desktop 1366`. 13 testes × 11 projetos = **143 testes**. As 10 baselines novas foram
+  geradas dentro do container jammy e os 12 arquivos existentes saíram byte-idênticos;
+  ferramenta permanente `Regen Visual Baselines` (`workflow_dispatch`) adicionada para
+  futuras regenerações.
 - **2026-10-17 (paridade de rendering)** — primeiro run real da suíte visual no CI (BUG-005
   destravado) expôs `homepage-full-Mobile-Chrome.png` regenerado **no Windows** (`38b8550`,
   393×7026) contra o render **Linux** do CI (393×7071; +2 linhas nos cards de serviço,

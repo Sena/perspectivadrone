@@ -16,9 +16,14 @@ export default defineConfig({
     actionTimeout: 15000,
   },
   projects: [
+    /* Desktops */
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'Desktop 1366',
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1366, height: 768 } },
     },
     {
       name: 'firefox',
@@ -28,19 +33,36 @@ export default defineConfig({
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
     },
-    /* Test against mobile viewports. */
+    /* Mobile — larguras reais cobertas: 360, 375, 390, 393, 430.
+       Quebra de linha é sensível à largura (ver incidente de paridade de rendering). */
     {
       name: 'Mobile Chrome',
       use: { ...devices['Pixel 5'] },
     },
     {
+      name: 'Galaxy S8',
+      use: { ...devices['Galaxy S8'] },
+    },
+    {
       name: 'Mobile Safari',
       use: { ...devices['iPhone 12'] },
     },
-    /* Test against branded browsers. */
+    {
+      name: 'iPhone SE',
+      use: { ...devices['iPhone SE (3rd gen)'] },
+    },
+    {
+      name: 'iPhone 14 Pro Max',
+      use: { ...devices['iPhone 14 Pro Max'] },
+    },
+    /* Tablets — portrait e landscape */
     {
       name: 'Tablet (iPad)',
       use: { ...devices['iPad (gen 7)'] },
+    },
+    {
+      name: 'Tablet (iPad) landscape',
+      use: { ...devices['iPad (gen 7) landscape'] },
     },
   ],
 });
