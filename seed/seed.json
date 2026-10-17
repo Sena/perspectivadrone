@@ -1,1 +1,222 @@
-{}
+{
+	"$schema": "https://emdashcms.com/seed.schema.json",
+	"version": "1",
+	"meta": {
+		"name": "Exported Seed",
+		"description": "Exported from existing EmDash database"
+	},
+	"settings": {
+		"social": {
+			"instagram": "perspectiva.drone"
+		},
+		"tagline": "Sua visão, do alto",
+		"title": "Perspectiva drone"
+	},
+	"blockTypes": [],
+	"collections": [
+		{
+			"slug": "pages",
+			"label": "Pages",
+			"labelSingular": "Page",
+			"supports": [
+				"drafts",
+				"revisions",
+				"search"
+			],
+			"fields": [
+				{
+					"slug": "title",
+					"label": "Title",
+					"type": "string",
+					"required": true,
+					"searchable": true
+				},
+				{
+					"slug": "content",
+					"label": "Content",
+					"type": "portableText",
+					"searchable": true
+				},
+				{
+					"slug": "image",
+					"label": "Imagem",
+					"type": "image"
+				}
+			]
+		},
+		{
+			"slug": "portfolio",
+			"label": "Portfólios",
+			"labelSingular": "Portfólio",
+			"supports": [
+				"drafts"
+			],
+			"fields": [
+				{
+					"slug": "title",
+					"label": "Título",
+					"type": "string",
+					"required": true
+				},
+				{
+					"slug": "location",
+					"label": "Localização",
+					"type": "string"
+				},
+				{
+					"slug": "coordinates",
+					"label": "Coordenadas",
+					"type": "string"
+				},
+				{
+					"slug": "image",
+					"label": "Imagem",
+					"type": "image",
+					"required": true
+				},
+				{
+					"slug": "layout_type",
+					"label": "Tipo de Bloco",
+					"type": "select",
+					"validation": {
+						"options": [
+							"featured",
+							"portrait",
+							"standard",
+							"landscape"
+						]
+					}
+				},
+				{
+					"slug": "sort_order",
+					"label": "Ordem",
+					"type": "integer"
+				}
+			]
+		},
+		{
+			"slug": "posts",
+			"label": "Posts",
+			"labelSingular": "Post",
+			"supports": [
+				"drafts",
+				"revisions",
+				"search"
+			],
+			"fields": [
+				{
+					"slug": "title",
+					"label": "Title",
+					"type": "string",
+					"required": true,
+					"searchable": true
+				},
+				{
+					"slug": "featured_image",
+					"label": "Featured Image",
+					"type": "image"
+				},
+				{
+					"slug": "content",
+					"label": "Content",
+					"type": "portableText",
+					"searchable": true
+				},
+				{
+					"slug": "excerpt",
+					"label": "Excerpt",
+					"type": "text"
+				}
+			]
+		},
+		{
+			"slug": "services",
+			"label": "Serviços",
+			"labelSingular": "Serviço",
+			"supports": [
+				"drafts"
+			],
+			"fields": [
+				{
+					"slug": "title",
+					"label": "Título",
+					"type": "string",
+					"required": true
+				},
+				{
+					"slug": "description",
+					"label": "Descrição",
+					"type": "text"
+				},
+				{
+					"slug": "icon",
+					"label": "Ícone (nome Lucide)",
+					"type": "string"
+				},
+				{
+					"slug": "sort_order",
+					"label": "Ordem",
+					"type": "integer"
+				}
+			]
+		}
+	],
+	"defaultLocale": "en",
+	"taxonomies": [
+		{
+			"id": "tax:category",
+			"name": "category",
+			"label": "Categories",
+			"labelSingular": "Category",
+			"hierarchical": true,
+			"collections": [
+				"posts"
+			]
+		},
+		{
+			"id": "tax:tag",
+			"name": "tag",
+			"label": "Tags",
+			"labelSingular": "Tag",
+			"hierarchical": false,
+			"collections": [
+				"posts"
+			]
+		}
+	],
+	"menus": [
+		{
+			"id": "menu:primary",
+			"name": "primary",
+			"label": "Primary Navigation",
+			"items": [
+				{
+					"type": "custom",
+					"label": "Início ",
+					"url": "/"
+				},
+				{
+					"type": "custom",
+					"label": "Portfólio ",
+					"url": "/portfolio"
+				},
+				{
+					"type": "custom",
+					"label": "Sobre",
+					"url": "/sobre"
+				},
+				{
+					"type": "custom",
+					"label": "Serviços",
+					"url": "/servicos"
+				},
+				{
+					"type": "custom",
+					"label": "Contato",
+					"url": "/contato"
+				}
+			]
+		}
+	],
+	"widgetAreas": []
+}

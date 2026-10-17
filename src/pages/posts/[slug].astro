@@ -5,7 +5,7 @@ import {
 	getEntryTerms,
 	getSeoMeta,
 	decodeSlug,
-	getSiteSettings,
+	getSiteSettingsWithCacheHint,
 } from "emdash";
 import { Image, PortableText, WidgetArea } from "emdash/ui";
 import { Comments, CommentForm } from "emdash/ui/comments";
@@ -50,7 +50,10 @@ function getImageUrl(img: unknown): string | undefined {
 	return undefined;
 }
 const featuredImageUrl = getImageUrl(post.data.featured_image);
-const { siteTitle } = resolveBlogSiteIdentity(await getSiteSettings());
+const { data: settings, cacheHint: settingsCache } =
+	await getSiteSettingsWithCacheHint();
+Astro.cache.set(settingsCache);
+const { siteTitle } = resolveBlogSiteIdentity(settings);
 
 // Generate SEO meta from content
 const seo = getSeoMeta(post, {

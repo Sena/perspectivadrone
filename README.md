@@ -2,7 +2,7 @@
 
 [![E2E Playwright Tests](https://github.com/Sena/perspectivadrone/actions/workflows/playwright.yml/badge.svg)](https://github.com/Sena/perspectivadrone/actions/workflows/playwright.yml)
 
-Site institucional de fotografia e filmagem aérea com drone. Construído com **Astro 5**, **EmDash CMS**, **Tailwind CSS v4** e hospedado no **Cloudflare Workers** com banco de dados **D1** e armazenamento de mídia **R2**.
+Site institucional de fotografia e filmagem aérea com drone. Construído com **Astro 7**, **EmDash CMS**, **Tailwind CSS v4** e hospedado no **Cloudflare Workers** com banco de dados **D1** e armazenamento de mídia **R2**.
 
 ---
 
@@ -10,8 +10,8 @@ Site institucional de fotografia e filmagem aérea com drone. Construído com **
 
 | Camada | Tecnologia |
 |---|---|
-| Framework | Astro 5 (SSR, `output: "server"`) |
-| CMS | EmDash (`emdash ^0.14`) |
+| Framework | Astro 7 (SSR, `output: "server"`) |
+| CMS | EmDash (`emdash ^1.3`) |
 | Estilização | Tailwind CSS v4 (via Vite plugin) |
 | Animações | GSAP 3.12 + ScrollTrigger (CDN) |
 | Runtime | Cloudflare Workers |
@@ -26,7 +26,7 @@ Site institucional de fotografia e filmagem aérea com drone. Construído com **
 ```
 perspectivadrone/
 ├── seed/
-│   └── seed.json          # Schema do CMS + conteúdo demo
+│   └── seed.json          # Snapshot do schema do CMS (o banco é a fonte de verdade)
 ├── src/
 │   ├── components/
 │   │   └── perspectiva/   # Componentes da landing page
@@ -53,6 +53,7 @@ perspectivadrone/
 | `pages` | Seções de conteúdo (hero, sobre, cta, contato) |
 | `portfolio` | Trabalhos fotográficos com imagem e metadados |
 | `services` | Serviços oferecidos com ícone e ordem |
+| `posts` | Posts do blog (herdado do template; sem conteúdo em produção) |
 
 ---
 
@@ -72,18 +73,25 @@ pnpm install
 
 ### Inicializar banco e seed (primeira vez)
 
+O banco D1 local (em `.wrangler/state/…`) é criado no primeiro acesso ao dev server:
+
 ```bash
-emdash init && npx emdash seed seed/seed.json
+pnpm run dev
 ```
 
-Isso cria o banco D1 local (`data.db`) e popula com o conteúdo de `seed/seed.json`.
+No primeiro request, o EmDash roda as migrações pendentes e aplica o schema do `seed/seed.json` embutido no build (apenas em banco vazio — bancos já configurados não são alterados).
+
+Para trabalhar com os **dados reais de produção** no local:
+
+```bash
+npm run sync -- pull --apply
+# ver SYNC_DB.md para detalhes (dry-run por padrão)
+```
 
 ### Subir o servidor de desenvolvimento
 
 ```bash
 pnpm run dev
-# ou
-npx emdash dev   # roda migrations + seed + tipos antes de iniciar
 ```
 
 Acesso: [http://localhost:4321](http://localhost:4321)
@@ -131,31 +139,24 @@ wrangler r2 bucket create perspectivadrone
 
 Já configurado no `wrangler.jsonc` com `bucket_name: "perspectivadrone"`.
 
-### Deploy manual (build + deploy + seed remoto)
+### Deploy manual (build + deploy)
 
 ```bash
 pnpm run deploy:prod
-# equivale a: astro build && wrangler deploy && npx emdash seed seed/seed.json --remote
+# equivale a: astro build && wrangler deploy (o script `deploy` faz o mesmo)
 ```
 
 Esse comando:
 1. Gera o build de produção em `./dist`
 2. Faz deploy do Worker no Cloudflare
-3. Aplica o seed no banco D1 **remoto**
 
-### Só build + deploy (sem aplicar seed)
-
-```bash
-pnpm run deploy
-# equivale a: astro build && wrangler deploy
-```
-
-Use quando o conteúdo já está no banco remoto e você só quer atualizar o código.
+> O schema/seed vai **embutido no build** e só é aplicado automaticamente em banco **novo** (primeiro request antes do setup). O banco de produção já está configurado: o conteúdo é gerenciado pelo admin e o schema pelos snapshots (`seed/seed.json`) + sincronização.
 
 ### Validar o seed antes de aplicar
 
 ```bash
-npx emdash seed seed/seed.json --validate
+pnpm run seed:validate
+# ou: npx emdash seed seed/seed.json --validate
 ```
 
 ### Limpeza de dados locais
@@ -220,6 +221,8 @@ O fluxo de CI funciona da seguinte forma:
 3. A URL gerada é extraída dinamicamente e injetada no Playwright através da variável de ambiente `PLAYWRIGHT_TEST_BASE_URL`.
 4. Todos os testes visuais e E2E rodam diretamente na versão hospedada, validando o comportamento real antes de qualquer merge.
 
+> Runbook da suíte, achados e pendências: `docs/qa/README.md` e `docs/BACKLOG.md`.
+
 ---
 
 ## Convenções importantes
@@ -228,6 +231,7 @@ O fluxo de CI funciona da seguinte forma:
 - **Imagens** são objetos `{ src, alt }`, não strings. Renderize com `<CdnImage image={...} imageSlot={...} />` usando um slot de `IMAGE_SLOTS` (`src/utils/image-variants.ts`): na zona de produção o componente monta o `srcset` do `/cdn-cgi/image` com o `sizes` do slot; fora dela (dev, previews `.workers.dev`, sem rota `/cdn-cgi/image`) cai no `<img>` original. Novo lugar que renderiza imagem = novo slot medido no layout. A zona só responde uma allowlist fixa de larguras (ver `image-variants.ts`): fora dela a resposta é a página de bloqueio da WAF — prove a largura com `curl` antes de usar.
 - **`entry.id`** = slug (para URLs). **`entry.data.id`** = ULID do banco (para chamadas de API).
 - Sempre chamar `Astro.cache.set(cacheHint)` em páginas que consultam conteúdo.
+- Para **site settings** e **menus** renderizados em página, use `getSiteSettingsWithCacheHint()` / `getMenuWithCacheHint()` e registre o hint do mesmo jeito.
 - Taxonomy names nas queries devem bater com o campo `"name"` do seed (ex: `"category"`).
 
 ---
@@ -244,7 +248,7 @@ As animações são carregadas via CDN (sem bundle) e controladas por classes CS
 | `.gsap-reveal` | headers de seção | fade-in ao entrar na viewport |
 | `.gsap-card` | cards do portfólio | stagger cascade ao scrollar |
 | `.corner-frame` | SVG interno dos cards | borda "desenhada" no hover (stroke-dashoffset) |
-| `#portfolio-lightbox` | Lightbox (Slide) | Galeria nativa em tela cheia via JSVanilla Vanilla |
+| `#portfolio-lightbox` | Lightbox (nativo) | Galeria em tela cheia via Vanilla JS (teclado, botões e swipe) |
 
 > O GSAP é carregado dinamicamente com um guard `window.__gsapLoaded` para evitar carregamento duplicado em navegações SPA.
 
@@ -274,7 +278,7 @@ A diretiva `unsafe-inline` é permitida globalmente, mas restrita aos domínios 
 
 ## Variáveis de ambiente
 
-Não há `.env` necessário para desenvolvimento local — o EmDash usa o `data.db` local automaticamente.
+Não há `.env` necessário para desenvolvimento local — o EmDash usa o D1 local do `.wrangler` (via wrangler dev) automaticamente.
 
 Para produção, as credenciais são gerenciadas via bindings do Cloudflare (`DB`, `MEDIA`, `LOADER`) configurados no `wrangler.jsonc`.
 
@@ -284,16 +288,14 @@ Para produção, as credenciais são gerenciadas via bindings do Cloudflare (`DB
 
 ### Erro: `Migration failed: duplicate column name` (banco local desatualizado)
 
-O banco local do D1 (usado pelo dev server) está em conflito com as migrações. Como usamos Cloudflare D1, o estado local fica na pasta `.wrangler` (e não apenas no `data.db`). Apague os caches e reinicialize:
+O banco local do D1 (usado pelo dev server) está em conflito com as migrações. O estado local fica na pasta `.wrangler`. Apague o estado e reinicialize:
 
 ```bash
 # PowerShell
-Remove-Item -Force data.db
 Remove-Item -Recurse -Force .wrangler
 Remove-Item -Recurse -Force node_modules\.vite
-emdash init
-npx emdash seed seed/seed.json
 pnpm run dev
+# o banco é recriado e as migrações rodam no primeiro request
 ```
 
 > O deploy remoto **não é afetado** — o banco do Cloudflare D1 de produção é independente.
@@ -329,4 +331,3 @@ pnpm run dev -- --port 3000
 ```bash
 npx emdash types
 ```
-

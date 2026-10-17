@@ -1,10 +1,15 @@
 ---
-import { getSiteSettings, getMenu } from "emdash";
+import { getSiteSettingsWithCacheHint, getMenuWithCacheHint } from "emdash";
 import Base from "../layouts/Base.astro";
 import Navbar from "../components/perspectiva/Navbar.astro";
 
-const settings = await getSiteSettings();
-const menu = await getMenu("primary");
+const { data: settings, cacheHint: settingsCache } =
+  await getSiteSettingsWithCacheHint();
+const { data: menu, cacheHint: menuCache } =
+  await getMenuWithCacheHint("primary");
+
+Astro.cache.set(settingsCache);
+Astro.cache.set(menuCache);
 ---
 
 <Base title={`Página não encontrada — ${settings.title}`} description="A página que você procura não existe.">

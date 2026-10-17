@@ -9,12 +9,11 @@
 		"preview": "astro preview",
 		"deploy": "astro build && wrangler deploy",
 		"typecheck": "astro check",
-		"bootstrap": "emdash init && emdash seed",
-		"seed": "emdash seed seed/seed.json --remote --url http://localhost:4321",
+		"seed:validate": "emdash seed seed/seed.json --validate",
 		"cleanup": "node scripts/cleanup.js",
 		"cleanup:prod": "node scripts/cleanup.js --remote",
 		"sync": "npx --yes github:Sena/emdash-sync-cli",
-		"deploy:prod": "astro build && wrangler deploy && npx emdash seed seed/seed.json --remote"
+		"deploy:prod": "astro build && wrangler deploy"
 	},
 	"dependencies": {
 		"@astrojs/cloudflare": "^14.3.1",

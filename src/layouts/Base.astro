@@ -1,5 +1,5 @@
 ---
-import { getSiteSettings } from "emdash";
+import { getSiteSettingsWithCacheHint } from "emdash";
 import {
 	EmDashHead,
 	EmDashBodyStart,
@@ -67,7 +67,9 @@ const {
 	type = "website",
 } = Astro.props;
 
-const settings = await getSiteSettings();
+const { data: settings, cacheHint: settingsCache } =
+	await getSiteSettingsWithCacheHint();
+Astro.cache.set(settingsCache);
 const { siteTitle } = resolveBlogSiteIdentity(settings);
 const fullTitle = title && title.includes(siteTitle) ? title : (title ? `${title} — ${siteTitle}` : siteTitle);
 

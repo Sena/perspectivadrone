@@ -4,7 +4,7 @@ import { getEmDashCollection, getSiteSettings } from "emdash";
 import { resolveBlogSiteIdentity } from "../utils/site-identity";
 
 export const GET: APIRoute = async ({ site, url }) => {
-	const siteUrl = site?.toString() || url.origin;
+	const siteUrl = (site?.toString() || url.origin).replace(/\/$/, "");
 	const { siteTitle, siteTagline } = resolveBlogSiteIdentity(await getSiteSettings());
 
 	const { entries: posts } = await getEmDashCollection("posts", {
@@ -39,7 +39,7 @@ export const GET: APIRoute = async ({ site, url }) => {
     <description>${escapeXml(siteTagline)}</description>
     <link>${siteUrl}</link>
     <atom:link href="${siteUrl}/rss.xml" rel="self" type="application/rss+xml"/>
-    <language>en-us</language>
+    <language>pt-BR</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
 ${items}
   </channel>

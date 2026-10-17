@@ -3,9 +3,9 @@ This is an EmDash site -- a CMS built on Astro with a full admin UI.
 ## Commands
 
 ```bash
-npx emdash dev        # Start dev server (runs migrations, seeds, generates types)
+pnpm dev              # Start dev server (runs migrations, seeds on empty DB, generates types)
 npx emdash types      # Regenerate TypeScript types from schema
-npx emdash seed seed/seed.json --validate  # Validate seed file
+pnpm run seed:validate  # Validate seed file (npx emdash seed seed/seed.json --validate)
 npx playwright test   # Run Playwright E2E and visual tests (requires dev server running first)
 npx playwright test --update-snapshots # Update visual baseline images
 ```
@@ -20,7 +20,7 @@ If you need a password, use this link: `http://localhost:4321/_emdash/api/setup/
 | ------------------------ | ---------------------------------------------------------------------------------- |
 | `astro.config.mjs`       | Astro config with `emdash()` integration, database, and storage                    |
 | `src/live.config.ts`     | EmDash loader registration (boilerplate -- don't modify)                           |
-| `seed/seed.json`         | Schema definition + demo content (collections, fields, taxonomies, menus, widgets) |
+| `seed/seed.json`         | Snapshot of the live schema (`npx emdash export-seed`); the database is the source of truth |
 | `emdash-env.d.ts`        | Generated types for collections (auto-regenerated on dev server start)             |
 | `src/layouts/Base.astro` | Base layout with EmDash wiring (menus, search, page contributions)                 |
 | `src/pages/`             | Astro pages -- all server-rendered                                                 |
@@ -42,3 +42,11 @@ Agent skills are in `.agents/skills/`. Load them when working on specific tasks:
 - Always call `Astro.cache.set(cacheHint)` on pages that query content.
 - Taxonomy names in queries must match the seed's `"name"` field exactly (e.g., `"category"` not `"categories"`).
 - **Lightbox / Galeria**: O grid de portfólio já possui um Lightbox nativo via Vanilla JS em `PortfolioGrid.astro` (com controles de teclado, botões e swipe para mobile). Não recrie galerias ou importe bibliotecas externas (como Swiper ou GLightbox) para isso.
+
+## QA
+
+The Playwright suite in `tests/` documents the public flows (E2E + visual regression).
+
+- `npx playwright test` — full suite (start the dev server first; see README).
+- Findings that are out of scope for the current change go to `docs/BACKLOG.md` with an id (`BUG-001`…), with evidence, instead of being fixed on the spot.
+- Runbook, environments and known flakes: `docs/qa/README.md`.
