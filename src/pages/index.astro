@@ -1,5 +1,10 @@
 ---
-import { getEmDashCollection, getSiteSettings, getEmDashEntry, getMenu } from "emdash";
+import {
+  getEmDashCollection,
+  getSiteSettingsWithCacheHint,
+  getEmDashEntry,
+  getMenuWithCacheHint,
+} from "emdash";
 import Base from "../layouts/Base.astro";
 import Navbar from "../components/perspectiva/Navbar.astro";
 import Hero from "../components/perspectiva/Hero.astro";
@@ -9,8 +14,13 @@ import ServicesGrid from "../components/perspectiva/ServicesGrid.astro";
 import ContactForm from "../components/perspectiva/ContactForm.astro";
 
 // Fetch data
-const settings = await getSiteSettings();
-const menu = await getMenu("primary");
+const [
+  { data: settings, cacheHint: settingsCache },
+  { data: menu, cacheHint: menuCache },
+] = await Promise.all([
+  getSiteSettingsWithCacheHint(),
+  getMenuWithCacheHint("primary"),
+]);
 
 // Fetch sections
 const { entry: hero, cacheHint: heroCache } = await getEmDashEntry("pages", "hero");
@@ -22,6 +32,8 @@ const { entries: portfolioItems, cacheHint: portfolioCache } = await getEmDashCo
 const { entries: services, cacheHint: servicesCache } = await getEmDashCollection("services");
 
 // Cache hints
+Astro.cache.set(settingsCache);
+Astro.cache.set(menuCache);
 Astro.cache.set(heroCache);
 Astro.cache.set(aboutCache);
 Astro.cache.set(ctaServicesCache);
