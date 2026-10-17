@@ -1,57 +1,96 @@
 ---
-// src/components/CdnImage.astro
-const { 
-  src: rawSrcProp, 
-  width: rawWidthProp, 
-  height: rawHeightProp, 
-  alt: rawAltProp, 
-  image,
-  sizes = "100vw",
-  widths = [320, 640, 768, 1024, 1280, 1920], // Default dynamic array
-  ...rest // Captures Tailwind classes, loading, fetchpriority, etc.
-} = Astro.props;
+/**
+ * Image served through Cloudflare's edge resize on the production zone.
+ *
+ * On `perspectivadrone.com.br` it emits a `/cdn-cgi/image` `srcset` plus the
+ * `sizes` of its slot; the widths come from the slot and stay inside the
+ * zone's allowlist (`utils/image-variants.ts` documents the constraint).
+ * Everywhere else -- dev server and `.workers.dev` previews, which have no
+ * `/cdn-cgi/image` route (error 1042) -- it degrades to exactly the `<img>` on
+ * the original URL.
+ *
+ * Callers pass `imageSlot` with the widths and `sizes` measured for the place
+ * the image is rendered. Every other attribute is forwarded untouched, with no
+ * defaults: changing any of them would change the page.
+ */
+import {
+	IMAGE_SLOTS,
+	cdnImagePath,
+	cdnSrcset,
+	type ImageSlot,
+	type ImageSlotName,
+} from "../utils/image-variants";
+
+interface Props {
+	/** Media object from a CMS image field; carries width/height/alt and the storage key. */
+	image?:
+		| {
+				id?: string;
+				src?: string;
+				width?: number;
+				height?: number;
+				alt?: string;
+				meta?: { storageKey?: string };
+		  }
+		| string
+		| null;
+	/** Direct source, for call sites that resolve the URL themselves (the hero). */
+	src?: string;
+	/** Widths and `sizes` for the place this image is rendered. */
+	imageSlot: ImageSlotName | ImageSlot;
+	width?: number;
+	height?: number;
+	alt?: string;
+	[key: string]: unknown;
+}
+
+const {
+	src: rawSrcProp,
+	image,
+	imageSlot,
+	width: rawWidthProp,
+	height: rawHeightProp,
+	alt: rawAltProp,
+	// Legacy props from the first implementation: widths and sizes now come
+	// from the slot, and they are stripped so they cannot leak into `...rest`.
+	sizes: _sizes,
+	widths: _widths,
+	...rest
+} = Astro.props as Props;
 
 const resolveSrc = () => {
-  if (rawSrcProp) return rawSrcProp;
-  if (!image) return '';
-  if (typeof image === 'string') return image;
-  return image.src || Astro.locals.emdash?.getPublicMediaUrl?.(image.meta?.storageKey || image.id) || '';
+	if (rawSrcProp) return rawSrcProp;
+	if (!image) return "";
+	if (typeof image === "string") return image;
+	return image.src || Astro.locals.emdash?.getPublicMediaUrl?.(image.meta?.storageKey || image.id) || "";
 };
 
 const finalSrc = resolveSrc();
-const finalWidth = rawWidthProp || (typeof image === 'object' ? image?.width : undefined);
-const finalHeight = rawHeightProp || (typeof image === 'object' ? image?.height : undefined);
-const finalAlt = rawAltProp || (typeof image === 'object' ? image?.alt : undefined) || '';
+const finalWidth = rawWidthProp || (typeof image === "object" ? image?.width : undefined);
+const finalHeight = rawHeightProp || (typeof image === "object" ? image?.height : undefined);
+const finalAlt = rawAltProp || (typeof image === "object" ? image?.alt : undefined) || "";
 
-// Get current hostname
-const hostname = Astro.url.hostname;
+const slot: ImageSlot = typeof imageSlot === "string" ? IMAGE_SLOTS[imageSlot] : imageSlot;
+const widths = slot.widths;
 
-// URL generator function for CDN with format=auto
-const cdn = (w: number) => {
-  if (!finalSrc) return '';
+// Transforms run only on the production zone, and only for sources that live
+// on it (a relative `/_emdash/...` path or an absolute URL of the site).
+const siteOrigin = Astro.site?.origin ?? "";
+const onZone = siteOrigin !== "" && Astro.url.origin === siteOrigin;
+const localSource =
+	finalSrc.startsWith("/") || (siteOrigin !== "" && finalSrc.startsWith(`${siteOrigin}/`));
+const useCdn = onZone && localSource;
 
-  // Active resize ONLY in production (using site variable from astro.config)
-  if (Astro.site && hostname === Astro.site.hostname) {
-    return `/cdn-cgi/image/width=${w},format=auto,quality=100${finalSrc.startsWith('/') ? '' : '/'}${finalSrc}`;
-  }
-
-  // Localhost, preview (*.workers.dev) or any other -> no resize
-  return finalSrc;
-};
-
-// Dynamically generates srcset scanning the received widths array
-const generatedSrcset = widths.map((w: number) => `${cdn(w)} ${w}w`).join(', ');
-
-// Uses the largest width from the array as src fallback
-const fallbackWidth = widths[widths.length - 1];
+const imgSrc = useCdn ? cdnImagePath(finalSrc, widths[widths.length - 1]) : finalSrc;
+const srcset = useCdn ? cdnSrcset(finalSrc, widths) : undefined;
 ---
 
-<img 
-  src={cdn(fallbackWidth)}
-  srcset={generatedSrcset}
-  sizes={sizes}
-  width={finalWidth}
-  height={finalHeight}
-  alt={finalAlt}
-  {...rest}
+<img
+	src={imgSrc}
+	srcset={srcset}
+	sizes={srcset ? slot.sizes : undefined}
+	width={finalWidth}
+	height={finalHeight}
+	alt={finalAlt}
+	{...rest}
 />

@@ -25,10 +25,9 @@ const heroImgAlt = (typeof HERO_IMG === 'object' ? HERO_IMG?.alt : null) || HERO
     {rawSrc ? (
       <CdnImage 
         src={rawSrc}
+        imageSlot="hero"
         width={HERO_IMG?.width || 1536}
         height={HERO_IMG?.height || 1024}
-        widths={[600, 800, 1200, 1600, 2000, 2600]}
-        sizes="(orientation: portrait) 150vh, 100vw"
         alt={heroImgAlt} 
         title={HERO_TITLE || "Destaque"} 
         class="w-full h-full object-cover" 
