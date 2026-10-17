@@ -24,8 +24,15 @@ npx playwright test --update-snapshots    # regenerar baselines — SOMENTE dent
 | `tests/visual.spec.ts` | 2 comparações visuais: homepage completa e hero |
 | `tests/seo.spec.ts` | RSS (idioma, link sem barra dupla), sitemap e rewrite das âncoras (`/portfolio` → home) |
 
-Cada teste roda nos 6 projetos: `chromium`, `firefox`, `webkit`,
-`Mobile Chrome` (Pixel 5), `Mobile Safari` (iPhone), `Tablet (iPad)`.
+Cada teste roda nos 11 projetos: desktops `chromium` (1280×720), `Desktop 1366`
+(1366×768), `firefox`, `webkit`; mobiles `Galaxy S8` (Android 360×740),
+`iPhone SE` (375×667), `Mobile Safari` (iPhone 12 / 390×664), `Mobile Chrome`
+(Pixel 5 / 393×727), `iPhone 14 Pro Max` (430×740); tablets `Tablet (iPad)`
+(810×1080) e `Tablet (iPad) landscape` (1080×810).
+
+As larguras cobrem os buckets mais comuns do mercado (360→430 px no mobile):
+quebra de linha é sensível à largura — foi assim que o incidente de paridade
+de rendering (2026-10-17) apareceu.
 
 ## Baselines visuais
 
