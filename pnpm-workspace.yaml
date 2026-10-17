@@ -1,7 +1,11 @@
+# `packages` is required for the workspace; without it pnpm install fails
+# with "packages field missing or empty" (the Cloudflare build failure).
+packages:
+  - "."
+
 # Build scripts: allow only what each runtime needs; rest false so
 # strictDepBuilds (pnpm >=10.26 / 11) passes.
 allowBuilds:
-  better-sqlite3: false
   esbuild: true
   sharp: true
   workerd: false
