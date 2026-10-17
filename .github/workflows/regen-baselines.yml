@@ -1,0 +1,47 @@
+name: Regen Visual Baselines
+
+# Gera/atualiza as baselines visuais SEMPRE no container do CI (jammy).
+#
+# Uso: Actions > "Regen Visual Baselines" > Run workflow
+#   - ref: branch (preview) ou main (produção)
+#   - base_url: URL alvo
+# Depois do run, baixe o artifact "visual-snapshots" e commite os PNGs alterados.
+#
+# Baselines geradas fora do container NUNCA valem para o CI
+# (ver incidente de paridade de rendering, 2026-10-17).
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: 'URL alvo (preview do branch ou produção)'
+        required: true
+        default: 'https://perspectivadrone2.flaviosena.workers.dev'
+
+jobs:
+  regen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-jammy
+    env:
+      HOME: /root
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Regenerate visual baselines
+        run: pnpm exec playwright test tests/visual.spec.ts --update-snapshots --workers=2
+        env:
+          PLAYWRIGHT_TEST_BASE_URL: ${{ inputs.base_url }}
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: visual-snapshots
+          path: tests/visual.spec.ts-snapshots/

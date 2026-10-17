@@ -70,6 +70,12 @@ npx playwright test
 
 ## Histórico
 
+- **2026-10-17 (cobertura de aparelhos)** — suíte ampliada de 6 para 11 projetos: `Galaxy S8`
+  (Android 360), `iPhone SE` (375), `iPhone 14 Pro Max` (430), `Tablet (iPad) landscape` e
+  `Desktop 1366`. 13 testes × 11 projetos = **143 testes**. As 10 baselines novas foram
+  geradas dentro do container jammy e os 12 arquivos existentes saíram byte-idênticos;
+  ferramenta permanente `Regen Visual Baselines` (`workflow_dispatch`) adicionada para
+  futuras regenerações.
 - **2026-10-17 (paridade de rendering)** — primeiro run real da suíte visual no CI (BUG-005
   destravado) expôs `homepage-full-Mobile-Chrome.png` regenerado **no Windows** (`38b8550`,
   393×7026) contra o render **Linux** do CI (393×7071; +2 linhas nos cards de serviço,
