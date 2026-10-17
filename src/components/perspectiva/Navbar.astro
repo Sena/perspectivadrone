@@ -27,7 +27,7 @@ const items: MenuItem[] = menu;
       {items.map((item: MenuItem) => (
         <a 
           href={item.url} 
-          class="text-sm tracking-wide text-white/70 hover:text-amber-400 transition-colors font-medium font-sans"
+          class="text-sm tracking-wide text-white/70 hover:text-primary transition-colors font-medium font-sans"
         >
           {item.label}
         </a>
@@ -41,27 +41,27 @@ const items: MenuItem[] = menu;
         target="_blank" 
         rel="noopener noreferrer"
         aria-label="Acessar Instagram"
-        class="flex items-center gap-2 group border border-white/10 px-4 py-2 hover:border-amber-400/30 transition-all bg-white/5"
+        class="flex items-center gap-2 group border border-white/10 px-4 py-2 hover:border-primary/30 transition-all bg-white/5"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white/40 group-hover:text-amber-400"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white/40 group-hover:text-primary"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
         <span class="coord-text text-[9px] text-white/50 group-hover:text-white transition-colors">@{instagram}</span>
       </a>
     </div>
 
     <!-- Mobile Menu Toggle -->
-    <button id="menu-toggle" class="md:hidden text-white/80 p-2" aria-label="Abrir menu">
+    <button id="menu-toggle" class="md:hidden text-white/80 p-2" aria-label="Abrir menu" aria-controls="mobile-menu" aria-expanded="false">
       <svg id="menu-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
     </button>
   </div>
 </nav>
 
 <!-- Mobile Menu Overlay -->
-<div id="mobile-menu" class="fixed inset-0 bg-black/95 z-[60] translate-x-full transition-transform duration-500 flex flex-col items-center justify-start overflow-y-auto pt-32 pb-16 gap-8 md:hidden">
+<div id="mobile-menu" inert class="fixed inset-0 bg-background/95 z-[60] translate-x-full transition-transform duration-500 flex flex-col items-center justify-start overflow-y-auto pt-32 pb-16 gap-8 md:hidden">
   <button id="menu-close" class="absolute top-8 right-8 text-white/60" aria-label="Fechar menu">
     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
   </button>
   {items.map((item: MenuItem) => (
-    <a href={item.url} class="text-3xl font-bold text-white hover:text-amber-400 transition-colors mobile-link font-display">
+    <a href={item.url} class="text-3xl font-bold text-white hover:text-primary transition-colors mobile-link font-display">
       {item.label}
     </a>
   ))}
@@ -72,6 +72,7 @@ const items: MenuItem[] = menu;
   if (!(window as any).__navbarInitialized) {
     (window as any).__navbarInitialized = true;
 
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const navbar = document.getElementById('navbar');
     const toggle = document.getElementById('menu-toggle');
     const close = document.getElementById('menu-close');
@@ -85,21 +86,33 @@ const items: MenuItem[] = menu;
     } else {
       navbar?.classList.remove('nav-scrolled');
     }
-  });
+  }, { passive: true });
 
-  // Mobile menu logic
-  toggle?.addEventListener('click', () => {
+  // Mobile menu logic (inert keeps the off-screen menu out of tab order)
+  const openMenu = () => {
+    mobileMenu?.removeAttribute('inert');
+    toggle?.setAttribute('aria-expanded', 'true');
     mobileMenu?.classList.remove('translate-x-full');
-  });
+    (close as HTMLElement | null)?.focus();
+  };
 
-  close?.addEventListener('click', () => {
+  const closeMenu = (returnFocus = false) => {
     mobileMenu?.classList.add('translate-x-full');
-  });
+    mobileMenu?.setAttribute('inert', '');
+    toggle?.setAttribute('aria-expanded', 'false');
+    if (returnFocus) (toggle as HTMLElement | null)?.focus();
+  };
+
+  toggle?.addEventListener('click', openMenu);
+
+  close?.addEventListener('click', () => closeMenu(true));
 
   mobileLinks.forEach(link => {
-    link.addEventListener('click', () => {
-      mobileMenu?.classList.add('translate-x-full');
-    });
+    link.addEventListener('click', () => closeMenu());
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && mobileMenu && !mobileMenu.hasAttribute('inert')) closeMenu(true);
   });
 
   // Scroll Spy logic
@@ -145,13 +158,13 @@ const items: MenuItem[] = menu;
     if (isNavigating && !force) return;
     
     navLinks.forEach(link => {
-      link.classList.remove('text-amber-400');
+      link.classList.remove('text-primary');
       link.classList.add('text-white/70');
       const href = link.getAttribute('href') || '';
       const isInicio = id === 'inicio' && (href === '/' || href === '#inicio' || href === '/#inicio');
       
       if (href === `#${id}` || href === `/#${id}` || href === `/${id}` || isInicio) {
-        link.classList.add('text-amber-400');
+        link.classList.add('text-primary');
         link.classList.remove('text-white/70');
         
         // Update Title
@@ -215,7 +228,7 @@ const items: MenuItem[] = menu;
         e.preventDefault();
         isNavigating = true;
         updateActiveNav(targetId, true);
-        targetElement.scrollIntoView({ behavior: 'smooth' });
+        targetElement.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth' });
         setTimeout(() => { isNavigating = false; }, 1000);
       }
     });
