@@ -24,8 +24,6 @@ jobs:
     timeout-minutes: 30
     container:
       image: mcr.microsoft.com/playwright:v1.60.0-jammy
-    env:
-      HOME: /root
     steps:
       - uses: actions/checkout@v4
 
@@ -38,6 +36,8 @@ jobs:
       - name: Regenerate visual baselines
         run: pnpm exec playwright test tests/visual.spec.ts --update-snapshots --workers=2
         env:
+          # Firefox não lança como root se $HOME não pertence ao usuário (container job usa /github/home).
+          HOME: /root
           PLAYWRIGHT_TEST_BASE_URL: ${{ inputs.base_url }}
 
       - uses: actions/upload-artifact@v4

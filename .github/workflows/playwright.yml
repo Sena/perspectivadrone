@@ -70,9 +70,6 @@ jobs:
     # Ao subir o @playwright/test no lockfile, suba a tag da imagem junto (vX.Y.Z-jammy).
     container:
       image: mcr.microsoft.com/playwright:v1.60.0-jammy
-    env:
-      # Firefox não lança como root se $HOME não pertencer ao usuário (container job usa /github/home)
-      HOME: /root
     strategy:
       fail-fast: false
       matrix:
@@ -96,6 +93,10 @@ jobs:
     - name: Run Playwright tests
       run: pnpm exec playwright test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
       env:
+        # Firefox não lança como root se $HOME não pertence ao usuário (container job usa /github/home).
+        # Escopado SÓ a este step (onde os browsers sobem): o override no nível do job fazia a CLI
+        # docker do runner procurar credenciais em /root a cada invocação (aviso cosmético nos logs).
+        HOME: /root
         PLAYWRIGHT_TEST_BASE_URL: ${{ needs.wait-for-deploy.outputs.url }}
         
     - uses: actions/upload-artifact@v4

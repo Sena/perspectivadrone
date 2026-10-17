@@ -61,7 +61,7 @@ npx playwright test
 | --- | --- | --- |
 | Local | `http://localhost:4321` | dev server manual; banco em `.wrangler` (pode ser clone do prod via `npm run sync -- pull --apply`) |
 | Preview | `https://<version>-perspectivadrone2.flaviosena.workers.dev` | `wrangler versions upload`; **herda os bindings de produção** — atenção: uma preview com EmDash 1.x migra o D1 de produção no primeiro request (BUG-006) |
-| CI | URL extraída do check do Cloudflare | `.github/workflows/playwright.yml`; container `mcr.microsoft.com/playwright:v1.60.0-jammy` (mesma imagem do Docker local; `HOME=/root` p/ o Firefox lançar como root) |
+| CI | URL extraída do check do Cloudflare | `.github/workflows/playwright.yml`; container `mcr.microsoft.com/playwright:v1.60.0-jammy` (mesma imagem do Docker local; `HOME=/root` escopado ao step de testes p/ o Firefox lançar como root) |
 
 ## Achados conhecidos
 
@@ -70,6 +70,10 @@ npx playwright test
 
 ## Histórico
 
+- **2026-10-17 (logs limpos)** — `HOME=/root` (necessário p/ o Firefox no container) foi
+  **escopado ao step que roda o Playwright**: no nível do job, ele fazia a CLI docker do runner
+  procurar credenciais em `/root` a cada invocação (~32 avisos cosméticos por run; zero impacto
+  funcional — imagens públicas, pull anônimo).
 - **2026-10-17 (cobertura de aparelhos)** — suíte ampliada de 6 para 11 projetos: `Galaxy S8`
   (Android 360), `iPhone SE` (375), `iPhone 14 Pro Max` (430), `Tablet (iPad) landscape` e
   `Desktop 1366`. 13 testes × 11 projetos = **143 testes**. As 10 baselines novas foram
