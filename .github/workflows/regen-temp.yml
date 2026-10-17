@@ -1,0 +1,33 @@
+name: Regen Baselines (temporario - qa/novos-aparelhos)
+
+on:
+  push:
+    branches: [qa/novos-aparelhos]
+
+jobs:
+  regen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-jammy
+    env:
+      HOME: /root
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Regenerate visual baselines (all projects, jammy)
+        run: pnpm exec playwright test tests/visual.spec.ts --update-snapshots --workers=2
+        env:
+          PLAYWRIGHT_TEST_BASE_URL: https://qa-novos-aparelhos-perspectivadrone2.flaviosena.workers.dev
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: visual-snapshots-qa-novos-aparelhos
+          path: tests/visual.spec.ts-snapshots/
