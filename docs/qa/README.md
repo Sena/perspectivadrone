@@ -16,6 +16,11 @@ npx playwright test tests/visual.spec.ts  # só os visuais
 npx playwright test --update-snapshots    # regenerar baselines — SOMENTE no container (Docker local ou workflow "Regen Visual Baselines")
 ```
 
+A suíte **aquece o alvo sozinha** antes dos workers (`tests/global-setup.ts`): a primeira
+visita compila as rotas no dev server (rodada fria custa dezenas de segundos) e, sem isso, a
+rajada de testes disputava CPU com a compilação — medido em máquina de 4 cores: 8/12 falhas
+frio → 12/12 aquecido. Se o servidor não estiver de pé, o erro do globalSetup aponta o caminho.
+
 ## O que a suíte cobre
 
 | Arquivo | Conteúdo |
@@ -82,6 +87,11 @@ npx playwright test
   (lockfile × imagens), unificação dos seletores do formulário (`#contact-form`) e
   `.gitattributes` fixando LF no `emdash-env.d.ts` (o CLI regenera com LF puro; no Windows o
   status ficava em " M" eterno, sem diff — nunca commitado).
+- **2026-10-17 (contenção local)** — rodada fria (dev server recém-bootado) fazia os primeiros
+  `goto` estourarem timeout: a compilação inicial das rotas (até ~100 s sob carga) disputava CPU
+  com a rajada dos browsers — 8/12 falhas numa máquina de 4 cores. Aquecimento automático
+  (`tests/global-setup.ts`: 1 request serializada antes dos workers) → 12/12, de forma
+  determinística e sem config de sistema.
 - **2026-10-17 (logs limpos)** — `HOME=/root` (necessário p/ o Firefox no container) saiu do
   nível do job para **inline no comando do Playwright**: em `env:` (job ou step) ele vaza para a
   CLI docker do runner, que então procura credenciais em `/root` e loga avisos cosméticos
