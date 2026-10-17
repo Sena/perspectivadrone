@@ -13,10 +13,8 @@ export default defineConfig({
   output: "server",
   adapter: cloudflare(),
 
-  experimental: {
-    cache: {
-      provider: memoryCache(),
-    },
+  cache: {
+    provider: memoryCache(),
   },
 
   image: {

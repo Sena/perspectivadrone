@@ -1,5 +1,8 @@
-import handler from "@astrojs/cloudflare/entrypoints/server";
+import handler, { createScheduledHandler, PluginBridge } from "@emdash-cms/cloudflare/worker";
 
-export { PluginBridge } from "@emdash-cms/cloudflare/sandbox";
+export { PluginBridge };
 
-export default handler;
+export default {
+	...handler,
+	scheduled: createScheduledHandler(),
+} satisfies ExportedHandler;

@@ -53,8 +53,6 @@ const items: MenuItem[] = menu;
       <svg id="menu-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
     </button>
   </div>
-
-  </div>
 </nav>
 
 <!-- Mobile Menu Overlay -->
@@ -110,7 +108,7 @@ const items: MenuItem[] = menu;
 
   const siteTitle = document.querySelector('title')?.textContent?.split('—')[1]?.trim() || "Perspectiva Drone";
 
-  const sectionRatios = {};
+  const sectionRatios: Record<string, number> = {};
   
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -143,7 +141,7 @@ const items: MenuItem[] = menu;
 
   let isNavigating = false;
 
-  function updateActiveNav(id, force = false) {
+  function updateActiveNav(id: string, force = false) {
     if (isNavigating && !force) return;
     
     navLinks.forEach(link => {

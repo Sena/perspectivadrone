@@ -18,6 +18,12 @@
 			"bucket_name": "perspectivadrone","preview_bucket_name": "perspectivadrone",
 		},
 	],
+	// General maintenance cron trigger (scheduled publishing and plugin cron)
+	"triggers": {
+		"crons": [
+			"* * * * *"
+		],
+	},
 	// Worker Loader for plugin sandboxing
 	"worker_loaders": [
 		{
