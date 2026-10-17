@@ -37,7 +37,7 @@ Agent skills are in `.agents/skills/`. Load them when working on specific tasks:
 ## Rules
 
 - All content pages must be server-rendered (`output: "server"`). No `getStaticPaths()` for CMS content.
-- Image fields are objects (`{ src, alt }`), not strings. Use `<Image image={...} />` from `"emdash/ui"`.
+- Image fields are objects (`{ src, alt }`), not strings. Render them through `<CdnImage image={...} imageSlot={...} />` with a slot from `IMAGE_SLOTS` (`src/utils/image-variants.ts`): on the production zone the component emits a Cloudflare `/cdn-cgi/image` `srcset` plus the slot's `sizes`; everywhere else (dev, `.workers.dev` previews, which have no `/cdn-cgi/image` route) it falls back to the plain `<img>` on the original URL. Adding a new place an image is rendered means adding a slot with widths and `sizes` measured against the layout -- never guessed. The zone only answers a fixed allowlist of widths (see `image-variants.ts`): anything outside it gets the WAF block page, so prove a new width with `curl` before shipping it.
 - `entry.id` is the slug (for URLs). `entry.data.id` is the database ULID (for API calls like `getEntryTerms`).
 - Always call `Astro.cache.set(cacheHint)` on pages that query content.
 - Taxonomy names in queries must match the seed's `"name"` field exactly (e.g., `"category"` not `"categories"`).
