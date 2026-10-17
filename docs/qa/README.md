@@ -13,7 +13,7 @@ Achados fora do padrão ficam em `docs/BACKLOG.md` com id (`BUG-001`…).
 ```bash
 npx playwright test                       # suíte completa (6 projetos)
 npx playwright test tests/visual.spec.ts  # só os visuais
-npx playwright test --update-snapshots    # regenerar baselines (ver Docker abaixo)
+npx playwright test --update-snapshots    # regenerar baselines — SOMENTE dentro do Docker (ver abaixo)
 ```
 
 ## O que a suíte cobre
@@ -30,6 +30,11 @@ Cada teste roda nos 6 projetos: `chromium`, `firefox`, `webkit`,
 ## Baselines visuais
 
 - Tolerância `maxDiffPixelRatio: 0.08`, mas a **dimensão da página precisa bater exata**.
+- **Regra de ouro**: baseline só nasce/atualiza **dentro do container** (Linux). O rendering
+  de fonte difere entre Windows e Linux (métricas de glifo → largura de texto → quebra de
+  linha): um baseline gerado no Windows quebra o CI (ex.: +1 linha por card no Pixel 5).
+  O CI roda a **mesma imagem** do fluxo Docker local (`playwright:v1.60.0-jammy`), então a
+  regeneração local e o CI são byte-idênticos.
 - Para paridade com o CI (Linux) regenere dentro do Docker:
 
 ```bash
@@ -49,7 +54,7 @@ npx playwright test
 | --- | --- | --- |
 | Local | `http://localhost:4321` | dev server manual; banco em `.wrangler` (pode ser clone do prod via `npm run sync -- pull --apply`) |
 | Preview | `https://<version>-perspectivadrone2.flaviosena.workers.dev` | `wrangler versions upload`; **herda os bindings de produção** — atenção: uma preview com EmDash 1.x migra o D1 de produção no primeiro request (BUG-006) |
-| CI | URL extraída do check do Cloudflare | `.github/workflows/playwright.yml`; hoje bloqueado por BUG-005 |
+| CI | URL extraída do check do Cloudflare | `.github/workflows/playwright.yml`; container `mcr.microsoft.com/playwright:v1.60.0-jammy` (mesma imagem do Docker local; `HOME=/root` p/ o Firefox lançar como root) |
 
 ## Achados conhecidos
 
@@ -58,6 +63,12 @@ npx playwright test
 
 ## Histórico
 
+- **2026-10-17 (paridade de rendering)** — primeiro run real da suíte visual no CI (BUG-005
+  destravado) expôs `homepage-full-Mobile-Chrome.png` regenerado **no Windows** (`38b8550`,
+  393×7026) contra o render **Linux** do CI (393×7071; +2 linhas nos cards de serviço,
+  22,75px cada). Causa: métricas de fonte Windows vs Linux — não era bug do site. Correção:
+  baseline restaurado (o de maio é **byte-idêntico** ao render do container jammy) e o job de
+  testes passou a rodar no container `playwright:v1.60.0-jammy` (mesmo do Docker local).
 - **2026-10-17** — upgrade EmDash 0.14 → 1.3 validado: suíte **60/60** local (com o banco
   clonado da produção via sync) e 59/60 na preview própria — a única falha era o baseline
   `homepage-full-Mobile-Chrome.png` desatualizado, regenerado na sequência e re-verificado verde.

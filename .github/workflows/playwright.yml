@@ -65,6 +65,14 @@ jobs:
     needs: wait-for-deploy
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    # Renderização determinística: mesma imagem do fluxo Docker local (docs/qa/README.md).
+    # Os baselines visuais nascem desta imagem — nunca os regenere fora dela.
+    # Ao subir o @playwright/test no lockfile, suba a tag da imagem junto (vX.Y.Z-jammy).
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-jammy
+    env:
+      # Firefox não lança como root se $HOME não pertencer ao usuário (container job usa /github/home)
+      HOME: /root
     strategy:
       fail-fast: false
       matrix:
@@ -77,24 +85,9 @@ jobs:
     - name: Setup pnpm
       uses: pnpm/action-setup@v4
 
-    - uses: actions/setup-node@v4
-      with:
-        node-version: lts/*
-        cache: 'pnpm'
-        
-    - name: Cache Playwright Browsers
-      uses: actions/cache@v4
-      with:
-        path: ~/.cache/ms-playwright
-        key: ${{ runner.os }}-playwright-${{ hashFiles('**/pnpm-lock.yaml') }}
-        restore-keys: |
-          ${{ runner.os }}-playwright-
-
+    # Browsers e Node já vêm na imagem — sem setup-node, cache ou install-playwright
     - name: Install dependencies
-      run: pnpm install --ignore-scripts
-      
-    - name: Install Playwright Browsers
-      run: pnpm exec playwright install --with-deps
+      run: pnpm install --frozen-lockfile --ignore-scripts
       
     - name: JIT Warmup Cloudflare Worker
       run: |
