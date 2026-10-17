@@ -9,6 +9,14 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
+  /* Tolerância das baselines: o render é determinístico (container jammy + fontes
+     self-hosted), então 8% mascarava regressões reais. Valores maiores = mais frouxo. */
+  expect: {
+    toHaveScreenshot: {
+      maxDiffPixelRatio: 0.02,
+      animations: 'disabled',
+    },
+  },
   use: {
     baseURL: process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:4321',
     trace: 'on-first-retry',

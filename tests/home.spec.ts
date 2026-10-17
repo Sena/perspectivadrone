@@ -115,7 +115,7 @@ test.describe('E2E Interactions', () => {
     await page.goto('/');
     
     // Find the submit button
-    const submitBtn = page.locator('#contato button[type="submit"]');
+    const submitBtn = page.locator('#contact-form button[type="submit"]');
     
     // Click submit without filling required fields
     await submitBtn.click();
@@ -125,7 +125,7 @@ test.describe('E2E Interactions', () => {
 
     // Using evaluate to check if form is valid according to the browser API
     const isFormValid = await page.evaluate(() => {
-      const form = document.querySelector('#contato form') as HTMLFormElement;
+      const form = document.querySelector('#contact-form') as HTMLFormElement;
       return form ? form.checkValidity() : true;
     });
 

@@ -11,9 +11,9 @@ Achados fora do padrão ficam em `docs/BACKLOG.md` com id (`BUG-001`…).
 2. Em outro terminal:
 
 ```bash
-npx playwright test                       # suíte completa (6 projetos)
+npx playwright test                       # suíte completa (11 projetos)
 npx playwright test tests/visual.spec.ts  # só os visuais
-npx playwright test --update-snapshots    # regenerar baselines — SOMENTE dentro do Docker (ver abaixo)
+npx playwright test --update-snapshots    # regenerar baselines — SOMENTE no container (Docker local ou workflow "Regen Visual Baselines")
 ```
 
 ## O que a suíte cobre
@@ -23,8 +23,11 @@ npx playwright test --update-snapshots    # regenerar baselines — SOMENTE dent
 | `tests/home.spec.ts` | 8 testes de interação: lightbox (clique/teclado/swipe), validação e envio do formulário de contato, menu mobile, SEO/acessibilidade essenciais, scroll-spy da navbar |
 | `tests/visual.spec.ts` | 2 comparações visuais: homepage completa e hero |
 | `tests/seo.spec.ts` | RSS (idioma, link sem barra dupla), sitemap e rewrite das âncoras (`/portfolio` → home) |
+| `tests/guards.spec.ts` | 4 guards independentes de device (rodam nos 3 motores): zero requests ao Google Fonts, 404 customizada, `prefers-reduced-motion` e ausência de exceção JS na home |
 
-Cada teste roda nos 11 projetos: desktops `chromium` (1280×720), `Desktop 1366`
+Cada teste roda nos 11 projetos — exceto os guards de `tests/guards.spec.ts`,
+restritos aos 3 motores (`chromium`, `firefox`, `webkit`) por não dependerem de
+device: desktops `chromium` (1280×720), `Desktop 1366`
 (1366×768), `firefox`, `webkit`; mobiles `Galaxy S8` (Android 360×740),
 `iPhone SE` (375×667), `Mobile Safari` (iPhone 12 / 390×664), `Mobile Chrome`
 (Pixel 5 / 393×727), `iPhone 14 Pro Max` (430×740); tablets `Tablet (iPad)`
@@ -36,7 +39,8 @@ de rendering (2026-10-17) apareceu.
 
 ## Baselines visuais
 
-- Tolerância `maxDiffPixelRatio: 0.08`, mas a **dimensão da página precisa bater exata**.
+- Tolerância `maxDiffPixelRatio: 0.02`, centralizada no `expect.toHaveScreenshot` do
+  `playwright.config.ts`; a **dimensão da página precisa bater exata**.
 - **Regra de ouro**: baseline só nasce/atualiza **dentro do container** (Linux). O rendering
   de fonte difere entre Windows e Linux (métricas de glifo → largura de texto → quebra de
   linha): um baseline gerado no Windows quebra o CI (ex.: +1 linha por card no Pixel 5).
@@ -45,7 +49,7 @@ de rendering (2026-10-17) apareceu.
 - Para paridade com o CI (Linux) regenere dentro do Docker:
 
 ```bash
-docker-compose exec perspectivadrone-linux npx playwright test tests/visual.spec.ts --update-snapshots --workers=1
+docker-compose exec perspectivadrone-linux npx playwright test tests/visual.spec.ts --update-snapshots --workers=2
 ```
 
 - Contra uma preview própria (`npx wrangler versions upload`), passe a URL:
@@ -61,7 +65,7 @@ npx playwright test
 | --- | --- | --- |
 | Local | `http://localhost:4321` | dev server manual; banco em `.wrangler` (pode ser clone do prod via `npm run sync -- pull --apply`) |
 | Preview | `https://<version>-perspectivadrone2.flaviosena.workers.dev` | `wrangler versions upload`; **herda os bindings de produção** — atenção: uma preview com EmDash 1.x migra o D1 de produção no primeiro request (BUG-006) |
-| CI | URL extraída do check do Cloudflare | `.github/workflows/playwright.yml`; container `mcr.microsoft.com/playwright:v1.60.0-jammy` (mesma imagem do Docker local; `HOME=/root` inline no comando do step de testes p/ o Firefox lançar como root) |
+| CI | URL extraída do check do Cloudflare | `.github/workflows/playwright.yml`; container `mcr.microsoft.com/playwright:v1.60.0-jammy` (mesma imagem do Docker local; `HOME=/root` inline no comando do step de testes p/ o Firefox lançar como root; job `Playwright vs imagens (lockfile)` falha se o `@playwright/test` divergir da tag `vX.Y.Z-jammy` das imagens — CI, `regen-baselines.yml` e `docker-compose.yml` são conferidos juntos) |
 
 ## Achados conhecidos
 
@@ -70,6 +74,14 @@ npx playwright test
 
 ## Histórico
 
+- **2026-10-17 (pente fino dos testes)** — guards de motor (`tests/guards.spec.ts`: Google
+  Fonts ausente, 404 customizada, reduced-motion, sem exceção JS), tolerância visual 0.08 → 0.02
+  centralizada no config, `document.fonts.ready` na preparação do snapshot, actions do CI em
+  Node 24 (`checkout@v7`, `pnpm/action-setup@v6`, `upload-artifact@v7`), `concurrency` (cancela
+  runs antigos de PR) + `workflow_dispatch` no workflow de testes, job de guarda de versão
+  (lockfile × imagens), unificação dos seletores do formulário (`#contact-form`) e
+  `.gitattributes` fixando LF no `emdash-env.d.ts` (o CLI regenera com LF puro; no Windows o
+  status ficava em " M" eterno, sem diff — nunca commitado).
 - **2026-10-17 (logs limpos)** — `HOME=/root` (necessário p/ o Firefox no container) saiu do
   nível do job para **inline no comando do Playwright**: em `env:` (job ou step) ele vaza para a
   CLI docker do runner, que então procura credenciais em `/root` e loga avisos cosméticos
