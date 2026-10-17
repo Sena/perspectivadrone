@@ -6,6 +6,7 @@ import {
 	EmDashBodyEnd,
 } from "emdash/ui";
 import { createPublicPageContext } from "emdash/page";
+import { Font } from "astro:assets";
 import { resolveBlogSiteIdentity } from "../utils/site-identity";
 import "../styles/theme.css";
 
@@ -28,15 +29,9 @@ const cspDomains = {
 		"https://cdn.jsdelivr.net",
 		"https://static.cloudflareinsights.com",
 		],
-	styles: [
-		"https://fonts.googleapis.com",
-		],
 	images: [
 		"https://www.google-analytics.com",
 		"https://www.googletagmanager.com",
-		],
-	fonts: [
-		"https://fonts.gstatic.com",
 		],
 	connects: [
 		"https://www.google-analytics.com",
@@ -50,7 +45,7 @@ const cspDomains = {
 // O 'nonce' foi removido porque anula o 'unsafe-inline', quebrando scripts nativos do Astro
 Astro.response.headers.set(
 	"Content-Security-Policy",
-	`default-src 'self'; script-src 'self' 'unsafe-inline' ${cspDomains.scripts.join(" ")}; style-src 'self' 'unsafe-inline' ${cspDomains.styles.join(" ")}; img-src 'self' data: blob: ${cspDomains.images.join(" ")}; font-src 'self' data: ${cspDomains.fonts.join(" ")}; connect-src 'self' ${cspDomains.connects.join(" ")};`
+	`default-src 'self'; script-src 'self' 'unsafe-inline' ${cspDomains.scripts.join(" ")}; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: ${cspDomains.images.join(" ")}; font-src 'self' data:; connect-src 'self' ${cspDomains.connects.join(" ")};`
 );
 
 interface Props {
@@ -90,9 +85,10 @@ const pageCtx = createPublicPageContext({
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>{fullTitle}</title>
 		<EmDashHead page={pageCtx} />
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+		<!-- Fontes baixadas no build e servidas pelo próprio domínio (API de Fonts do Astro) -->
+		<Font cssVariable="--font-display" preload />
+		<Font cssVariable="--font-sans" preload />
+		<Font cssVariable="--font-mono" />
 		<script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-RJDVRMXRM6"></script>
 		<script is:inline>
 			window.dataLayer = window.dataLayer || [];
@@ -101,6 +97,16 @@ const pageCtx = createPublicPageContext({
 
 			gtag('config', 'G-RJDVRMXRM6');
 		</script>
+		<noscript>
+			<style>
+				.reveal-hidden,
+				.gsap-card,
+				.gsap-reveal {
+					opacity: 1 !important;
+					transform: none !important;
+				}
+			</style>
+		</noscript>
 	</head>
 	<body class="grain-overlay">
 		<EmDashBodyStart page={pageCtx} />

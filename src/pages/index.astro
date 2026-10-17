@@ -37,36 +37,38 @@ const sortedServices = services.sort((a, b) => (Number(a.data.sort_order) || 0) 
   <div class="min-h-screen overflow-x-hidden bg-background text-white">
     <Navbar instagram={settings.social?.instagram} menu={menu?.items} title={settings.title} tagline={settings.tagline} />
     
-    <Hero 
-      entry={hero} 
-    />
+    <main>
+      <Hero 
+        entry={hero} 
+      />
 
-    <PortfolioGrid items={portfolioItems}  instagram={settings.social?.instagram}/>
+      <PortfolioGrid items={portfolioItems}  instagram={settings.social?.instagram}/>
 
-    <div class="amber-divider my-0 mx-6"></div>
+      <div class="amber-divider my-0 mx-6"></div>
 
-    <About 
-      entry={about}
-    />
+      <About 
+        entry={about}
+      />
 
-    <div class="amber-divider my-0 mx-6"></div>
+      <div class="amber-divider my-0 mx-6"></div>
 
-    <ServicesGrid 
-      services={sortedServices} 
-      cta={ctaServices}
-    />
+      <ServicesGrid 
+        services={sortedServices} 
+        cta={ctaServices}
+      />
 
-    <div class="amber-divider my-0 mx-6"></div>
+      <div class="amber-divider my-0 mx-6"></div>
 
-    <ContactForm 
-      instagram={settings.social?.instagram}
-      entry={contactInfo}
-    />
+      <ContactForm 
+        instagram={settings.social?.instagram}
+        entry={contactInfo}
+      />
+    </main>
 
     <footer class="border-t border-white/10 py-10 px-6">
       <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
         <div>
-          <p class="text-white font-bold text-lg" style="font-family: 'Playfair Display', serif;">{settings.title}</p>
+          <p class="text-white font-bold text-lg font-display">{settings.title}</p>
           <p class="coord-text mt-1 text-white/30">{settings.tagline}</p>
         </div>
         <p class="coord-text text-white/20">

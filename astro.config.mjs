@@ -46,7 +46,7 @@ export default defineConfig({
           provider: fontProviders.google(),
           name: "DM Sans",
           cssVariable: "--font-sans",
-          weights: [300, 400, 500, 700],
+          weights: [300, 400, 500, 600, 700],
           fallbacks: ["sans-serif"],
       },
       {
