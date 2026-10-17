@@ -62,8 +62,5 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwindcss()],
-    ssr: {
-      external: ["better-sqlite3"],
-    },
   },
 });
