@@ -122,7 +122,7 @@ const data = entry?.data || {};
           }
         }, 8000);
       } else {
-        const errorData = await response.json();
+        const errorData = (await response.json()) as { message?: string };
         alert(errorData.message || 'Erro ao enviar mensagem.');
         if (submitBtn) {
           submitBtn.disabled = false;
