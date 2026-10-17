@@ -1,7 +1,9 @@
 import { test, expect } from '@playwright/test';
 
-// Deterministic function to prepare the page for visual regression testing
-// It forces images to load eagerly, overrides GSAP hidden states, and waits for all images to decode.
+// Deterministic page preparation for visual snapshots: scrolls the page to
+// trigger lazy loading and IntersectionObserver/GSAP reveals, then waits for
+// webfonts, image decoding and animation settling before the screenshot.
+// (Screenshot tolerance is configured in playwright.config.ts.)
 async function preparePageForSnapshot(page) {
   // Scroll down organically to trigger native lazy loading and IntersectionObserver animations
   // Scroll organically element by element to ensure mobile Safari/WebKit triggers IntersectionObservers natively
@@ -17,6 +19,11 @@ async function preparePageForSnapshot(page) {
     window.scrollTo(0, 0);
   });
   
+  // Wait for the self-hosted webfonts (Astro Fonts API) to be applied.
+  await page.evaluate(async () => {
+    await document.fonts.ready;
+  });
+
   // Wait for any remaining IntersectionObserver animations to finish
   await page.waitForTimeout(2000);
 
@@ -43,7 +50,6 @@ test.describe('Visual Regression Tests', () => {
 
     await expect(page).toHaveScreenshot('homepage-full.png', { 
       fullPage: true, 
-      maxDiffPixelRatio: 0.08,
       timeout: 15000
     });
   });
@@ -54,7 +60,6 @@ test.describe('Visual Regression Tests', () => {
 
     const hero = page.locator('#inicio');
     await expect(hero).toHaveScreenshot('hero-section.png', {
-      maxDiffPixelRatio: 0.08,
       timeout: 15000
     });
   });

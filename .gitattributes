@@ -1,0 +1,3 @@
+# O CLI do EmDash regenera este arquivo com LF puro; sem o pin, no Windows
+# (core.autocrlf=true) o status ficava eternamente " M" (aviso LF->CRLF, diff vazio).
+emdash-env.d.ts text eol=lf

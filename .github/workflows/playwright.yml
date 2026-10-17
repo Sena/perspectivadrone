@@ -5,8 +5,23 @@ on:
     branches: [main]
   pull_request:
     types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+# Cancela runs antigos do mesmo branch/PR (o último push manda).
+# Push na main fica de fora: é a validação de produção, roda por inteiro.
+concurrency:
+  group: playwright-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  version-check:
+    name: Playwright vs imagens (lockfile)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Confere @playwright/test x tag das imagens
+        run: node scripts/check-playwright-version.mjs
+
   wait-for-deploy:
     name: Wait for Cloudflare Preview
     runs-on: ubuntu-latest
@@ -62,7 +77,7 @@ jobs:
 
   playwright-tests:
     name: Playwright E2E (${{ matrix.shardIndex }}/${{ matrix.shardTotal }})
-    needs: wait-for-deploy
+    needs: [version-check, wait-for-deploy]
     runs-on: ubuntu-latest
     timeout-minutes: 60
     # Renderização determinística: mesma imagem do fluxo Docker local (docs/qa/README.md).
@@ -77,10 +92,10 @@ jobs:
         shardTotal: [4]
         
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
 
     - name: Setup pnpm
-      uses: pnpm/action-setup@v4
+      uses: pnpm/action-setup@v6
 
     # Browsers e Node já vêm na imagem — sem setup-node, cache ou install-playwright
     - name: Install dependencies
@@ -98,7 +113,7 @@ jobs:
       env:
         PLAYWRIGHT_TEST_BASE_URL: ${{ needs.wait-for-deploy.outputs.url }}
         
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       if: always()
       with:
         name: playwright-report-${{ matrix.shardIndex }}
