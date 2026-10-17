@@ -225,7 +225,7 @@ O fluxo de CI funciona da seguinte forma:
 ## Convenções importantes
 
 - **Todas as páginas são SSR** — sem `getStaticPaths()` para conteúdo CMS.
-- **Imagens** são objetos `{ src, alt }`, não strings. Use `<Image image={...} />` de `emdash/ui`.
+- **Imagens** são objetos `{ src, alt }`, não strings. Renderize com `<CdnImage image={...} imageSlot={...} />` usando um slot de `IMAGE_SLOTS` (`src/utils/image-variants.ts`): na zona de produção o componente monta o `srcset` do `/cdn-cgi/image` com o `sizes` do slot; fora dela (dev, previews `.workers.dev`, sem rota `/cdn-cgi/image`) cai no `<img>` original. Novo lugar que renderiza imagem = novo slot medido no layout. A zona só responde uma allowlist fixa de larguras (ver `image-variants.ts`): fora dela a resposta é a página de bloqueio da WAF — prove a largura com `curl` antes de usar.
 - **`entry.id`** = slug (para URLs). **`entry.data.id`** = ULID do banco (para chamadas de API).
 - Sempre chamar `Astro.cache.set(cacheHint)` em páginas que consultam conteúdo.
 - Taxonomy names nas queries devem bater com o campo `"name"` do seed (ex: `"category"`).
