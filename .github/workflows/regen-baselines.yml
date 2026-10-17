@@ -34,10 +34,9 @@ jobs:
         run: pnpm install --frozen-lockfile --ignore-scripts
 
       - name: Regenerate visual baselines
-        run: pnpm exec playwright test tests/visual.spec.ts --update-snapshots --workers=2
+        # HOME inline (e não em env:) p/ não vazar na CLI docker do runner — ver playwright.yml.
+        run: HOME=/root pnpm exec playwright test tests/visual.spec.ts --update-snapshots --workers=2
         env:
-          # Firefox não lança como root se $HOME não pertence ao usuário (container job usa /github/home).
-          HOME: /root
           PLAYWRIGHT_TEST_BASE_URL: ${{ inputs.base_url }}
 
       - uses: actions/upload-artifact@v4
