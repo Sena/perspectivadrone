@@ -25,10 +25,16 @@
  * `quality=85` is Cloudflare's default for the formats the edge produces,
  * pinned here explicitly so the URL shape stays self-describing. The previous
  * `quality=100` means lossless in WebP and sent clients without WebP/AVIF a
- * 2.3 MB JPEG. The zone's WAF allowlists this exact suffix, so this value and
- * the zone rule move together. No `onerror=redirect`: the zone's WAF answers
- * 403 to URLs carrying that parameter (the mini-commerce zone accepts it; this
- * one does not), and the URL shape below is the one production already serves.
+ * 2.3 MB JPEG.
+ *
+ * `onerror=redirect` turns a failed transformation (source missing, not an
+ * image, unsupported codec) into a 307 to the original URL, so the visitor
+ * still gets the image instead of an error page. It cannot become an open
+ * redirect: sources outside the zone's allowed origins are refused with 403
+ * before the fallback applies (measured on the sibling zone, same platform).
+ *
+ * The zone's WAF allowlists the exact URL prefix, so this shape and the zone
+ * rule move together.
  */
 
 export interface ImageSlot {
@@ -84,7 +90,7 @@ export type ImageSlotName = keyof typeof IMAGE_SLOTS;
  */
 export function cdnImagePath(src: string, width: number): string {
 	const source = /^https?:\/\//.test(src) ? src : src.replace(/^\/+/, "");
-	return `/cdn-cgi/image/width=${width},format=auto,quality=85/${source}`;
+	return `/cdn-cgi/image/onerror=redirect,width=${width},format=auto,quality=85/${source}`;
 }
 
 /** `srcset` for a source against a list of widths. */
