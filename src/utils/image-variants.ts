@@ -22,8 +22,11 @@
  * image's 3:2 ratio). Adding a new place an image is rendered means adding a
  * slot here with its own widths and `sizes`.
  *
- * `quality=100` matches what the site already serves, so nothing is perceived
- * as degraded by this change. No `onerror=redirect`: the zone's WAF answers
+ * `quality=85` is Cloudflare's default for the formats the edge produces,
+ * pinned here explicitly so the URL shape stays self-describing. The previous
+ * `quality=100` means lossless in WebP and sent clients without WebP/AVIF a
+ * 2.3 MB JPEG. The zone's WAF allowlists this exact suffix, so this value and
+ * the zone rule move together. No `onerror=redirect`: the zone's WAF answers
  * 403 to URLs carrying that parameter (the mini-commerce zone accepts it; this
  * one does not), and the URL shape below is the one production already serves.
  */
@@ -81,7 +84,7 @@ export type ImageSlotName = keyof typeof IMAGE_SLOTS;
  */
 export function cdnImagePath(src: string, width: number): string {
 	const source = /^https?:\/\//.test(src) ? src : src.replace(/^\/+/, "");
-	return `/cdn-cgi/image/width=${width},format=auto,quality=100/${source}`;
+	return `/cdn-cgi/image/width=${width},format=auto,quality=85/${source}`;
 }
 
 /** `srcset` for a source against a list of widths. */
