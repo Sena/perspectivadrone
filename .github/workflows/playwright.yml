@@ -84,7 +84,7 @@ jobs:
     # Os baselines visuais nascem desta imagem — nunca os regenere fora dela.
     # Ao subir o @playwright/test no lockfile, suba a tag da imagem junto (vX.Y.Z-jammy).
     container:
-      image: mcr.microsoft.com/playwright:v1.60.0-jammy
+      image: mcr.microsoft.com/playwright:v1.64.1-jammy
     strategy:
       fail-fast: false
       matrix:
