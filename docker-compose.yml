@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   astro-playwright:
-    image: mcr.microsoft.com/playwright:v1.60.0-jammy
+    image: mcr.microsoft.com/playwright:v1.64.1-jammy
     container_name: perspectivadrone-linux
     ports:
       - "4321:4321"

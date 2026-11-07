@@ -49,7 +49,7 @@ de rendering (2026-10-17) apareceu.
 - **Regra de ouro**: baseline só nasce/atualiza **dentro do container** (Linux). O rendering
   de fonte difere entre Windows e Linux (métricas de glifo → largura de texto → quebra de
   linha): um baseline gerado no Windows quebra o CI (ex.: +1 linha por card no Pixel 5).
-  O CI roda a **mesma imagem** do fluxo Docker local (`playwright:v1.60.0-jammy`), então a
+  O CI roda a **mesma imagem** do fluxo Docker local (`playwright:v1.64.1-jammy`), então a
   regeneração local e o CI são byte-idênticos.
 - Para paridade com o CI (Linux) regenere dentro do Docker:
 
@@ -70,7 +70,7 @@ npx playwright test
 | --- | --- | --- |
 | Local | `http://localhost:4321` | dev server manual; banco em `.wrangler` (pode ser clone do prod via `npm run sync -- pull --apply`) |
 | Preview | `https://<version>-perspectivadrone2.flaviosena.workers.dev` | `wrangler versions upload`; **herda os bindings de produção** — atenção: uma preview com EmDash 1.x migra o D1 de produção no primeiro request (BUG-006) |
-| CI | URL extraída do check do Cloudflare | `.github/workflows/playwright.yml`; container `mcr.microsoft.com/playwright:v1.60.0-jammy` (mesma imagem do Docker local; `HOME=/root` inline no comando do step de testes p/ o Firefox lançar como root; job `Playwright vs imagens (lockfile)` falha se o `@playwright/test` divergir da tag `vX.Y.Z-jammy` das imagens — CI, `regen-baselines.yml` e `docker-compose.yml` são conferidos juntos) |
+| CI | URL extraída do check do Cloudflare | `.github/workflows/playwright.yml`; container `mcr.microsoft.com/playwright:v1.64.1-jammy` (mesma imagem do Docker local; `HOME=/root` inline no comando do step de testes p/ o Firefox lançar como root; job `Playwright vs imagens (lockfile)` falha se o `@playwright/test` divergir da tag `vX.Y.Z-jammy` das imagens — CI, `regen-baselines.yml` e `docker-compose.yml` são conferidos juntos) |
 
 ## Achados conhecidos
 

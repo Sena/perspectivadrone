@@ -11,7 +11,7 @@ Site institucional de fotografia e filmagem aérea com drone. Construído com **
 | Camada | Tecnologia |
 |---|---|
 | Framework | Astro 7 (SSR, `output: "server"`) |
-| CMS | EmDash (`emdash ^1.3`) |
+| CMS | EmDash (`emdash ^1.4`) |
 | Estilização | Tailwind CSS v4 (via Vite plugin) |
 | Animações | GSAP 3.12 + ScrollTrigger (CDN) |
 | Runtime | Cloudflare Workers |
@@ -61,8 +61,8 @@ perspectivadrone/
 
 ### Pré-requisitos
 
-- Node.js ≥ 18
-- pnpm (`npm i -g pnpm`)
+- Node.js ≥ 22.23.4 (exigido pelo Astro 7)
+- pnpm ≥ 11 (`npm i -g pnpm`)
 - Conta Cloudflare (para deploy)
 
 ### Instalação
