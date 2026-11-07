@@ -53,7 +53,7 @@ perspectivadrone/
 | `pages` | Seções de conteúdo (hero, sobre, cta, contato) |
 | `portfolio` | Trabalhos fotográficos com imagem e metadados |
 | `services` | Serviços oferecidos com ícone e ordem |
-| `posts` | Posts do blog (herdado do template; sem conteúdo em produção) |
+| `posts` | Posts do blog (herdado do template; sem conteúdo e sem rotas públicas) |
 
 ---
 

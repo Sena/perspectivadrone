@@ -35,6 +35,23 @@ test.describe('Guards de motor', () => {
     await expect(page.locator('main a[href="/"]')).toBeVisible();
   });
 
+  test('rotas órfãs do blog respondem 404 sem redirect', async ({ page }) => {
+    for (const route of ['/search', '/posts', '/category/qualquer', '/tag/qualquer']) {
+      const response = await page.goto(route);
+      expect(response?.status(), route).toBe(404);
+      await expect(page, route).toHaveURL(new RegExp(`${route}$`));
+      await expect(page.locator('main h1'), route).toContainText('Fora de');
+    }
+  });
+
+  test('página inexistente responde 404 direto e mantém a URL', async ({ page }) => {
+    const response = await page.goto('/pages/nao-existe');
+    expect(response?.status()).toBe(404);
+
+    await expect(page).toHaveURL(/\/pages\/nao-existe$/);
+    await expect(page.locator('main h1')).toContainText('Fora de');
+  });
+
   test('prefers-reduced-motion: conteúdo visível sem transição', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/');
