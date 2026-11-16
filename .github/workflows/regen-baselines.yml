@@ -47,3 +47,6 @@ jobs:
         with:
           name: visual-snapshots
           path: tests/visual.spec.ts-snapshots/
+          # O fluxo é baixar o artefato e commitar; guardar por 15 dias só
+          # ocupava cota.
+          retention-days: 3
