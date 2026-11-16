@@ -3,12 +3,19 @@ import { getSiteSettings } from "emdash";
 // @ts-ignore - Módulo virtual do Cloudflare no Astro 6
 import { env } from "cloudflare:workers";
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, site }) => {
   try {
     const settings = await getSiteSettings();
     const url = new URL(request.url);
-    const hostname = url.hostname;
-    const contactEmail = `contato@${hostname}`;
+
+    // Remetente: o domínio VERIFICADO na Resend, que é o do site
+    // (`site` do astro.config), não o host da requisição. Em preview
+    // `*.workers.dev` o antigo `contato@<host>` era recusado — domínio não
+    // verificado — e o envio falhava só fora da produção. `RESEND_FROM`
+    // (secret) permite trocar por um remetente específico sem tocar no código.
+    const senderDomain = site?.hostname ?? url.hostname;
+    const contactEmail =
+      (env as any).RESEND_FROM?.toString().trim() || `contato@${senderDomain}`;
 
     // No Astro 6 com Cloudflare, usamos o import direto para acessar as Secrets
     const RESEND_API_KEY = (env as any).RESEND_API_KEY;
