@@ -36,6 +36,7 @@ uploads/
 emdash-env.d.ts
 .emdash/types.ts
 .emdash/schema.json
+.emdash/migrations.json
 
 # Test output
 playwright-report/
