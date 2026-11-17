@@ -86,10 +86,11 @@ const layoutMap = {
     </div>
   </div>
 
-  <!-- Lightbox -->
-  <div id="portfolio-lightbox" role="dialog" aria-modal="true" aria-label="Visualizador de fotos" class="fixed inset-0 z-[100] bg-black/95 hidden flex-col items-center justify-center opacity-0 transition-opacity duration-300">
+  <!-- Lightbox — <dialog> nativo: o navegador já entrega top layer, focus trap,
+       fundo inerte, Esc/back-gesture e devolução do foco ao card que abriu. -->
+  <dialog id="portfolio-lightbox" aria-label="Visualizador de fotos" closedby="any" class="lightbox">
     <!-- Close Btn -->
-    <button id="lightbox-close" class="absolute top-6 right-6 text-white/60 hover:text-white transition-colors p-2 z-[101]" aria-label="Fechar slide">
+    <button id="lightbox-close" autofocus class="absolute top-6 right-6 text-white/60 hover:text-white transition-colors p-2 z-[101]" aria-label="Fechar slide">
       <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
     </button>
 
@@ -105,7 +106,7 @@ const layoutMap = {
 
     <!-- Main Image Container -->
     <div class="max-w-5xl max-h-[80vh] px-12 md:px-24 w-full h-full flex flex-col items-center justify-center relative">
-      <img id="lightbox-img" src="" alt="Foto ampliada" class="max-w-full max-h-[70vh] object-contain select-none" />
+      <img id="lightbox-img" src="" alt="Foto ampliada" width="1600" height="1067" class="max-w-full max-h-[70vh] object-contain select-none" />
       
       <!-- Caption -->
       <div id="lightbox-caption" class="text-center mt-6">
@@ -113,7 +114,7 @@ const layoutMap = {
         <p id="lightbox-location" class="text-white/60 font-sans text-sm"></p>
       </div>
     </div>
-  </div>
+  </dialog>
 </section>
 
 <style>
@@ -132,11 +133,70 @@ const layoutMap = {
     /* perimeter ≈ 4 * 100 = 400 viewBox units */
     stroke-dasharray: 400;
     stroke-dashoffset: 400;
+    transition: stroke-dashoffset 0.55s cubic-bezier(0.455, 0.03, 0.515, 0.955);
   }
 
-  /* Reveal on hover (CSS fallback — GSAP overrides below) */
-  .photo-card:hover .corner-frame {
+  /* Hover reveal em CSS puro: antes o GSAP (CDN, ~70 KB) era baixado só para
+     animar estes dois valores. Hover não existe em toque, então a regra fica
+     restrita a ponteiros finos. */
+  @media (hover: hover) and (pointer: fine) {
+    .photo-card:hover .corner-frame {
+      opacity: 1;
+      transition: opacity 0.15s linear;
+    }
+
+    .photo-card:hover .corner-rect {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /* ── Lightbox (<dialog>) ────────────────────────────────────
+     display é definido só no estado [open]: o UA stylesheet já esconde o
+     dialog fechado e sobrescrever isso o deixaria visível o tempo todo. */
+  .lightbox {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: rgb(0 0 0 / 0.95);
+    color: white;
+    /* Sem isso o gesto de scroll sobre o backdrop rola a página de baixo. */
+    overscroll-behavior: contain;
+    opacity: 0;
+    transition-property: opacity, display, overlay;
+    transition-duration: 0.3s;
+    transition-timing-function: ease-out;
+    transition-behavior: allow-discrete;
+  }
+
+  .lightbox[open] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     opacity: 1;
+
+    @starting-style {
+      opacity: 0;
+    }
+  }
+
+  .lightbox::backdrop {
+    background: rgb(0 0 0 / 0.8);
+    /* ::backdrop é overflow: visible por padrão e ignora overscroll-behavior. */
+    overflow: hidden;
+    overscroll-behavior: contain;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lightbox,
+    .corner-rect {
+      transition-duration: 0.1s;
+    }
   }
 
   /* Initial state for stagger reveal */
@@ -254,46 +314,11 @@ const layoutMap = {
     cardObs.observe(document.getElementById('portfolio') || cards[0]);
   })();
 
-  /* ── 4. CORNER-FRAME HOVER — carrega GSAP só p/ isso ─────
-     GSAP é carregado dinamicamente apenas para o efeito
-     SVG stroke-dashoffset. Não registra ScrollTrigger.        */
-  (function () {
-    const cards = Array.from(document.querySelectorAll('.gsap-card'));
-    if (!cards.length) return;
-
-    const loadScript = (src) =>
-      new Promise((res, rej) => {
-        const s = document.createElement('script');
-        s.src = src; s.onload = res; s.onerror = rej;
-        document.head.appendChild(s);
-      });
-
-    const initHover = () => {
-      const gsap = window.gsap;
-      cards.forEach((card) => {
-        const frame = card.querySelector('.corner-frame');
-        const rect  = card.querySelector('.corner-rect');
-        if (!frame || !rect) return;
-
-        card.addEventListener('mouseenter', () => {
-          gsap.to(frame, { opacity: 1, duration: 0.15 });
-          gsap.to(rect,  { strokeDashoffset: 0, duration: 0.55, ease: 'power2.inOut' });
-        });
-        card.addEventListener('mouseleave', () => {
-          gsap.to(rect, {
-            strokeDashoffset: 400, duration: 0.4, ease: 'power2.in',
-            onComplete: () => gsap.set(frame, { opacity: 0 }),
-          });
-        });
-      });
-    };
-
-    if (window.gsap || window.__gsapLoaded) { initHover(); return; }
-    window.__gsapLoaded = true;
-    loadScript('https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js')
-      .then(initHover)
-      .catch(e => console.warn('[GSAP hover] Failed:', e));
-  })();
+  /* ── 4. CORNER-FRAME HOVER — feito em CSS ───────────────
+     O efeito (opacidade da moldura + stroke-dashoffset) roda nas
+     transições de `.corner-frame`/`.corner-rect` no <style> acima.
+     Antes o GSAP era baixado da CDN (~70 KB de JS de terceiro) só
+     para animar estes dois valores.                             */
 
   /* ── 5. LIGHTBOX ───────────────────────────────────────── */
   (function initLightbox() {
@@ -309,32 +334,19 @@ const layoutMap = {
     if (!lightbox || !lightboxImg || !cards.length) return;
 
     let currentIndex = 0;
-    let lastFocused = null;
 
+    // <dialog> nativo: showModal() é o que dá top layer, fundo inerte, focus
+    // trap e Esc/back-gesture. Nada de overflow:hidden no <body> — isso remove
+    // a scrollbar e desloca o layout; a contenção de scroll é CSS (:modal).
     const openLightbox = (index: number) => {
-      lastFocused = document.activeElement;
       currentIndex = index;
       updateLightbox();
-      lightbox.classList.remove('hidden');
-      lightbox.classList.add('flex');
-      
-      requestAnimationFrame(() => {
-        lightbox.classList.remove('opacity-0');
-        lightbox.classList.add('opacity-100');
-      });
-      document.body.style.overflow = 'hidden';
-      closeBtn?.focus();
+      lightbox.showModal();
     };
 
     const closeLightbox = () => {
-      lightbox.classList.remove('opacity-100');
-      lightbox.classList.add('opacity-0');
-      setTimeout(() => {
-        lightbox.classList.add('hidden');
-        lightbox.classList.remove('flex');
-        document.body.style.overflow = '';
-      }, 300);
-      if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
+      // close() devolve o foco ao elemento que abriu o dialog.
+      lightbox.close();
     };
 
     const updateLightbox = () => {
@@ -384,10 +396,10 @@ const layoutMap = {
       }
     });
 
-    // Keyboard navigation
+    // Keyboard navigation. Escape não aparece aqui de propósito: o <dialog>
+    // modal já fecha nativamente com Esc e com o back-gesture.
     document.addEventListener('keydown', (e) => {
-      if (lightbox.classList.contains('hidden')) return;
-      if (e.key === 'Escape') closeLightbox();
+      if (!lightbox.open) return;
       if (e.key === 'ArrowRight') { currentIndex++; updateLightbox(); }
       if (e.key === 'ArrowLeft') { currentIndex--; updateLightbox(); }
     });
@@ -402,7 +414,7 @@ const layoutMap = {
 
     lightbox.addEventListener('touchend', (e) => {
       touchEndX = e.changedTouches[0].screenX;
-      if (lightbox.classList.contains('hidden')) return;
+      if (!lightbox.open) return;
       
       const swipeDistance = touchEndX - touchStartX;
       if (swipeDistance > 50) {

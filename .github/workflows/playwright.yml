@@ -4,7 +4,15 @@ on:
   push:
     branches: [main]
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened, ready_for_review]
+    # PR que só mexe em documento, spec ou skill não precisa subir preview e
+    # rodar 4 shards × 11 projetos.
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - "*-spec.md"
+      - ".agents/**"
+      - ".claude/**"
   workflow_dispatch:
 
 # Cancela runs antigos do mesmo branch/PR (o último push manda).
@@ -13,9 +21,13 @@ concurrency:
   group: playwright-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+# Draft não roda: enquanto o PR é rascunho os pushes são iterativos. Com
+# `ready_for_review` nos triggers, a rodada completa acontece quando ele fica
+# pronto. `workflow_dispatch` e push na main nunca são draft.
 jobs:
   version-check:
     name: Playwright vs imagens (lockfile)
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -24,6 +36,7 @@ jobs:
 
   wait-for-deploy:
     name: Wait for Cloudflare Preview
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-latest
     outputs:
       url: ${{ steps.cf.outputs.url }}
@@ -78,6 +91,7 @@ jobs:
   playwright-tests:
     name: Playwright E2E (${{ matrix.shardIndex }}/${{ matrix.shardTotal }})
     needs: [version-check, wait-for-deploy]
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-latest
     timeout-minutes: 60
     # Renderização determinística: mesma imagem do fluxo Docker local (docs/qa/README.md).
@@ -118,4 +132,6 @@ jobs:
       with:
         name: playwright-report-${{ matrix.shardIndex }}
         path: playwright-report/
-        retention-days: 15
+        # O relatório serve para inspecionar a rodada; 15 dias × 4 shards
+        # consumia armazenamento sem uso.
+        retention-days: 3

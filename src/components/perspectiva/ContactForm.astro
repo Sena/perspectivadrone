@@ -41,12 +41,16 @@ const data = entry?.data || {};
 
     <!-- Contact form -->
     <div id="contact-wrapper">
-      <form id="contact-form" class="space-y-5">
+      <!-- method/action deixam o formulário funcional sem JS; o handler abaixo
+           intercepta para ter loading/erro no lugar. -->
+      <form id="contact-form" class="space-y-5" method="post" action="/api/contact">
         <div>
           <label for="contact-name" class="coord-text text-white/50 block mb-2">Seu nome</label>
           <input
             id="contact-name"
             type="text" required name="name"
+            autocomplete="name"
+            enterkeyhint="next"
             class="w-full bg-transparent border border-white/5 border-b-white/30 text-white px-4 py-3 text-sm focus:outline-none transition-all duration-300 font-sans focus:border-white/5 focus:border-b-primary focus:-translate-y-1 focus:shadow-[0_4px_20px_-4px_oklch(0.72_0.18_65/0.3)]"
             placeholder="Como posso te chamar?"
           />
@@ -56,6 +60,12 @@ const data = entry?.data || {};
           <input
             id="contact-email"
             type="email" required name="email"
+            autocomplete="email"
+            inputmode="email"
+            autocapitalize="none"
+            autocorrect="off"
+            spellcheck="false"
+            enterkeyhint="next"
             class="w-full bg-transparent border border-white/5 border-b-white/30 text-white px-4 py-3 text-sm focus:outline-none transition-all duration-300 font-sans focus:border-white/5 focus:border-b-primary focus:-translate-y-1 focus:shadow-[0_4px_20px_-4px_oklch(0.72_0.18_65/0.3)]"
             placeholder="seu@email.com"
           />
@@ -65,6 +75,7 @@ const data = entry?.data || {};
           <textarea
             id="contact-message"
             required rows="5" name="message"
+            enterkeyhint="send"
             class="w-full bg-transparent border border-white/5 border-b-white/30 text-white px-4 py-3 text-sm focus:outline-none transition-all duration-300 resize-none font-sans focus:border-white/5 focus:border-b-primary focus:-translate-y-1 focus:shadow-[0_4px_20px_-4px_oklch(0.72_0.18_65/0.3)]"
             placeholder="Conte sobre seu projeto..."
           ></textarea>
