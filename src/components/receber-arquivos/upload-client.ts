@@ -80,7 +80,7 @@ function sleep(ms: number, signal?: AbortSignal): Promise<void> {
 }
 
 async function call<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`${API}${path}`, {
+  const response = await fetch(`${API}/${path}`, {
     ...init,
     headers: { accept: "application/json", ...(init?.headers as Record<string, string> | undefined) },
   });
@@ -180,10 +180,16 @@ function init(): void {
   const successMeta = byId<HTMLElement>("ra-success-meta");
   const again = byId<HTMLButtonElement>("ra-again");
   const resumeButton = byId<HTMLButtonElement>("ra-resume");
+  const dropTitle = byId<HTMLElement>("ra-drop-title");
+  const dropHint = byId<HTMLElement>("ra-drop-hint");
+  const dropAction = byId<HTMLElement>("ra-drop-action");
+  const selectedChip = byId<HTMLElement>("ra-selected-chip");
 
   if (!form || !fileInput || !submit) return;
 
   const partSize = Number(root.dataset.partSize) || 5 * 1024 * 1024;
+  const maxBytes = Number(root.dataset.maxBytes) || 0;
+  const emptyHint = dropHint?.textContent ?? "";
 
   let selected: File | null = null;
   let pendingResume: ResumeEntry | null = null;
@@ -235,24 +241,55 @@ function init(): void {
     setStatusLine("");
     if (bar) bar.style.width = "0%";
     if (percent) percent.textContent = "0%";
-    submit.disabled = false;
-    submit.textContent = "Enviar";
     running = false;
+    syncSubmit();
+  };
+
+  // Sem arquivo não há o que enviar: o botão fica inerte e diz o porquê, em
+  // vez de aceitar o clique e responder com erro.
+  const syncSubmit = () => {
+    if (running) {
+      submit.disabled = true;
+      return;
+    }
+    submit.disabled = selected === null;
+    submit.textContent = selected ? "Enviar arquivo" : "Escolha um arquivo";
+  };
+
+  // O bloco precisa mostrar o arquivo escolhido com o mesmo peso do convite
+  // inicial — senão a tela parece não ter registrado a seleção.
+  const renderSelected = (file: File | null) => {
+    if (drop) drop.dataset.state = file ? "selected" : "empty";
+    if (dropTitle) dropTitle.textContent = file ? file.name : "Clique para escolher um arquivo";
+    if (dropHint) dropHint.textContent = file ? formatBytes(file.size) : emptyHint;
+    toggle(dropAction, file !== null);
+    toggle(selectedChip, file !== null);
+    if (fileLabel) {
+      fileLabel.textContent = file
+        ? `Arquivo selecionado: ${file.name}, ${formatBytes(file.size)}.`
+        : "Nenhum arquivo selecionado";
+    }
+    syncSubmit();
   };
 
   const handleSelectedFile = (file: File | null) => {
-    selected = file;
+    selected = null;
     pendingResume = null;
     clearError();
     resetUi();
 
-    if (!file) {
-      if (fileLabel) fileLabel.textContent = "Nenhum arquivo selecionado";
+    if (file && maxBytes > 0 && file.size > maxBytes) {
+      if (fileInput) fileInput.value = "";
+      renderSelected(null);
+      showError(
+        `O arquivo tem ${formatBytes(file.size)} e passa do limite de ${formatBytes(maxBytes)}. Escolha outro.`,
+      );
       return;
     }
 
-    if (fileLabel) fileLabel.textContent = `${file.name} — ${formatBytes(file.size)}`;
-    if (drop) drop.classList.add("border-primary/40");
+    selected = file;
+    renderSelected(file);
+    if (!file) return;
 
     const entry = readResume(file);
     if (entry) {
@@ -367,13 +404,13 @@ function init(): void {
       toggle(success, true);
       setStatusLine("");
       if (fileInput) fileInput.value = "";
-      if (fileLabel) fileLabel.textContent = "Nenhum arquivo selecionado";
       selected = null;
       pendingResume = null;
+      renderSelected(null);
     } finally {
       running = false;
-      submit.disabled = false;
       controller = null;
+      syncSubmit();
     }
   };
 
@@ -411,8 +448,7 @@ function init(): void {
       await runUpload(selected, { ...data, filename: selected.name, size: selected.size }, []);
     } catch (error) {
       handleFailure(error);
-      submit.disabled = false;
-      submit.textContent = "Enviar";
+      syncSubmit();
     }
   });
 
