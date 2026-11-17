@@ -45,7 +45,11 @@ const MAX_MESSAGE = 5_000;
 function json(body: Record<string, unknown>, status = 200) {
 	return new Response(JSON.stringify(body), {
 		status,
-		headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
+		headers: {
+			"Content-Type": "application/json",
+			"Cache-Control": "no-store",
+			"X-Content-Type-Options": "nosniff",
+		},
 	});
 }
 
@@ -109,11 +113,23 @@ export const POST: APIRoute = async ({ request, site }) => {
       );
     }
 
+    // Validação de formato de e-mail e sanitização de quebras de linha (evita header injection)
+    const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+    const cleanEmail = email.trim();
+    if (!EMAIL_REGEX.test(cleanEmail)) {
+      return json({ message: "Por favor, informe um endereço de e-mail válido." }, 400);
+    }
+
+    const cleanName = name.replace(/[\r\n]/g, " ").trim();
+    if (!cleanName) {
+      return json({ message: "Por favor, preencha seu nome." }, 400);
+    }
+
     // Validação de tamanho: o limite também é servidor-side porque
     // `maxlength` no HTML é sugestão, não barreira.
     if (
-      name.length > MAX_NAME ||
-      email.length > MAX_EMAIL ||
+      cleanName.length > MAX_NAME ||
+      cleanEmail.length > MAX_EMAIL ||
       message.length > MAX_MESSAGE
     ) {
       return json({ message: "Mensagem longa demais. Encurte e tente de novo." }, 413);
@@ -128,22 +144,19 @@ export const POST: APIRoute = async ({ request, site }) => {
       body: JSON.stringify({
         from: `${settings.title} <${contactEmail}>`,
         to: [contactEmail],
-        reply_to: email,
-        subject: `${settings.title} - ${name}`,
-        text: `Nome: ${name}\nE-mail: ${email}\n\nMensagem:\n${message}`,
+        reply_to: cleanEmail,
+        subject: `${settings.title} - ${cleanName}`,
+        text: `Nome: ${cleanName}\nE-mail: ${cleanEmail}\n\nMensagem:\n${message}`,
       }),
     });
 
     if (response.ok) {
       return json({ message: "Mensagem enviada com sucesso!" });
     } else {
-      const errorData = await response.json();
+      const errorData = await response.json().catch(() => null);
       console.error("Resend Error:", errorData);
       return json(
-        {
-          message: "Ocorreu um erro ao enviar sua mensagem via Resend.",
-          details: errorData,
-        },
+        { message: "Ocorreu um erro ao enviar sua mensagem. Tente novamente mais tarde." },
         500,
       );
     }

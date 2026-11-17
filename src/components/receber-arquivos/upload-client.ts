@@ -504,7 +504,6 @@ function init(): void {
   window.addEventListener("beforeunload", (event) => {
     if (!running) return;
     event.preventDefault();
-    event.returnValue = "";
   });
 }
 

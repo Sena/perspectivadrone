@@ -22,6 +22,15 @@ Astro.response.headers.set(
 	"max-age=31536000; includeSubDomains; preload"
 );
 
+// Proteções contra Clickjacking, MIME-Sniffing e vazamento de referrer
+Astro.response.headers.set("X-Frame-Options", "SAMEORIGIN");
+Astro.response.headers.set("X-Content-Type-Options", "nosniff");
+Astro.response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+Astro.response.headers.set(
+	"Permissions-Policy",
+	"camera=(), microphone=(), geolocation=()"
+);
+
 // Domínios permitidos para o CSP
 const cspDomains = {
 	scripts: [
@@ -44,7 +53,7 @@ const cspDomains = {
 // O 'nonce' foi removido porque anula o 'unsafe-inline', quebrando scripts nativos do Astro
 Astro.response.headers.set(
 	"Content-Security-Policy",
-	`default-src 'self'; script-src 'self' 'unsafe-inline' ${cspDomains.scripts.join(" ")}; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: ${cspDomains.images.join(" ")}; font-src 'self' data:; connect-src 'self' ${cspDomains.connects.join(" ")};`
+	`default-src 'self'; script-src 'self' 'unsafe-inline' ${cspDomains.scripts.join(" ")}; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: ${cspDomains.images.join(" ")}; font-src 'self' data:; connect-src 'self' ${cspDomains.connects.join(" ")}; frame-ancestors 'self';`
 );
 
 interface Props {

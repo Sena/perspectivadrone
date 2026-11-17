@@ -148,31 +148,87 @@ function toAdminItem(id: string, record: UploadRecord) {
 // Rotas públicas
 // =============================================================================
 
+const START_WINDOW_MS = 10 * 60 * 1000;
+const MAX_STARTS_PER_WINDOW = 10;
+const startHitsByIp = new Map<string, number[]>();
+
+function isStartRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const recent = (startHitsByIp.get(ip) ?? []).filter((at) => now - at < START_WINDOW_MS);
+  if (recent.length >= MAX_STARTS_PER_WINDOW) {
+    startHitsByIp.set(ip, recent);
+    return true;
+  }
+  recent.push(now);
+  startHitsByIp.set(ip, recent);
+  if (startHitsByIp.size > 2_000) {
+    for (const [key, hits] of startHitsByIp) {
+      if (hits.every((at) => now - at >= START_WINDOW_MS)) startHitsByIp.delete(key);
+    }
+  }
+  return false;
+}
+
 export async function handleStatus(ctx: PluginRouteContext) {
-  const [usedBytes, maxFileSizeGb, quotaGb] = await Promise.all([
+  const [usedBytes, maxFileSizeGb, quotaGb, activeVal] = await Promise.all([
     sumStoredBytes(ctx).catch(() => 0),
     settingsNumber(ctx, "maxFileSizeGb", DEFAULT_MAX_FILE_GB),
     settingsNumber(ctx, "quotaGb", DEFAULT_QUOTA_GB),
+    ctx.kv.get<boolean>("active").catch(() => null),
   ]);
   await cleanupExpired(ctx).catch(() => undefined);
 
+  const active = activeVal !== false;
   const quotaBytes = Math.round(quotaGb * GIB);
   return {
     ok: true,
+    active,
     maxFileSize: Math.round(maxFileSizeGb * GIB),
     quotaBytes,
     usedBytes,
-    closed: usedBytes >= quotaBytes,
+    closed: !active || usedBytes >= quotaBytes,
   };
 }
 
 export async function handleStart(ctx: PluginRouteContext) {
+  // 1) Checagem de ativação do plugin
+  const activeVal = await ctx.kv.get<boolean>("active").catch(() => null);
+  if (activeVal === false) return { ok: false, error: "UPLOAD_CLOSED" };
+
+  // 2) Checagem de origem (same-origin)
+  const origin = ctx.request.headers.get("origin");
+  const url = new URL(ctx.request.url);
+  if (origin !== null && origin !== url.origin) {
+    return { ok: false, error: "UNAUTHORIZED_ORIGIN" };
+  }
+  if (ctx.request.headers.get("sec-fetch-site") === "cross-site") {
+    return { ok: false, error: "UNAUTHORIZED_ORIGIN" };
+  }
+
+  // 3) Trava de volume por IP
+  const ip = ctx.requestMeta.ip ?? "desconhecido";
+  if (isStartRateLimited(ip)) {
+    return { ok: false, error: "RATE_LIMITED" };
+  }
+
   const body = asRecord(ctx.input);
   const filenameRaw = typeof body.filename === "string" ? body.filename : "";
-  const contentType =
+  const rawContentType =
     typeof body.contentType === "string" && body.contentType.trim()
       ? body.contentType.trim().slice(0, 200)
       : "application/octet-stream";
+  const DANGEROUS_MIMES = [
+    "text/html",
+    "text/xml",
+    "application/xml",
+    "application/xhtml+xml",
+    "image/svg+xml",
+    "text/javascript",
+    "application/javascript",
+  ];
+  const contentType = DANGEROUS_MIMES.includes(rawContentType.toLowerCase().split(";")[0])
+    ? "application/octet-stream"
+    : rawContentType;
   const size = Number(body.size);
   const confirmDuplicate = body.confirmDuplicate === true;
 
@@ -413,10 +469,12 @@ export async function handleAdminList(ctx: PluginRouteContext) {
 }
 
 export async function handleAdminStats(ctx: PluginRouteContext) {
-  const [usedBytes, quotaGb] = await Promise.all([
+  const [usedBytes, quotaGb, activeVal] = await Promise.all([
     sumStoredBytes(ctx),
     settingsNumber(ctx, "quotaGb", DEFAULT_QUOTA_GB),
+    ctx.kv.get<boolean>("active").catch(() => null),
   ]);
+  const active = activeVal !== false;
   const ready = await uploads(ctx)
     .query({ where: { status: "ready" }, limit: 1 })
     .then((result) => (typeof uploads(ctx).count === "function" ? uploads(ctx).count({ status: "ready" }) : result.items.length))
@@ -424,10 +482,18 @@ export async function handleAdminStats(ctx: PluginRouteContext) {
 
   return {
     ok: true,
+    active,
     usedBytes,
     quotaBytes: Math.round(quotaGb * GIB),
     count: Number(ready) || 0,
   };
+}
+
+export async function handleAdminToggleStatus(ctx: PluginRouteContext) {
+  const body = asRecord(ctx.input);
+  const active = body.active === true;
+  await ctx.kv.set("active", active);
+  return { ok: true, active };
 }
 
 export async function handleAdminMeta(ctx: PluginRouteContext) {

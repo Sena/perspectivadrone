@@ -104,13 +104,32 @@ export const GET: APIRoute = async ({ params, locals, request, url }) => {
   );
   if (!object) return textResponse(404, "Arquivo não encontrado.");
 
+  // Tipos executáveis ou suscetíveis a XSS no navegador são forçados para octet-stream
+  const DANGEROUS_TYPES = [
+    "text/html",
+    "text/xml",
+    "application/xml",
+    "application/xhtml+xml",
+    "image/svg+xml",
+    "text/javascript",
+    "application/javascript",
+    "application/x-javascript",
+  ];
+  const declaredType = (meta.contentType || "").toLowerCase().split(";")[0].trim();
+  const safeContentType = DANGEROUS_TYPES.includes(declaredType)
+    ? "application/octet-stream"
+    : meta.contentType || "application/octet-stream";
+
   const headers = new Headers({
-    "content-type": meta.contentType || "application/octet-stream",
+    "content-type": safeContentType,
     "content-length": String(range ? range.length : meta.size),
     "content-disposition": contentDisposition(meta.filename),
     "accept-ranges": "bytes",
     "cache-control": "private, no-store",
     "x-robots-tag": NOINDEX,
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "content-security-policy": "default-src 'none'; sandbox",
   });
   if (range) {
     headers.set(

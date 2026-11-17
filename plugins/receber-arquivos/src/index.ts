@@ -7,6 +7,7 @@ import {
   handleAdminList,
   handleAdminMeta,
   handleAdminStats,
+  handleAdminToggleStatus,
   handleComplete,
   handlePart,
   handleStart,
@@ -100,6 +101,11 @@ export function createPlugin(): ResolvedPlugin {
         permission: "plugins:manage",
         methods: ["POST"],
         handler: async (ctx) => handleAdminDelete(ctx),
+      },
+      "admin/toggle-status": {
+        permission: "plugins:manage",
+        methods: ["POST"],
+        handler: async (ctx) => handleAdminToggleStatus(ctx),
       },
     },
 

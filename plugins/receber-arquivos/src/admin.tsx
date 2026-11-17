@@ -23,6 +23,7 @@ interface ReceivedItem {
 }
 
 interface Stats {
+  active?: boolean;
   usedBytes: number;
   quotaBytes: number;
   count: number;
@@ -146,13 +147,79 @@ export function ReceberArquivosPage() {
     stats && stats.quotaBytes > 0 ? Math.min(stats.usedBytes / stats.quotaBytes, 1) : 0;
   const usageWarning = usageRatio >= 0.8;
 
+  const toggleActive = async () => {
+    if (!stats) return;
+    const nextState = !(stats.active !== false);
+    const confirmed = window.confirm(
+      nextState
+        ? "Ativar envios? A página /uploads voltará a aceitar novos arquivos."
+        : "Desativar envios? Novos uploads serão bloqueados imediatamente.",
+    );
+    if (!confirmed) return;
+    setBusyId("__toggle__");
+    setError("");
+    try {
+      await request("admin/toggle-status", {
+        method: "POST",
+        body: JSON.stringify({ active: nextState }),
+      });
+      setStats({ ...stats, active: nextState });
+    } catch (toggleError) {
+      setError(toggleError instanceof Error ? toggleError.message : "Falha ao alterar status.");
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const isPluginActive = stats?.active !== false;
+
   return (
     <div style={{ display: "grid", gap: 20, maxWidth: 1100 }}>
-      <div>
-        <h1 style={{ fontSize: 20, fontWeight: 600, margin: 0 }}>Receber arquivos</h1>
-        <p style={{ ...muted, marginTop: 6 }}>
-          Arquivos enviados pelo link <code>/uploads</code>. Só o administrador baixa ou exclui.
-        </p>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap" }}>
+        <div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <h1 style={{ fontSize: 20, fontWeight: 600, margin: 0 }}>Receber arquivos</h1>
+            {stats ? (
+              <span
+                style={{
+                  fontSize: 12,
+                  fontWeight: 500,
+                  padding: "2px 8px",
+                  borderRadius: 999,
+                  background: isPluginActive ? "#dcfce7" : "#fee2e2",
+                  color: isPluginActive ? "#166534" : "#991b1b",
+                  border: `1px solid ${isPluginActive ? "#bbf7d0" : "#fecaca"}`,
+                }}
+              >
+                {isPluginActive ? "Envios ativos" : "Envios desativados"}
+              </span>
+            ) : null}
+          </div>
+          <p style={{ ...muted, marginTop: 6 }}>
+            Arquivos enviados pelo link <code>/uploads</code>. Só o administrador baixa ou exclui.
+          </p>
+        </div>
+
+        {stats ? (
+          <button
+            type="button"
+            onClick={() => void toggleActive()}
+            disabled={busyId === "__toggle__"}
+            style={{
+              border: `1px solid ${isPluginActive ? "#fca5a5" : "var(--primary, #d97706)"}`,
+              background: isPluginActive ? "#fff" : "var(--primary, #d97706)",
+              color: isPluginActive ? "#dc2626" : "#fff",
+              borderRadius: 6,
+              padding: "6px 14px",
+              fontSize: 13,
+              fontWeight: 500,
+              cursor: busyId === "__toggle__" ? "progress" : "pointer",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {busyId === "__toggle__" ? "Atualizando…" : isPluginActive ? "Desativar envios" : "Ativar envios"}
+          </button>
+        ) : null}
       </div>
 
       <div
@@ -165,9 +232,10 @@ export function ReceberArquivosPage() {
         }}
       >
         Os arquivos ocupam a cota gratuita do R2 (10 GB). Exclua depois de baixar.
-        <div style={{ color: "#b45309", marginTop: 4 }}>
-          Com o plugin ativo, qualquer pessoa com o link /uploads pode enviar. Desative o plugin
-          quando o envio terminar.
+        <div style={{ color: !isPluginActive ? "#dc2626" : "#b45309", marginTop: 4 }}>
+          {!isPluginActive
+            ? "O link /uploads está temporariamente desativado para envios."
+            : "Com o plugin ativo, qualquer pessoa com o link /uploads pode enviar. Desative quando o envio terminar."}
         </div>
       </div>
 
