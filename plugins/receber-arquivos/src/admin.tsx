@@ -58,7 +58,7 @@ function shortUserAgent(value: string | null): string {
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`${API}${path}`, {
+  const response = await fetch(`${API}/${path}`, {
     credentials: "same-origin",
     ...init,
     headers: {

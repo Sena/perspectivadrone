@@ -56,7 +56,13 @@ export function createPlugin(): ResolvedPlugin {
       },
       "upload/part": {
         public: true,
-        methods: ["PUT"],
+        // POST é o método que o cliente usa em produção: o WAF da zona
+        // `perspectivadrone.com.br` bloqueia PUT (e DELETE/PATCH) com 403
+        // "Sorry, you have been blocked" antes de chegar ao Worker. O preview
+        // em workers.dev não tem essa regra — foi por isso que o upload
+        // funcionou lá e falhou em produção. PUT continua aceito para não
+        // quebrar clientes antigos/chamadas diretas.
+        methods: ["POST", "PUT"],
         // O host lê o corpo antes do handler e o teto declarável é 8 MiB;
         // por isso a fatia é de 5 MiB (mínimo de parte do R2) em vez de stream.
         request: { body: "bytes", maxBytes: PART_SIZE_BYTES },
