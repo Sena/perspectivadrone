@@ -29,6 +29,7 @@ frio → 12/12 aquecido. Se o servidor não estiver de pé, o erro do globalSetu
 | `tests/visual.spec.ts` | 2 comparações visuais: homepage completa e hero |
 | `tests/seo.spec.ts` | RSS (idioma, link sem barra dupla), sitemap e rewrite das âncoras (`/portfolio` → home) |
 | `tests/guards.spec.ts` | 4 guards independentes de device (rodam nos 3 motores): zero requests ao Google Fonts, 404 customizada, `prefers-reduced-motion` e ausência de exceção JS na home |
+| `tests/receber-arquivos.spec.ts` | 4 testes do plugin "Receber arquivos": `/uploads` com `noindex` e formulário, `robots.txt`, senha errada sem criar upload e download protegido por sessão |
 
 Cada teste roda nos 11 projetos — exceto os guards de `tests/guards.spec.ts`,
 restritos aos 3 motores (`chromium`, `firefox`, `webkit`) por não dependerem de

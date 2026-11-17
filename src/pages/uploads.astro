@@ -1,0 +1,82 @@
+---
+import { Font } from "astro:assets";
+
+import UploadForm from "../components/receber-arquivos/UploadForm.astro";
+import "../styles/theme.css";
+
+export const prerender = false;
+
+// Nada deste caminho pode ser indexado: meta, header e robots.txt.
+Astro.response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+Astro.response.headers.set("Cache-Control", "private, no-store");
+
+interface PluginStatus {
+  maxFileSize: number;
+  quotaBytes: number;
+  usedBytes: number;
+  closed: boolean;
+}
+
+let status: PluginStatus | null = null;
+let pluginMissing = false;
+
+// Nada de `fetch` para o próprio domínio: no Workers, uma subrequisição para o
+// próprio host não volta para o script (o resultado é 404). O host expõe o
+// dispatcher de rotas públicas em processo para páginas SSR — e é ele quem
+// devolve NOT_FOUND quando o plugin está desativado.
+try {
+  const result = await Astro.locals.emdash.handlePublicPluginApiRoute(
+    "receber-arquivos",
+    "GET",
+    "status",
+    Astro.request,
+  );
+  if (result.success && result.data) status = result.data as PluginStatus;
+  else if (result.error?.code === "NOT_FOUND") pluginMissing = true;
+} catch {
+  // Falha transitória do runtime: cai no estado indisponível.
+}
+
+if (pluginMissing) Astro.response.status = 404;
+else if (!status) Astro.response.status = 503;
+
+const pageTitle = "Envio de arquivos — Perspectiva";
+---
+
+<!doctype html>
+<html lang="pt-BR">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+		<meta name="robots" content="noindex, nofollow, noarchive" />
+		<meta name="theme-color" content="#0a0a0b" />
+		<title>{pageTitle}</title>
+		<Font cssVariable="--font-display" preload />
+		<Font cssVariable="--font-sans" preload />
+	</head>
+	<body class="min-h-screen">
+		<main class="min-h-screen flex items-center justify-center px-6 py-16">
+			{
+				pluginMissing ? (
+					<div class="w-full max-w-[640px] text-center">
+						<p class="coord-text text-primary/80 mb-3">/ 404</p>
+						<h1 class="font-display text-3xl md:text-4xl text-white mb-4">Página não encontrada</h1>
+						<p class="text-white/60 font-sans font-light text-sm">
+							Este link não está mais disponível. Fale com o responsável pelo envio.
+						</p>
+					</div>
+				) : status ? (
+					<UploadForm status={status} />
+				) : (
+					<div class="w-full max-w-[640px] text-center">
+						<p class="coord-text text-primary/80 mb-3">/ Indisponível</p>
+						<h1 class="font-display text-3xl md:text-4xl text-white mb-4">Tente de novo em instantes</h1>
+						<p class="text-white/60 font-sans font-light text-sm">
+							Não foi possível falar com o servidor agora.
+						</p>
+					</div>
+				)
+			}
+		</main>
+	</body>
+</html>

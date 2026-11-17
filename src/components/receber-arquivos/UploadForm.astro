@@ -1,0 +1,183 @@
+---
+interface Props {
+	status: {
+		maxFileSize: number;
+		quotaBytes: number;
+		usedBytes: number;
+		closed: boolean;
+	};
+}
+
+const { status } = Astro.props;
+const closed = status.closed;
+const partSize = 5 * 1024 * 1024;
+const maxFileSizeGb = Math.round((status.maxFileSize / 1024 ** 3) * 10) / 10;
+---
+
+<div class="w-full max-w-[640px]" data-upload-root data-part-size={partSize} data-max-bytes={status.maxFileSize}>
+	<p class="coord-text text-primary/80 mb-3">/ Envio de arquivos</p>
+	<h1 class="font-display text-4xl md:text-5xl text-white leading-tight mb-4">Envie seu material</h1>
+	<p class="text-white/60 font-sans font-light mb-10">
+		Escolha o arquivo e envie. Você pode fechar a página depois da confirmação.
+	</p>
+
+	{
+		closed ? (
+			<div class="border border-white/10 bg-white/[0.02] p-6">
+				<p class="text-white/80 text-sm font-sans">Envios temporariamente fechados. Fale com o responsável.</p>
+			</div>
+		) : (
+			<div id="ra-workspace">
+				<form id="ra-form" class="space-y-6" novalidate>
+					<div>
+						<div class="flex items-center justify-between mb-2">
+							<span class="coord-text text-white/50">Arquivo</span>
+							<span id="ra-selected-chip" class="hidden coord-text text-primary" hidden>Selecionado</span>
+						</div>
+						<label
+							for="ra-file"
+							id="ra-drop"
+							data-state="empty"
+							class="ra-drop flex flex-col items-center justify-center gap-2 border border-dashed border-white/20 bg-white/[0.02] px-6 py-10 text-center cursor-pointer transition-colors duration-300 hover:border-primary/60 min-h-[132px]"
+						>
+							<span class="ra-drop-mark" aria-hidden="true">
+								<svg class="ra-mark-upload" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+									<path d="M12 16V4" />
+									<path d="m8 8 4-4 4 4" />
+									<path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" />
+								</svg>
+								<svg class="ra-mark-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+									<path d="m20 6L9 17l-5-5" />
+								</svg>
+							</span>
+							<span class="flex flex-col gap-1 min-w-0">
+								<span id="ra-drop-title" class="text-white/80 text-sm font-sans">Clique para escolher um arquivo</span>
+								<span id="ra-drop-hint" class="text-white/40 text-xs font-sans">Até {maxFileSizeGb} GB por arquivo · um por vez</span>
+							</span>
+							<span id="ra-drop-action" class="hidden text-primary text-xs font-sans underline underline-offset-4" hidden>Trocar arquivo</span>
+						</label>
+						<input id="ra-file" name="file" type="file" class="sr-only" />
+						<p id="ra-file-name" class="sr-only" aria-live="polite">Nenhum arquivo selecionado</p>
+					</div>
+
+					<button id="ra-resume" type="button" class="hidden w-full border border-primary/40 text-primary px-6 py-3 text-sm font-semibold tracking-wide min-h-[44px]" hidden>
+						Continuar envio anterior
+					</button>
+
+					<button
+						id="ra-submit"
+						type="submit"
+						disabled
+						class="btn-primary w-full min-h-[48px] flex items-center justify-center gap-2 disabled:cursor-not-allowed"
+					>
+						Escolha um arquivo
+					</button>
+
+					<p class="text-white/40 text-xs font-sans">
+						Mantenha esta aba aberta até o envio terminar. Em conexões instáveis o envio retoma de onde parou.
+					</p>
+				</form>
+
+				<div id="ra-progress" class="hidden mt-8" hidden>
+					<div class="flex items-baseline justify-between mb-2">
+						<span class="coord-text text-white/50">Enviando</span>
+						<span id="ra-percent" class="text-primary text-sm font-sans tabular-nums">0%</span>
+					</div>
+					<div class="h-2 w-full bg-white/10 overflow-hidden" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="ra-bar-track">
+						<div id="ra-bar" class="h-full bg-primary transition-[width] duration-300" style="width: 0%"></div>
+					</div>
+					<div class="flex items-center justify-between mt-3">
+						<p id="ra-meta" class="text-white/50 text-xs font-sans tabular-nums">0 MB de 0 MB</p>
+						<button id="ra-cancel" type="button" class="text-white/60 hover:text-white text-xs font-sans underline underline-offset-4 min-h-[44px] px-2">
+							Cancelar
+						</button>
+					</div>
+				</div>
+
+				<p id="ra-status" class="text-white/60 text-xs font-sans mt-4" aria-live="polite"></p>
+				<p id="ra-error" class="mt-4 text-sm font-sans text-red-300 border border-red-400/30 bg-red-500/5 px-4 py-3 hidden" role="alert" hidden></p>
+
+				<div id="ra-success" class="hidden mt-8 border border-primary/30 bg-primary/[0.06] p-6" role="status" hidden>
+					<p class="text-primary text-sm font-semibold font-sans mb-2">Arquivo recebido com sucesso.</p>
+					<p id="ra-success-name" class="text-white text-sm font-sans break-all mb-1"></p>
+					<p id="ra-success-meta" class="text-white/50 text-xs font-sans tabular-nums"></p>
+					<button id="ra-again" type="button" class="mt-5 border border-white/20 text-white/80 px-5 py-3 text-sm font-sans min-h-[44px]">
+						Enviar outro arquivo
+					</button>
+				</div>
+			</div>
+		)
+	}
+
+	<noscript>
+		<p class="mt-6 text-white/50 text-xs font-sans">
+			O envio precisa de JavaScript ativado neste navegador.
+		</p>
+	</noscript>
+</div>
+
+<style>
+	/* O seletor precisa mudar de cara depois que o arquivo entra: com o texto
+	   inicial fixo e o nome só numa linha cinza, o usuário não sabe se
+	   escolheu — e reenvia ou desiste. */
+	.ra-drop[data-state="selected"] {
+		border-style: solid;
+		border-color: var(--color-primary);
+		background-color: color-mix(in oklab, var(--color-primary) 7%, transparent);
+	}
+
+	.ra-drop-mark {
+		display: inline-flex;
+		color: rgba(255, 255, 255, 0.4);
+	}
+
+	.ra-drop[data-state="selected"] .ra-drop-mark {
+		color: var(--color-primary);
+	}
+
+	.ra-drop .ra-mark-check {
+		display: none;
+	}
+
+	.ra-drop[data-state="selected"] .ra-mark-check {
+		display: block;
+	}
+
+	.ra-drop[data-state="selected"] .ra-mark-upload {
+		display: none;
+	}
+
+	.ra-drop[data-state="selected"] #ra-drop-title {
+		color: #fff;
+		font-weight: 500;
+		overflow-wrap: anywhere;
+	}
+
+	/* Em telas estreitas o nome do arquivo precisa de largura inteira. */
+	@media (min-width: 480px) {
+		.ra-drop[data-state="selected"] {
+			flex-direction: row;
+			align-items: center;
+			gap: 0.875rem;
+			padding-top: 1.5rem;
+			padding-bottom: 1.5rem;
+			text-align: left;
+		}
+
+		.ra-drop[data-state="selected"] #ra-drop-action {
+			margin-left: auto;
+			white-space: nowrap;
+		}
+	}
+
+	/* Botão inerte até haver arquivo: o laranja cheio convidava ao clique que
+	   só devolvia "Escolha um arquivo". */
+	#ra-submit:disabled {
+		background-color: oklch(0.26 0.01 285);
+		color: rgba(255, 255, 255, 0.45);
+	}
+</style>
+
+<script>
+	import "./upload-client";
+</script>
