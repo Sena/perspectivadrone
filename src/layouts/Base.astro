@@ -60,6 +60,7 @@ interface Props {
 	title?: string;
 	description?: string | null;
 	image?: string | null;
+	preloadImage?: string | null;
 	type?: "website" | "article";
 }
 
@@ -67,6 +68,7 @@ const {
 	title = "",
 	description,
 	image,
+	preloadImage,
 	type = "website",
 } = Astro.props;
 
@@ -99,7 +101,9 @@ const pageCtx = createPublicPageContext({
 		<Font cssVariable="--font-display" preload />
 		<Font cssVariable="--font-sans" preload />
 		<Font cssVariable="--font-mono" />
-		<script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-RJDVRMXRM6"></script>
+		{preloadImage && (
+			<link rel="preload" as="image" href={preloadImage} fetchpriority="high" />
+		)}
 		<script is:inline>
 			window.dataLayer = window.dataLayer || [];
 			function gtag(){dataLayer.push(arguments);}
@@ -107,6 +111,7 @@ const pageCtx = createPublicPageContext({
 
 			gtag('config', 'G-RJDVRMXRM6');
 		</script>
+		<script is:inline defer src="https://www.googletagmanager.com/gtag/js?id=G-RJDVRMXRM6"></script>
 		<noscript>
 			<style>
 				.reveal-hidden,
