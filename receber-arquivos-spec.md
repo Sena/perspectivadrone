@@ -11,6 +11,13 @@
 > continuam em 1.024 partes, dentro do teto de 10.000. Todo o resto da spec foi
 > mantido, incluindo o painel próprio e o download fora das rotas do plugin.
 >
+> **Correção de runtime (2026-11-17):** a checagem de estado em `/uploads` e a
+> leitura de metadados no download **não** usam `fetch` para o próprio domínio:
+> no Workers, uma subrequisição para o próprio host não volta para o script
+> (retorna 404), o que derrubava `/uploads` na preview. As duas passaram a
+> chamar o dispatcher em processo do host (`locals.emdash`):
+> `handlePublicPluginApiRoute` na página e `handlePluginApiRoute` no download.
+>
 > **Mudança de escopo (2026-11-17):** a senha única foi **removida**. O gate
 > passou a ser o **ativar/desativar do plugin**: ativo, `/uploads` aceita envio
 > de quem tiver o link; desativado, página e rotas respondem 404. Configurações

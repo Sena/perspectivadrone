@@ -55,37 +55,35 @@ export const GET: APIRoute = async ({ params, locals, request, url }) => {
   const id = params.id;
   if (!id) return textResponse(400, "Requisição inválida.");
 
-  const user = (locals as { user?: { role?: number } } | undefined)?.user;
+  const user = locals.user;
   if (!user) return textResponse(401, "Faça login para baixar este arquivo.");
   if (typeof user.role !== "number" || user.role < ADMIN_ROLE) {
     return textResponse(403, "Sem permissão para baixar este arquivo.");
   }
 
-  // Os metadados vivem no storage do plugin; a rota privada é a API oficial
-  // para lê-los. Encaminhamos o cookie da sessão já validada acima.
+  // Os metadados vivem no storage do plugin; a rota privada é a fonte única.
+  // Chamamos o handler em processo: `fetch` para o próprio domínio não volta
+  // para o script no Workers (a subrequisição morre em 404).
   let meta: DownloadMeta | null = null;
   try {
-    const metaResponse = await fetch(
-      new URL(
-        `/_emdash/api/plugins/receber-arquivos/admin/meta?id=${encodeURIComponent(id)}`,
-        url.origin,
-      ),
-      {
-        headers: {
-          accept: "application/json",
-          cookie: request.headers.get("cookie") ?? "",
-          "X-EmDash-Request": "1",
-        },
-      },
+    const metaUrl = new URL("/_emdash/api/plugins/receber-arquivos/admin/meta", url.origin);
+    metaUrl.searchParams.set("id", id);
+    const metaRequest = new Request(metaUrl, {
+      method: "GET",
+      headers: { accept: "application/json" },
+    });
+    const result = await locals.emdash.handlePluginApiRoute(
+      "receber-arquivos",
+      "GET",
+      "admin/meta",
+      metaRequest,
+      user,
     );
-    if (!metaResponse.ok) {
-      return textResponse(metaResponse.status === 403 ? 403 : 404, "Arquivo não encontrado.");
-    }
-    const payload = (await metaResponse.json()) as {
+    const payload = result as {
       success?: boolean;
       data?: DownloadMeta & { ok?: boolean };
     };
-    if (payload?.success && payload.data?.ok) meta = payload.data;
+    if (payload.success && payload.data?.ok) meta = payload.data;
   } catch {
     return textResponse(503, "Não foi possível ler o arquivo agora.");
   }

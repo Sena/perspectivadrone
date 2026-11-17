@@ -20,21 +20,21 @@ interface PluginStatus {
 let status: PluginStatus | null = null;
 let pluginMissing = false;
 
+// Nada de `fetch` para o próprio domínio: no Workers, uma subrequisição para o
+// próprio host não volta para o script (o resultado é 404). O host expõe o
+// dispatcher de rotas públicas em processo para páginas SSR — e é ele quem
+// devolve NOT_FOUND quando o plugin está desativado.
 try {
-  // O host devolve 404 em rotas de plugin desativado — é assim que a página
-  // sabe que o recurso está desligado (não há API pública de estado no Astro).
-  const response = await fetch(
-    new URL("/_emdash/api/plugins/receber-arquivos/status", Astro.url.origin),
-    { headers: { accept: "application/json" } },
+  const result = await Astro.locals.emdash.handlePublicPluginApiRoute(
+    "receber-arquivos",
+    "GET",
+    "status",
+    Astro.request,
   );
-  if (response.status === 404) {
-    pluginMissing = true;
-  } else if (response.ok) {
-    const payload = (await response.json()) as { success?: boolean; data?: PluginStatus };
-    if (payload?.success && payload.data) status = payload.data;
-  }
+  if (result.success && result.data) status = result.data as PluginStatus;
+  else if (result.error?.code === "NOT_FOUND") pluginMissing = true;
 } catch {
-  // Dev server sem rede interna ou falha transitória: cai no estado indisponível.
+  // Falha transitória do runtime: cai no estado indisponível.
 }
 
 if (pluginMissing) Astro.response.status = 404;
