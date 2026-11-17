@@ -17,6 +17,15 @@
 > restantes: `maxFileSizeGb` e `quotaGb`. Sem campo `secret`, o plugin não
 > depende mais de `EMDASH_ENCRYPTION_KEY`. As seções 7.1, 7.2 e o campo
 > `password` da seção 6 descrevem o desenho antigo e ficam como histórico.
+>
+> **WAF da zona (2026-11-17):** em produção o WAF de
+> `perspectivadrone.com.br` bloqueia `PUT`, `DELETE` e `PATCH` com 403 HTML
+> ("Sorry, you have been blocked") **antes** de chegar ao Worker. No preview em
+> `*.workers.dev` não existe essa regra. Por isso o cliente envia a fatia com
+> **POST** e a rota aceita `["POST", "PUT"]` (PUT fica só por compatibilidade).
+> A rota continua recebendo o corpo via `body: "bytes"` — o host lê o corpo
+> independente do método. Detalhe operacional em
+> `plugins/receber-arquivos/README.md`.
 **Área:** plugin nativo EmDash + página pública + endpoints autenticados
 **Nome curto / id do plugin:** `receber-arquivos` (rótulo no admin: "Receber arquivos")
 

@@ -344,7 +344,7 @@ function init(): void {
       try {
         await call<{ partNumber: number; etag: string }>(
           `upload/part?uploadId=${encodeURIComponent(data.uploadId)}&partNumber=${partNumber}&token=${encodeURIComponent(data.token)}`,
-          { method: "PUT", body: blob, signal },
+          { method: "POST", body: blob, signal },
         );
         return;
       } catch (error) {
