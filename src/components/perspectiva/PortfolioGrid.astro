@@ -406,22 +406,32 @@ const layoutMap = {
 
     // Mobile Swipe Navigation
     let touchStartX = 0;
+    let touchStartY = 0;
     let touchEndX = 0;
+    let touchEndY = 0;
 
     lightbox.addEventListener('touchstart', (e) => {
-      touchStartX = e.changedTouches[0].screenX;
+      if (e.touches.length !== 1) return;
+      touchStartX = e.touches[0].screenX;
+      touchStartY = e.touches[0].screenY;
     }, { passive: true });
 
     lightbox.addEventListener('touchend', (e) => {
+      if (!lightbox.open || !e.changedTouches.length) return;
       touchEndX = e.changedTouches[0].screenX;
-      if (!lightbox.open) return;
+      touchEndY = e.changedTouches[0].screenY;
       
-      const swipeDistance = touchEndX - touchStartX;
-      if (swipeDistance > 50) {
+      const swipeDistanceX = touchEndX - touchStartX;
+      const swipeDistanceY = touchEndY - touchStartY;
+      
+      // Ignora se o deslocamento vertical for maior (gesto de scroll/pan)
+      if (Math.abs(swipeDistanceY) > Math.abs(swipeDistanceX)) return;
+
+      if (swipeDistanceX > 50) {
         // Swipe Right -> Prev
         currentIndex--;
         updateLightbox();
-      } else if (swipeDistance < -50) {
+      } else if (swipeDistanceX < -50) {
         // Swipe Left -> Next
         currentIndex++;
         updateLightbox();
