@@ -43,9 +43,13 @@ Astro.cache.set(servicesCache);
 
 const sortedServices = services.sort((a, b) => (Number(a.data.sort_order) || 0) - (Number(b.data.sort_order) || 0));
 
+const heroImg = hero?.data?.image;
+const heroPreloadSrc = typeof heroImg === 'string' 
+  ? heroImg 
+  : heroImg?.src || Astro.locals.emdash?.getPublicMediaUrl?.(heroImg?.meta?.storageKey || heroImg?.id) || null;
 ---
 
-<Base title={settings.title} description={settings.tagline}>
+<Base title={settings.title} description={settings.tagline} preloadImage={heroPreloadSrc}>
   <div class="min-h-screen overflow-x-hidden bg-background text-white">
     <Navbar instagram={settings.social?.instagram} menu={menu?.items} title={settings.title} tagline={settings.tagline} />
     

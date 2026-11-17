@@ -133,6 +133,8 @@
     pointer-events: none;
     z-index: 9999;
     opacity: 0.15;
+    transform: translateZ(0);
+    will-change: transform;
   }
 }
 
