@@ -1,0 +1,105 @@
+---
+interface Props {
+	status: {
+		maxFileSize: number;
+		quotaBytes: number;
+		usedBytes: number;
+		closed: boolean;
+	};
+}
+
+const { status } = Astro.props;
+const closed = status.closed;
+const partSize = 5 * 1024 * 1024;
+const maxFileSizeGb = Math.round((status.maxFileSize / 1024 ** 3) * 10) / 10;
+---
+
+<div class="w-full max-w-[640px]" data-upload-root data-part-size={partSize}>
+	<p class="coord-text text-primary/80 mb-3">/ Envio de arquivos</p>
+	<h1 class="font-display text-4xl md:text-5xl text-white leading-tight mb-4">Envie seu material</h1>
+	<p class="text-white/60 font-sans font-light mb-10">
+		Escolha o arquivo e envie. Você pode fechar a página depois da confirmação.
+	</p>
+
+	{
+		closed ? (
+			<div class="border border-white/10 bg-white/[0.02] p-6">
+				<p class="text-white/80 text-sm font-sans">Envios temporariamente fechados. Fale com o responsável.</p>
+			</div>
+		) : (
+			<div id="ra-workspace">
+				<form id="ra-form" class="space-y-6" novalidate>
+					<div>
+						<span class="coord-text text-white/50 block mb-2">Arquivo</span>
+						<label
+							for="ra-file"
+							id="ra-drop"
+							class="flex flex-col items-center justify-center gap-2 border border-dashed border-white/20 bg-white/[0.02] px-6 py-10 text-center cursor-pointer transition-colors duration-300 hover:border-primary/60 min-h-[132px]"
+						>
+							<span class="text-white/80 text-sm font-sans">Clique para escolher um arquivo</span>
+							<span class="text-white/40 text-xs font-sans">Até {maxFileSizeGb} GB por arquivo · um por vez</span>
+						</label>
+						<input id="ra-file" name="file" type="file" class="sr-only" />
+						<p id="ra-file-name" class="text-white/60 text-xs font-sans mt-3 break-all">
+							Nenhum arquivo selecionado
+						</p>
+					</div>
+
+					<button id="ra-resume" type="button" class="hidden w-full border border-primary/40 text-primary px-6 py-3 text-sm font-semibold tracking-wide min-h-[44px]" hidden>
+						Continuar envio anterior
+					</button>
+
+					<button
+						id="ra-submit"
+						type="submit"
+						class="btn-primary w-full min-h-[48px] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+					>
+						Enviar
+					</button>
+
+					<p class="text-white/40 text-xs font-sans">
+						Mantenha esta aba aberta até o envio terminar. Em conexões instáveis o envio retoma de onde parou.
+					</p>
+				</form>
+
+				<div id="ra-progress" class="hidden mt-8" hidden>
+					<div class="flex items-baseline justify-between mb-2">
+						<span class="coord-text text-white/50">Enviando</span>
+						<span id="ra-percent" class="text-primary text-sm font-sans tabular-nums">0%</span>
+					</div>
+					<div class="h-2 w-full bg-white/10 overflow-hidden" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="ra-bar-track">
+						<div id="ra-bar" class="h-full bg-primary transition-[width] duration-300" style="width: 0%"></div>
+					</div>
+					<div class="flex items-center justify-between mt-3">
+						<p id="ra-meta" class="text-white/50 text-xs font-sans tabular-nums">0 MB de 0 MB</p>
+						<button id="ra-cancel" type="button" class="text-white/60 hover:text-white text-xs font-sans underline underline-offset-4 min-h-[44px] px-2">
+							Cancelar
+						</button>
+					</div>
+				</div>
+
+				<p id="ra-status" class="text-white/60 text-xs font-sans mt-4" aria-live="polite"></p>
+				<p id="ra-error" class="mt-4 text-sm font-sans text-red-300 border border-red-400/30 bg-red-500/5 px-4 py-3 hidden" role="alert" hidden></p>
+
+				<div id="ra-success" class="hidden mt-8 border border-primary/30 bg-primary/[0.06] p-6" role="status" hidden>
+					<p class="text-primary text-sm font-semibold font-sans mb-2">Arquivo recebido com sucesso.</p>
+					<p id="ra-success-name" class="text-white text-sm font-sans break-all mb-1"></p>
+					<p id="ra-success-meta" class="text-white/50 text-xs font-sans tabular-nums"></p>
+					<button id="ra-again" type="button" class="mt-5 border border-white/20 text-white/80 px-5 py-3 text-sm font-sans min-h-[44px]">
+						Enviar outro arquivo
+					</button>
+				</div>
+			</div>
+		)
+	}
+
+	<noscript>
+		<p class="mt-6 text-white/50 text-xs font-sans">
+			O envio precisa de JavaScript ativado neste navegador.
+		</p>
+	</noscript>
+</div>
+
+<script>
+	import "./upload-client";
+</script>

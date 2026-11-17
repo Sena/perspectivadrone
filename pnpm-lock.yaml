@@ -20,6 +20,9 @@ importers:
       '@emdash-cms/plugin-forms':
         specifier: ^0.2.13
         version: 0.2.13(33e66feeb0011f4e40ea07a2bb03b446)
+      '@perspectiva/receber-arquivos':
+        specifier: workspace:*
+        version: link:plugins/receber-arquivos
       astro:
         specifier: ^7.4.12
         version: 7.4.12(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)
@@ -51,6 +54,15 @@ importers:
       wrangler:
         specifier: ^4.162.0
         version: 4.162.0(@cloudflare/workers-types@5.20261113.1)(@types/node@26.6.6)
+
+  plugins/receber-arquivos:
+    dependencies:
+      emdash:
+        specifier: '>=1.5.0'
+        version: 1.5.0(@astrojs/react@7.1.9(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(vite@8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)))(@atcute/cbor@2.3.8(@atcute/cid@2.5.0))(@atcute/cid@2.5.0)(@atcute/identity@2.0.2(@atcute/lexicons@2.1.1)(typescript@5.9.3))(@date-fns/tz@1.5.0)(@floating-ui/dom@1.8.0)(@tiptap/extensions@3.32.0(@tiptap/core@3.32.0(@tiptap/pm@3.32.0))(@tiptap/pm@3.32.0))(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(astro@7.4.12(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))(date-fns@4.4.0)(echarts@6.1.0)(prosemirror-model@1.25.13)(prosemirror-state@1.4.4)(prosemirror-view@1.42.9)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@5.9.3)
+      react:
+        specifier: ^19.0.0
+        version: 19.3.1
 
 packages:
 
