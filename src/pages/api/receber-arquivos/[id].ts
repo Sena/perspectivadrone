@@ -79,11 +79,10 @@ export const GET: APIRoute = async ({ params, locals, request, url }) => {
       metaRequest,
       user,
     );
-    const payload = result as {
-      success?: boolean;
-      data?: DownloadMeta & { ok?: boolean };
-    };
-    if (payload.success && payload.data?.ok) meta = payload.data;
+    // `success` já é obrigatório no HandlerResponse do host; só o `data` chega
+    // como `unknown` e por isso leva cast.
+    const payload = result.data as (DownloadMeta & { ok?: boolean }) | undefined;
+    if (result.success && payload?.ok) meta = payload;
   } catch {
     return textResponse(503, "Não foi possível ler o arquivo agora.");
   }
