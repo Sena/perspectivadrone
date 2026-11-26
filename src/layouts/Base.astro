@@ -62,6 +62,8 @@ interface Props {
 	image?: string | null;
 	preloadImage?: string | null;
 	type?: "website" | "article";
+	/** `false` desliga os hints de cache do layout (ex.: página 404). */
+	cache?: boolean;
 }
 
 const {
@@ -70,11 +72,12 @@ const {
 	image,
 	preloadImage,
 	type = "website",
+	cache = true,
 } = Astro.props;
 
 const { data: settings, cacheHint: settingsCache } =
 	await getSiteSettingsWithCacheHint();
-Astro.cache.set(settingsCache);
+if (cache) Astro.cache.set(settingsCache);
 const { siteTitle } = resolveBlogSiteIdentity(settings);
 const fullTitle = title && title.includes(siteTitle) ? title : (title ? `${title} — ${siteTitle}` : siteTitle);
 

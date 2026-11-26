@@ -3,16 +3,19 @@ import { getSiteSettingsWithCacheHint, getMenuWithCacheHint } from "emdash";
 import Base from "../layouts/Base.astro";
 import Navbar from "../components/perspectiva/Navbar.astro";
 
-const { data: settings, cacheHint: settingsCache } =
-  await getSiteSettingsWithCacheHint();
-const { data: menu, cacheHint: menuCache } =
-  await getMenuWithCacheHint("primary");
+const { data: settings } = await getSiteSettingsWithCacheHint();
+const { data: menu } = await getMenuWithCacheHint("primary");
 
-Astro.cache.set(settingsCache);
-Astro.cache.set(menuCache);
+// EmDash 1.6 pode guardar um 404 de conteúdo por até 60s. O site não declara
+// routeRules, então mantém o comportamento anterior: miss não entra no cache.
+Astro.cache.set(false);
 ---
 
-<Base title={`Página não encontrada — ${settings.title}`} description="A página que você procura não existe.">
+<Base
+  title={`Página não encontrada — ${settings.title}`}
+  description="A página que você procura não existe."
+  cache={false}
+>
   <div class="min-h-screen overflow-x-hidden bg-background text-white flex flex-col">
     <Navbar instagram={settings.social?.instagram} menu={menu?.items} title={settings.title} tagline={settings.tagline} />
     

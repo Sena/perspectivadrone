@@ -41,7 +41,9 @@ Astro.cache.set(contactCache);
 Astro.cache.set(portfolioCache);
 Astro.cache.set(servicesCache);
 
-const sortedServices = services.sort((a, b) => (Number(a.data.sort_order) || 0) - (Number(b.data.sort_order) || 0));
+// EmDash 1.6 compartilha o array entre leituras idênticas na mesma request:
+// ordenar uma cópia evita mexer no objeto que outra página ainda vai ler.
+const sortedServices = [...services].sort((a, b) => (Number(a.data.sort_order) || 0) - (Number(b.data.sort_order) || 0));
 
 const heroImg = hero?.data?.image;
 const heroPreloadSrc = typeof heroImg === 'string' 
