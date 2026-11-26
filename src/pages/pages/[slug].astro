@@ -12,12 +12,14 @@ if (!slug) {
 
 const { entry: page, cacheHint } = await getEmDashEntry("pages", slug);
 
+// EmDash 1.6: o hint de um miss carrega a tag da collection. Registrar antes
+// do rewrite faz o 404 em cache ser purgado quando a página for publicada.
+Astro.cache.set(cacheHint);
+
 if (!page) {
 	Astro.response.status = 404;
 	return Astro.rewrite("/404");
 }
-
-Astro.cache.set(cacheHint);
 ---
 
 <Base title={page.data.title}>
