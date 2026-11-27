@@ -2,3 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /uploads
 Disallow: /api/receber-arquivos/
+Disallow: /_emdash/
+
+Sitemap: https://perspectivadrone.com.br/sitemap.xml
