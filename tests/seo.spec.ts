@@ -13,6 +13,18 @@ test.describe('SEO e infraestrutura', () => {
     expect(body).toMatch(/<atom:link href="[^"]+\/rss\.xml" rel="self"/);
   });
 
+  test('robots.txt esconde o admin e declara o sitemap', async ({ request }) => {
+    const res = await request.get('/robots.txt');
+    expect(res.status()).toBe(200);
+
+    const body = await res.text();
+    expect(body).toContain('User-agent: *');
+    expect(body).toContain('Disallow: /_emdash/');
+    // O admin é backoffice; o upload também não entra em índice.
+    expect(body).toContain('Disallow: /uploads');
+    expect(body).toMatch(/Sitemap:\s*https:\/\/perspectivadrone\.com\.br\/sitemap\.xml/);
+  });
+
   test('sitemap.xml responde sem erro', async ({ request }) => {
     const res = await request.get('/sitemap.xml');
     expect(res.status()).toBe(200);

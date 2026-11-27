@@ -8,6 +8,7 @@ import {
 import { createPublicPageContext } from "emdash/page";
 import { Font } from "astro:assets";
 import { resolveBlogSiteIdentity } from "../utils/site-identity";
+import { shouldLoadAnalytics } from "../utils/analytics-gate";
 import "../styles/theme.css";
 
 // Prevenir cache do HTML para evitar CSS quebrado (hash antigo) após novos deploys
@@ -16,45 +17,10 @@ Astro.response.headers.set(
 	"public, max-age=0, must-revalidate"
 );
 
-// Forçar HTTPS (HSTS)
-Astro.response.headers.set(
-	"Strict-Transport-Security",
-	"max-age=31536000; includeSubDomains; preload"
-);
+// HSTS, XFO, nosniff, Referrer-Policy, Permissions-Policy e CSP vivem no
+// `src/middleware.ts`: lá eles alcançam também robots.txt, sitemap e /uploads,
+// que não passam por este layout.
 
-// Proteções contra Clickjacking, MIME-Sniffing e vazamento de referrer
-Astro.response.headers.set("X-Frame-Options", "SAMEORIGIN");
-Astro.response.headers.set("X-Content-Type-Options", "nosniff");
-Astro.response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
-Astro.response.headers.set(
-	"Permissions-Policy",
-	"camera=(), microphone=(), geolocation=()"
-);
-
-// Domínios permitidos para o CSP
-const cspDomains = {
-	scripts: [
-		"https://www.googletagmanager.com",
-		"https://static.cloudflareinsights.com",
-		],
-	images: [
-		"https://www.google-analytics.com",
-		"https://www.googletagmanager.com",
-		],
-	connects: [
-		"https://www.google-analytics.com",
-		"https://analytics.google.com",
-		"https://stats.g.doubleclick.net",
-		"https://cloudflareinsights.com",
-	],
-};
-
-// CSP restrito ao próprio domínio com exceções explícitas (via cspDomains)
-// O 'nonce' foi removido porque anula o 'unsafe-inline', quebrando scripts nativos do Astro
-Astro.response.headers.set(
-	"Content-Security-Policy",
-	`default-src 'self'; script-src 'self' 'unsafe-inline' ${cspDomains.scripts.join(" ")}; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: ${cspDomains.images.join(" ")}; font-src 'self' data:; connect-src 'self' ${cspDomains.connects.join(" ")}; frame-ancestors 'self';`
-);
 
 interface Props {
 	title?: string;
@@ -77,7 +43,26 @@ const {
 
 const { data: settings, cacheHint: settingsCache } =
 	await getSiteSettingsWithCacheHint();
-if (cache) Astro.cache.set(settingsCache);
+// Resposta de sessão não pode virar cache público.
+const hasUser = Boolean(
+	(Astro.locals as unknown as { user?: unknown }).user,
+);
+if (cache && !hasUser) Astro.cache.set(settingsCache);
+
+// GA4 só no host canônico de produção e sem sessão. Preview, dev e admin ficam
+// de fora; `GA_ENABLED=false` é o kill switch.
+const analyticsEnabled = shouldLoadAnalytics({
+	host: Astro.url.host,
+	canonicalHost: Astro.site?.host ?? null,
+	isProd: import.meta.env.PROD,
+	hasUser: Boolean((Astro.locals as unknown as { user?: unknown }).user),
+	enabled:
+		typeof process !== "undefined"
+			? (process.env as Record<string, string | undefined>)?.GA_ENABLED !==
+				"false"
+			: true,
+});
+
 const { siteTitle } = resolveBlogSiteIdentity(settings);
 const fullTitle = title && title.includes(siteTitle) ? title : (title ? `${title} — ${siteTitle}` : siteTitle);
 
@@ -107,14 +92,18 @@ const pageCtx = createPublicPageContext({
 		{preloadImage && (
 			<link rel="preload" as="image" href={preloadImage} fetchpriority="high" />
 		)}
-		<script is:inline>
-			window.dataLayer = window.dataLayer || [];
-			function gtag(){dataLayer.push(arguments);}
-			gtag('js', new Date());
+		{analyticsEnabled && (
+			<>
+				<script is:inline>
+					window.dataLayer = window.dataLayer || [];
+					function gtag(){dataLayer.push(arguments);}
+					gtag('js', new Date());
 
-			gtag('config', 'G-RJDVRMXRM6');
-		</script>
-		<script is:inline defer src="https://www.googletagmanager.com/gtag/js?id=G-RJDVRMXRM6"></script>
+					gtag('config', 'G-RJDVRMXRM6');
+				</script>
+				<script is:inline defer src="https://www.googletagmanager.com/gtag/js?id=G-RJDVRMXRM6"></script>
+			</>
+		)}
 		<noscript>
 			<style>
 				.reveal-hidden,
