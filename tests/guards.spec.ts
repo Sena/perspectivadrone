@@ -78,3 +78,50 @@ test.describe('Guards de motor', () => {
     expect(pageErrors).toEqual([]);
   });
 });
+
+// Headers e gate de analytics não dependem de viewport: um caso por recurso,
+// fora da matriz de aparelhos.
+test.describe('Headers de segurança', () => {
+  test('HTML da home recebe HSTS e CSP', async ({ request }) => {
+    const response = await request.get('/');
+    const headers = response.headers();
+
+    expect(headers['strict-transport-security']).toContain('max-age=');
+    expect(headers['x-content-type-options']).toBe('nosniff');
+    expect(headers['x-frame-options']).toBe('SAMEORIGIN');
+    expect(headers['referrer-policy']).toBe('strict-origin-when-cross-origin');
+
+    const csp = headers['content-security-policy'];
+    expect(csp).toContain("default-src 'self'");
+    expect(csp).toContain("object-src 'none'");
+  });
+
+  test('robots.txt também recebe HSTS (o layout de página não alcança)', async ({ request }) => {
+    const response = await request.get('/robots.txt');
+    expect(response.headers()['strict-transport-security']).toContain('max-age=');
+  });
+
+  test('/uploads mantém a política própria da rota', async ({ request }) => {
+    const response = await request.get('/uploads');
+    const headers = response.headers();
+
+    // A rota é de recebimento de arquivo: nada de embed, nada de índice.
+    expect(headers['content-security-policy']).toContain("frame-ancestors 'none'");
+    expect(headers['x-robots-tag']).toContain('noindex');
+    expect(headers['cache-control']).toContain('no-store');
+  });
+});
+
+test.describe('Gate do GA4', () => {
+  test('fora do host canônico o GA não é injetado', async ({ page }) => {
+    const requested: string[] = [];
+    page.on('request', (req) => requested.push(req.url()));
+
+    await page.goto('/', { waitUntil: 'load' });
+
+    // Preview, dev e localhost nunca contam visita: nem o snippet, nem o script.
+    const html = await page.content();
+    expect(html).not.toContain('G-RJDVRMXRM6');
+    expect(requested.some((url) => url.includes('googletagmanager.com/gtag/js'))).toBe(false);
+  });
+});
