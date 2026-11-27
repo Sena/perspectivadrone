@@ -24,12 +24,6 @@
 			"* * * * *"
 		],
 	},
-	// Worker Loader for plugin sandboxing
-	"worker_loaders": [
-		{
-			"binding": "LOADER",
-		},
-	],
 	"observability": {
 		"enabled": false,
 		"head_sampling_rate": 1,

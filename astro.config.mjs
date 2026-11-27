@@ -1,11 +1,11 @@
 import cloudflare from "@astrojs/cloudflare";
 import react from "@astrojs/react";
-import { d1, r2, sandbox } from "@emdash-cms/cloudflare";
+import { d1, r2 } from "@emdash-cms/cloudflare";
 import { formsPlugin } from "@emdash-cms/plugin-forms";
 import { receberArquivosPlugin } from "@perspectiva/receber-arquivos/config";
 
-import { defineConfig, fontProviders, memoryCache } from "astro/config";
-import emdash from "emdash/astro";
+import { defineConfig, fontProviders } from "astro/config";
+import emdash, { memoryCache } from "emdash/astro";
 
 import tailwindcss from "@tailwindcss/vite";
 
@@ -13,10 +13,6 @@ export default defineConfig({
   site: "https://perspectivadrone.com.br",
   output: "server",
   adapter: cloudflare(),
-
-  cache: {
-    provider: memoryCache(),
-  },
 
   image: {
       layout: "constrained",
@@ -29,9 +25,13 @@ export default defineConfig({
           database: d1({ binding: "DB", session: "auto", coalesce: true }),
           storage: r2({ binding: "MEDIA" }),
           plugins: [formsPlugin(), receberArquivosPlugin()],
-          sandboxed: [],
-          sandboxRunner: sandbox(),
-          marketplace: "https://marketplace.emdashcms.com",
+          // Object cache do EmDash (settings, catálogo, taxonomias): 10 min.
+          // Não confundir com o route cache do Astro, que fica desligado aqui.
+          objectCache: memoryCache({ defaultTtl: 600 }),
+          // Placeholder de imagem no admin em vez de caixa vazia.
+          imagePlaceholders: true,
+          // Nav do admin sem o que este site não usa.
+          admin: { hiddenNavItems: ["comments", "bylines"] },
       }),
 	],
 
