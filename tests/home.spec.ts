@@ -74,18 +74,22 @@ test.describe('E2E Interactions', () => {
       await lightbox.evaluate((el, args) => {
         try {
           const touchStart = new Touch({ identifier: 1, target: el, screenX: args.startX, screenY: args.y, clientX: args.startX, clientY: args.y });
-          el.dispatchEvent(new TouchEvent('touchstart', { changedTouches: [touchStart] }));
+          // O handler ignora touchstart sem exatamente um toque ativo
+          // (`e.touches.length === 1`) e lê a posição de `e.touches`.
+          el.dispatchEvent(new TouchEvent('touchstart', { touches: [touchStart], changedTouches: [touchStart] }));
           
           const touchEnd = new Touch({ identifier: 1, target: el, screenX: args.endX, screenY: args.y, clientX: args.endX, clientY: args.y });
-          el.dispatchEvent(new TouchEvent('touchend', { changedTouches: [touchEnd] }));
+          el.dispatchEvent(new TouchEvent('touchend', { touches: [], changedTouches: [touchEnd] }));
         } catch (e) {
           // Firefox fallback for TouchEvent
           const startEvent = new Event('touchstart') as any;
-          startEvent.changedTouches = [{ screenX: args.startX }];
+          startEvent.touches = [{ screenX: args.startX, screenY: args.y }];
+          startEvent.changedTouches = [{ screenX: args.startX, screenY: args.y }];
           el.dispatchEvent(startEvent);
           
           const endEvent = new Event('touchend') as any;
-          endEvent.changedTouches = [{ screenX: args.endX }];
+          endEvent.touches = [];
+          endEvent.changedTouches = [{ screenX: args.endX, screenY: args.y }];
           el.dispatchEvent(endEvent);
         }
       }, { startX, endX, y: box!.y + box!.height / 2 });
