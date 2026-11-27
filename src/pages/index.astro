@@ -45,10 +45,19 @@ Astro.cache.set(servicesCache);
 // ordenar uma cópia evita mexer no objeto que outra página ainda vai ler.
 const sortedServices = [...services].sort((a, b) => (Number(a.data.sort_order) || 0) - (Number(b.data.sort_order) || 0));
 
-const heroImg = hero?.data?.image;
-const heroPreloadSrc = typeof heroImg === 'string' 
-  ? heroImg 
-  : heroImg?.src || Astro.locals.emdash?.getPublicMediaUrl?.(heroImg?.meta?.storageKey || heroImg?.id) || null;
+const heroImg = hero?.data?.image as
+  | string
+  | { src?: string; id?: string; meta?: { storageKey?: unknown } }
+  | null
+  | undefined;
+const heroMedia = typeof heroImg === 'string' ? undefined : heroImg;
+const heroStorageKey =
+  typeof heroMedia?.meta?.storageKey === 'string'
+    ? heroMedia.meta.storageKey
+    : heroMedia?.id;
+const heroPreloadSrc = typeof heroImg === 'string'
+  ? heroImg
+  : heroMedia?.src || (heroStorageKey ? Astro.locals.emdash?.getPublicMediaUrl?.(heroStorageKey) : undefined) || null;
 ---
 
 <Base title={settings.title} description={settings.tagline} preloadImage={heroPreloadSrc}>
